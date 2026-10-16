@@ -1,0 +1,98 @@
+/* ==============================
+   1. Configurações gerais
+   ============================== */
+
+/* Remove margens e preenchimentos padrão do navegador*/
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Define o visual padrão da página */
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f5f7fc;
+    color: #202943;
+    line-height: 1.6;
+}
+
+/* ==============================
+   2. Cabeçalho
+   ============================== */
+
+.cabecalho {
+    background-color: #14224b;
+    color: #ffffff;
+    text-align: center;
+    padding: 32px 20px;
+}
+
+/* Nome do aplicativo */
+.cabecalho h1 {
+    font-size: 32px;
+    margin-bottom: 4px;
+}
+
+/* Frase abaio do nome */
+.cabecalho p {
+    color: #f3b8d2;
+    font-size: 16px;
+}
+
+/* ==============================
+   3. Conteúdo principal
+   ============================== */
+
+.conteudo {
+    width: min(100% - 32px, 1000px);
+    margin: 40px auto;
+}
+
+/* Área de boas-vindas */
+.boas-vindas {
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    border: 1px solid #e4e8f2;
+    box-shadow: 0 4px 16px rgba(20, 34, 75, 0.06);
+}
+
+/* Título da área de boas-vindas */
+.boas-vindas h2 {
+    color: #14224b;
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+/* Texto da área de boas-vindas */
+.boas-vindas p {
+    color: #65708a;
+    font-size: 16px;
+}
+
+/* ==============================
+   4. Adaptação para celulares
+   ============================== */
+
+@media (max-width: 600px) {
+    .cabecalho {
+        padding: 24px 16px;
+    }
+
+    .cabecalho h1 {
+        font-size: 26px;
+    }
+
+    .conteudo {
+        margin-top: 24px;
+    }
+
+    .boas-vindas {
+        padding: 24px;
+    }
+
+    .boas-vindas h2 {
+        font-size: 22px;
+    }
+}
