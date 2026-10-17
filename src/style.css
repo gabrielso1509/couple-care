@@ -134,6 +134,871 @@ body {
 
 
 /* ==================================================
+   4.1. PÁGINA DE TAREFAS
+   ================================================== */
+
+/* Área exclusiva da página de tarefas */
+.conteudo-tarefas {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Introdução e botão de nova tarefa */
+.introducao-tarefas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.texto-destaque {
+    color: var(--terracota);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+.introducao-tarefas h2 {
+    margin: 4px 0;
+    color: var(--terracota-escuro);
+    font-size: 28px;
+}
+
+.introducao-tarefas p {
+    color: var(--texto-secundario);
+}
+
+/* Botão visual para adicionar tarefas */
+.botao-nova-tarefa {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--terracota);
+    color: var(--branco);
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Efeito visual ao passar o mouse */
+.botao-nova-tarefa:hover {
+    background-color: var(--terracota-escuro);
+}
+
+/* Cartões com o resumo das tarefas */
+.resumo-tarefas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.cartao-resumo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    background-color: var(--branco);
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+.resumo-icone {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background-color: var(--fundo);
+    color: var(--terracota);
+    font-size: 22px;
+}
+
+.cartao-resumo p {
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+.cartao-resumo h3 {
+    color: var(--terracota-escuro);
+    font-size: 26px;
+}
+
+/* Painel branco que envolve a lista */
+.painel-tarefas {
+    padding: 26px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    background-color: var(--branco);
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+/* Título e contador do painel */
+.cabecalho-painel-tarefas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.cabecalho-painel-tarefas h2 {
+    color: var(--terracota-escuro);
+    font-size: 21px;
+}
+
+.cabecalho-painel-tarefas p {
+    color: var(--texto-secundario);
+    font-size: 14px;
+}
+
+.contador-tarefas {
+    padding: 6px 10px;
+    border-radius: 20px;
+    background-color: var(--fundo);
+    color: var(--terracota);
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Filtros da lista */
+.filtros-tarefas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0;
+}
+
+.filtro-tarefa {
+    padding: 8px 14px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+.filtro-tarefa.selecionado {
+    border-color: var(--terracota);
+    background-color: var(--terracota);
+    color: var(--branco);
+}
+
+/* Título do grupo de tarefas */
+.titulo-grupo-tarefas {
+    margin-bottom: 8px;
+    color: var(--texto-principal);
+    font-size: 15px;
+}
+
+/* Cartão individual de tarefa */
+.item-tarefa {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.item-tarefa:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Círculo visual de conclusão */
+.marcador-conclusao {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    border: 2px solid var(--rosa-terracota);
+    border-radius: 50%;
+}
+
+/* Informações da tarefa */
+.detalhes-tarefa {
+    flex: 1;
+    min-width: 0;
+}
+
+.detalhes-tarefa h3 {
+    color: var(--texto-principal);
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.detalhes-tarefa > p {
+    margin-top: 3px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+/* Prazo, responsável e prioridade */
+.metadados-tarefa {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+/* Etiquetas de prioridade */
+.prioridade-tarefa {
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.prioridade-urgente {
+    background-color: #FCE8E6;
+    color: #B42318;
+}
+
+.prioridade-alta {
+    background-color: #FCEBDD;
+    color: #A94F19;
+}
+
+.prioridade-media {
+    background-color: #FFF3CD;
+    color: #8A6500;
+}
+
+.prioridade-baixa {
+    background-color: #E4F3E8;
+    color: #287443;
+}
+
+
+/* ==================================================
+   4.2. PÁGINA DE CALENDÁRIO
+   ================================================== */
+
+/* Organiza os elementos da página */
+.conteudo-calendario {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Introdução da página */
+.introducao-calendario {
+    margin-bottom: 0;
+}
+
+.introducao-calendario h2 {
+    margin: 4px 0;
+    color: var(--terracota-escuro);
+    font-size: 28px;
+}
+
+.introducao-calendario p {
+    color: var(--texto-secundario);
+}
+
+/* Organiza calendário e agenda lado a lado */
+.layout-calendario {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(250px, 1fr);
+    align-items: start;
+    gap: 24px;
+}
+
+/* Cartões principais do calendário e da agenda */
+.painel-calendario,
+.painel-agenda {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    background-color: var(--branco);
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.05);
+}
+
+/* Cabeçalho com o nome do mês e as setas */
+.cabecalho-mes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.cabecalho-mes h2 {
+    color: var(--terracota-escuro);
+    font-size: 20px;
+    text-align: center;
+}
+
+/* Botões para trocar o mês */
+.botao-mes {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background-color: var(--branco);
+    color: var(--terracota-escuro);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.botao-mes:hover {
+    background-color: var(--fundo);
+}
+
+/* Grade do calendário: sete colunas, uma por dia da semana */
+.grade-calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-top: 1px solid var(--borda);
+    border-left: 1px solid var(--borda);
+}
+
+/* Nomes dos dias da semana */
+.dia-semana {
+    padding: 10px 0;
+    background-color: var(--fundo);
+    color: var(--texto-secundario);
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Quadrados individuais dos dias */
+.dia-calendario {
+    display: flex;
+    min-width: 0;
+    min-height: 76px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 2px;
+    border-right: 1px solid var(--borda);
+    border-bottom: 1px solid var(--borda);
+    background-color: var(--branco);
+    color: var(--texto-principal);
+    font-size: 13px;
+}
+
+/* Dias que pertencem ao mês anterior ou seguinte */
+.dia-calendario.outro-mes {
+    background-color: #FAF8F6;
+    color: #B9AAA3;
+}
+
+/* Destaque do dia selecionado */
+.dia-calendario.selecionado {
+    background-color: #F8E8E1;
+    color: var(--terracota-escuro);
+    font-weight: bold;
+    outline: 2px solid var(--terracota);
+    outline-offset: -2px;
+}
+
+/* Indicadores dos eventos existentes em cada dia */
+.indicadores-eventos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* Aparência comum dos indicadores */
+.indicador {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+/* Cor para tarefas */
+.indicador-tarefa {
+    background-color: var(--terracota);
+}
+
+/* Cor para vencimentos financeiros */
+.indicador-financa {
+    background-color: #4778B8;
+}
+
+/* Cor para compromissos */
+.indicador-compromisso {
+    background-color: #8B62AD;
+}
+
+/* Legenda abaixo do calendário */
+.legenda-calendario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.legenda-calendario span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--texto-secundario);
+    font-size: 11px;
+}
+
+/* Cabeçalho da agenda diária */
+.cabecalho-agenda {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho-agenda h2 {
+    margin-top: 8px;
+    color: var(--terracota-escuro);
+    font-size: 22px;
+}
+
+.cabecalho-agenda p {
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+/* Lista de eventos do dia */
+.lista-eventos {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+/* Cartão de cada evento */
+.evento {
+    padding: 16px;
+    border-left: 4px solid var(--terracota);
+    border-radius: 8px;
+    background-color: #FBF5F1;
+}
+
+.evento-tarefa {
+    border-left-color: var(--terracota);
+}
+
+/* Categoria do evento */
+.tipo-evento {
+    color: var(--terracota);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Título e descrição do evento */
+.evento h3 {
+    margin: 6px 0;
+    color: var(--texto-principal);
+    font-size: 15px;
+}
+
+.evento p,
+.responsavel-evento {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+/* Responsável pelo evento */
+.responsavel-evento {
+    display: block;
+    margin-top: 12px;
+}
+
+/* Aviso de conteúdo demonstrativo */
+.aviso-agenda {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+/* Botão de novo compromisso */
+.botao-adicionar-evento {
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--terracota);
+    color: var(--branco);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-adicionar-evento:hover {
+    background-color: var(--terracota-escuro);
+}
+
+
+/* ==================================================
+   4.3. PÁGINA DE FINANÇAS
+   ================================================== */
+
+/* Área principal */
+.conteudo-financas {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* Introdução */
+.introducao-financas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.introducao-financas h1 {
+    color: var(--texto-principal);
+    font-size: 30px;
+}
+
+.introducao-financas p {
+    color: var(--texto-secundario);
+    line-height: 1.6;
+}
+
+/* Cartões do resumo financeiro */
+.resumo-financeiro {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.cartao-financeiro {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    padding: 22px;
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+.cabecalho-cartao-financeiro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.titulo-cartao-financeiro {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.icone-financeiro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background-color: var(--fundo);
+    border-radius: 12px;
+    font-size: 19px;
+}
+
+.valor-financeiro {
+    color: var(--texto-principal);
+    font-size: 25px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.descricao-financeira {
+    color: var(--texto-secundario);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Painéis financeiros */
+.painel-contas,
+.painel-movimentacoes {
+    min-width: 0;
+    padding: 24px;
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+.cabecalho-financas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.cabecalho-financas h2 {
+    margin-bottom: 6px;
+    color: var(--texto-principal);
+    font-size: 20px;
+}
+
+.cabecalho-financas p {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Status da conexão bancária */
+.status-conexao {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: var(--texto-secundario);
+    background-color: var(--fundo);
+    border-radius: 20px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.indicador-conexao {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    background-color: var(--rosa-terracota);
+    border-radius: 50%;
+}
+
+/* Estado inicial das contas */
+.estado-contas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    background-color: var(--fundo);
+    border: 1px dashed var(--borda);
+    border-radius: 14px;
+}
+
+.icone-banco {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    background-color: var(--branco);
+    border-radius: 18px;
+    font-size: 28px;
+}
+
+.estado-contas h3 {
+    color: var(--texto-principal);
+    font-size: 18px;
+}
+
+.estado-contas p {
+    max-width: 480px;
+    color: var(--texto-secundario);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Botões financeiros */
+.botao-conectar-banco,
+.botao-nova-movimentacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--terracota);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.botao-conectar-banco:hover,
+.botao-nova-movimentacao:hover {
+    background-color: var(--terracota-escuro);
+}
+
+.botao-conectar-banco:disabled,
+.botao-nova-movimentacao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Lista de movimentações */
+.lista-movimentacoes {
+    display: flex;
+    flex-direction: column;
+}
+
+.movimentacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.movimentacao:last-child {
+    border-bottom: none;
+}
+
+.detalhes-movimentacao {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.icone-movimentacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    background-color: var(--fundo);
+    border-radius: 12px;
+    font-size: 20px;
+}
+
+.texto-movimentacao {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.texto-movimentacao h3 {
+    color: var(--texto-principal);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.texto-movimentacao p {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+.valor-movimentacao {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.valor-entrada {
+    color: #367A53;
+}
+
+.valor-saida {
+    color: var(--terracota);
+}
+
+/* Aviso de dados demonstrativos */
+.aviso-financas {
+    margin-top: 18px;
+    padding: 14px;
+    color: var(--texto-secundario);
+    background-color: var(--fundo);
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Responsividade para tablets */
+@media (max-width: 1000px) {
+    .resumo-financeiro {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Responsividade para celulares */
+@media (max-width: 600px) {
+    .conteudo-financas {
+        gap: 20px;
+    }
+
+    .introducao-financas h1 {
+        font-size: 25px;
+    }
+
+    .resumo-financeiro {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .cartao-financeiro {
+        padding: 18px;
+    }
+
+    .valor-financeiro {
+        font-size: 23px;
+    }
+
+    .painel-contas,
+    .painel-movimentacoes {
+        padding: 18px;
+    }
+
+    .cabecalho-financas {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .status-conexao {
+        white-space: normal;
+    }
+
+    .estado-contas {
+        padding: 24px 14px;
+    }
+
+    .botao-conectar-banco,
+    .botao-nova-movimentacao {
+        width: 100%;
+    }
+
+    .movimentacao {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .detalhes-movimentacao {
+        gap: 10px;
+    }
+
+    .icone-movimentacao {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+
+    .valor-movimentacao {
+        font-size: 12px;
+    }
+}
+
+
+/* ==================================================
    5. MENU LATERAL E NAVEGAÇÃO
    ================================================== */
 
@@ -213,7 +1078,6 @@ body {
     gap: 12px;
     padding: 12px 14px;
     border-radius: 10px;
-
     color: #F7F1ED;
     text-decoration: none;
     white-space: nowrap;
@@ -229,7 +1093,6 @@ body {
     flex-shrink: 0;
     width: 22px;
     height: 22px;
-
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -381,8 +1244,68 @@ body {
         text-align: left;
     }
 
-    /* Não exibe símbolos provisórios no celular */
+    /* Responsividade da navegação */
     .aplicacao.menu-recolhido .item-menu::before {
         content: none;
+    }
+
+    /* Responsividade da página de tarefas */
+    .introducao-tarefas {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .introducao-tarefas h2 {
+        font-size: 23px;
+    }
+
+    .resumo-tarefas {
+        grid-template-columns: 1fr;
+    }
+
+    .cartao-resumo {
+        padding: 16px;
+    }
+
+    .painel-tarefas {
+        padding: 18px;
+    }
+
+    .cabecalho-painel-tarefas {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .metadados-tarefa {
+        gap: 8px;
+    }
+
+    /* Responsividade da página de calendário */
+    .layout-calendario {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .painel-calendario,
+    .painel-agenda {
+        padding: 16px;
+    }
+
+    .dia-calendario {
+        min-height: 56px;
+        padding: 8px 1px;
+        font-size: 12px;
+    }
+
+    .cabecalho-mes h2 {
+        font-size: 17px;
+    }
+
+    .legenda-calendario {
+        gap: 10px;
+    }
+
+    .introducao-calendario h2 {
+        font-size: 23px;
     }
 }
