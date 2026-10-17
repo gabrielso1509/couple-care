@@ -1,201 +1,83 @@
-/* ==============================
-   1. Configurações gerais
-   ============================== */
 
-/* Remove margens e preenchimentos padrão do navegador*/
-*{
+/* ==================================================
+   1. CONFIGURAÇÕES GERAIS
+   ================================================== */
+
+/* Cores oficiais da identidade visual do CoupleCare */
+:root {
+    --terracota-escuro: #713B32;
+    --terracota: #98472F;
+    --terracota-medio: #B76B54;
+    --rosa-terracota: #D39580;
+
+    --fundo: #F7F1ED;
+    --branco: #FFFFFF;
+
+    --texto-principal: #352925;
+    --texto-secundario: #6F5B53;
+    --borda: #E8DCD5;
+}
+
+/* Remove margens e preenchimentos padrão do navegador */
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Define o visual padrão da página */
-body{
+/* Estilo padrão da página */
+body {
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f5f7fc;
-    color: #202943;
+    background-color: var(--fundo);
+    color: var(--texto-principal);
     line-height: 1.6;
 }
 
-/* ==============================
-   2. Cabeçalho
-   ============================== */
 
-.cabecalho {
-    background-color: #14224b;
-    color: #ffffff;
-    text-align: center;
-    padding: 32px 20px;
-}
+/* ==================================================
+   2. ESTRUTURA DA APLICAÇÃO
+   ================================================== */
 
-/* Nome do aplicativo */
-.cabecalho h1 {
-    font-size: 32px;
-    margin-bottom: 4px;
-}
-
-/* Frase abaio do nome */
-.cabecalho p {
-    color: #f3b8d2;
-    font-size: 16px;
-}
-
-/* ==============================
-   3. Conteúdo principal
-   ============================== */
-
-.conteudo {
-    width: min(100% - 32px, 1000px);
-    margin: 40px auto;
-}
-
-/* Área de boas-vindas */
-.boas-vindas {
-    background-color: #ffffff;
-    padding: 32px;
-    border-radius: 16px;
-    border: 1px solid #e4e8f2;
-    box-shadow: 0 4px 16px rgba(20, 34, 75, 0.06);
-}
-
-/* Título da área de boas-vindas */
-.boas-vindas h2 {
-    color: #14224b;
-    font-size: 26px;
-    margin-bottom: 8px;
-}
-
-/* Texto da área de boas-vindas */
-.boas-vindas p {
-    color: #65708a;
-    font-size: 16px;
-}
-
-/* ==============================
-   4. Adaptação para celulares
-   ============================== */
-
-@media (max-width: 600px) {
-    .cabecalho {
-        padding: 24px 16px;
-    }
-
-    .cabecalho h1 {
-        font-size: 26px;
-    }
-
-    .conteudo {
-        margin-top: 24px;
-    }
-
-    .boas-vindas {
-        padding: 24px;
-    }
-
-    .boas-vindas h2 {
-        font-size: 22px;
-    }
-}
-
-
-/* ==============================
-   5. Estrutura da aplicação
-   ============================== */
-
-/* Organiza o menu e o conteúdo lado a lado*/
+/* Organiza o menu e o conteúdo lado a lado */
 .aplicacao {
     display: flex;
     min-height: 100vh;
 }
 
-
-/* ==============================
-   6. Menu lateral
-   ============================== */
-
-.menu-lateral {
-    width: 250px;
-    min-width: 250px;
-    background-color: #14224b;
-    color: #ffffff;
-    padding: 24px 16px;
-
-    /* Anima a largura quando o menu for recolhido*/
-    transition:  width 0.3s ease, min-width 0.3s ease;
-}
-
-/* Cabeçalho interno do menu*/
-.menu-lateral-cabecalho {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 32px;
-}
-
-.menu-lateral-cabecalho h2 {
-    font-size: 21px;
-    white-space: nowrap;
-}
-
-/* Botão para recolher ou expandir o menu */
-.botao-menu {
-    background-color: transparent;
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.botao-menu:hover {
-    background-color: rgba(255, 255, 255, 0.12);
-}
-
-/* Lista de navegação */
-.navegacao {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.item-menu {
-    display: block;
-    padding: 12px 14px;
-    border-radius: 10px;
-    color: #e4e9f7;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.item-menu:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-}
-
-/* Destaca a seção selecionada*/
-.item-menu.ativo {
-    background-color: #f3b8d2;
-    color: #14224b;
-    font-weight: bold;
-}
-
-
-/* ==============================
-   7. Ajustes do conteúdo
-   ============================== */
-
-/* Área que contém o cabeçalho e o conteúdo */
+/* Área que contém o cabeçalho e o conteúdo principal */
 .conteudo-principal {
-    flex: 1;
-    min-width: 0;
     display: flex;
+    flex: 1;
     flex-direction: column;
+    min-width: 0;
 }
 
-/* Cabeçalho ocupa toda a largura da área principal */
+
+/* ==================================================
+   3. CABEÇALHO PRINCIPAL
+   ================================================== */
+
+/* Cabeçalho da página */
+.cabecalho {
+    background-color: var(--terracota-escuro);
+    color: var(--branco);
+    text-align: center;
+    padding: 32px 20px;
+}
+
+/* Título do cabeçalho */
+.cabecalho h1 {
+    font-size: 32px;
+    margin-bottom: 4px;
+}
+
+/* Frase abaixo do título */
+.cabecalho p {
+    color: var(--rosa-terracota);
+    font-size: 16px;
+}
+
+/* Ajustes do cabeçalho dentro da aplicação */
 .conteudo-principal > .cabecalho {
     width: 100%;
     flex: none;
@@ -203,12 +85,23 @@ body{
     padding: 24px 32px;
 }
 
-/* Ajusta o tamanho do título do cabeçalho */
+/* Título do cabeçalho dentro da aplicação */
 .conteudo-principal > .cabecalho h1 {
     font-size: 28px;
 }
 
-/* Conteúdo ocupa o espaço abaixo do cabeçalho */
+
+/* ==================================================
+   4. CONTEÚDO PRINCIPAL
+   ================================================== */
+
+/* Área que envolve o conteúdo da página */
+.conteudo {
+    width: min(100% - 32px, 1000px);
+    margin: 40px auto;
+}
+
+/* Ajustes do conteúdo dentro da aplicação */
 .conteudo-principal > .conteudo {
     width: auto;
     max-width: none;
@@ -217,131 +110,278 @@ body{
     margin: 32px;
 }
 
-/* ==============================
-   8. Adaptação para celulares
-   ============================== */
-
-
-@media (max-width: 600px) {
-    .aplicacao {
-        flex-direction: column;
-    }
-
-    .menu-lateral {
-        width: 100%;
-        min-width: 0;
-        min-height: auto;
-    }
-
-    .menu-lateral-cabecalho {
-        margin-bottom: 16px;
-    }
-
-    .navegacao {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .aplicacao > .cabecalho {
-        text-align: center;
-    }
-
-    .aplicacao > .conteudo {
-        margin: 24px 16px;
-    }
-
-        .conteudo-principal {
-        width: 100%;
-    }
-
-    .conteudo-principal > .cabecalho {
-        padding: 24px 16px;
-        text-align: center;
-    }
-
-    .conteudo-principal > .conteudo {
-        margin: 24px 16px;
-    }  
+/* Cartão de boas-vindas */
+.boas-vindas {
+    background-color: var(--branco);
+    padding: 32px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.08);
 }
 
-/* ==============================
-   9. Menu lateral recolhido
-   ============================== */
+/* Título do cartão */
+.boas-vindas h2 {
+    color: var(--terracota-escuro);
+    font-size: 26px;
+    margin-bottom: 8px;
+}
 
-/* Diminui a largura do menu quando a classe é ativada */
+/* Texto do cartão */
+.boas-vindas p {
+    color: var(--texto-secundario);
+    font-size: 16px;
+}
+
+
+/* ==================================================
+   5. MENU LATERAL E NAVEGAÇÃO
+   ================================================== */
+
+/* Área principal do menu lateral */
+.menu-lateral {
+    width: 250px;
+    min-width: 250px;
+    padding: 24px 16px;
+    background-color: var(--terracota-escuro);
+    color: var(--branco);
+
+    /* Anima a largura ao recolher ou expandir */
+    transition: width 0.3s ease, min-width 0.3s ease;
+}
+
+/* Cabeçalho interno do menu */
+.menu-lateral-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+/* Título antigo, caso ainda seja utilizado */
+.menu-lateral-cabecalho h2 {
+    font-size: 21px;
+    white-space: nowrap;
+}
+
+/* Logo do CoupleCare */
+.logo-couplecare {
+    display: block;
+    width: 160px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Botão para recolher ou expandir o menu */
+.botao-menu {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--branco);
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* Efeito visual do botão ao passar o mouse */
+.botao-menu:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Imagem do botão do menu */
+.icone-menu {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* Organiza os links verticalmente */
+.navegacao {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Links de navegação: ícone e texto */
+.item-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+
+    color: #F7F1ED;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+/* Ícones SVG da navegação */
+.icone-item-menu {
+    display: block;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Efeito dos links ao passar o mouse */
+.item-menu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--branco);
+}
+
+/* Aparência da página selecionada */
+.item-menu.ativo {
+    background-color: var(--terracota);
+    color: var(--branco);
+    font-weight: bold;
+}
+
+
+/* ==================================================
+   6. MENU LATERAL RECOLHIDO
+   ================================================== */
+
+/* Reduz a largura do menu */
 .aplicacao.menu-recolhido .menu-lateral {
     width: 76px;
     min-width: 76px;
     padding: 24px 10px;
 }
 
-/* Esconde o nome do aplicativo do menu recolhido */
-.aplicacao.menu-recolhido .menu-lateral-cabecalho h2 {
+/* Esconde a logo no menu recolhido */
+.aplicacao.menu-recolhido .menu-lateral-cabecalho h2,
+.aplicacao.menu-recolhido .logo-couplecare {
     display: none;
 }
 
-/* Centraliza o botão de recolher */
+/* Centraliza o botão no cabeçalho do menu */
 .aplicacao.menu-recolhido .menu-lateral-cabecalho {
     justify-content: center;
 }
 
-/* Transforma os links em atalhos compactos */
+/* Centraliza os links quando o menu está recolhido */
 .aplicacao.menu-recolhido .item-menu {
+    justify-content: center;
+    gap: 0;
+    padding: 12px 0;
     font-size: 0;
     text-align: center;
-    padding: 12px 0;
 }
 
-/* Adiciona um símbolo a cada atalho */
+/* Ajusta o tamanho dos ícones no menu recolhido */
+.aplicacao.menu-recolhido .icone-item-menu {
+    width: 24px;
+    height: 24px;
+}
+
+/* Impede a exibição dos símbolos provisórios antigos */
 .aplicacao.menu-recolhido .item-menu::before {
-    font-size: 20px;
+    content: none;
 }
 
-.aplicacao.menu-recolhido .item-menu:nth-child(1)::before {
-    content: "⌂";
-}
 
-.aplicacao.menu-recolhido .item-menu:nth-child(2)::before {
-    content: "✓";
-}
+/* ==================================================
+   7. RESPONSIVIDADE PARA CELULARES
+   ================================================== */
 
-.aplicacao.menu-recolhido .item-menu:nth-child(3)::before {
-    content: "▦";
-}
-
-.aplicacao.menu-recolhido .item-menu:nth-child(4)::before {
-    content: "♡";
-}
-
-.aplicacao.menu-recolhido .item-menu:nth-child(5)::before {
-    content: "$";
-}
-
-.aplicacao.menu-recolhido .item-menu:nth-child(6)::before {
-    content: "⚙";
-}
-
-/* Mantém o menu adaptado para celular */
+/* Ajustes para telas com largura de até 600px */
 @media (max-width: 600px) {
+
+    /* Organiza o menu acima do conteúdo */
+    .aplicacao {
+        flex-direction: column;
+    }
+
+    /* Menu ocupa toda a largura da tela */
+    .menu-lateral {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+    }
+
+    /* Reduz o espaço abaixo do cabeçalho do menu */
+    .menu-lateral-cabecalho {
+        margin-bottom: 16px;
+    }
+
+    /* Distribui os links em duas colunas */
+    .navegacao {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Conteúdo principal ocupa toda a largura */
+    .conteudo-principal {
+        width: 100%;
+    }
+
+    /* Centraliza o cabeçalho no celular */
+    .conteudo-principal > .cabecalho {
+        padding: 24px 16px;
+        text-align: center;
+    }
+
+    /* Ajusta as margens do conteúdo */
+    .conteudo-principal > .conteudo {
+        margin: 24px 16px;
+    }
+
+    /* Reduz o espaço interno do cartão */
+    .boas-vindas {
+        padding: 24px;
+    }
+
+    /* Reduz o título do cabeçalho */
+    .cabecalho h1 {
+        font-size: 26px;
+    }
+
+    /* Reduz o título do cartão */
+    .boas-vindas h2 {
+        font-size: 22px;
+    }
+
+    /* No celular, o menu recolhido continua ocupando a largura toda */
     .aplicacao.menu-recolhido .menu-lateral {
         width: 100%;
         min-width: 0;
     }
 
-    .aplicacao.menu-recolhido .menu-lateral-cabecalho h2 {
+    /* Mantém a logo visível no celular */
+    .aplicacao.menu-recolhido .menu-lateral-cabecalho h2,
+    .aplicacao.menu-recolhido .logo-couplecare {
         display: block;
     }
 
+    /* Mantém o botão à direita no celular */
     .aplicacao.menu-recolhido .menu-lateral-cabecalho {
         justify-content: space-between;
     }
 
+    /* Mantém ícones e textos visíveis no celular */
     .aplicacao.menu-recolhido .item-menu {
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 12px 14px;
         font-size: 16px;
         text-align: left;
-        padding: 12px 14px;
     }
 
+    /* Não exibe símbolos provisórios no celular */
     .aplicacao.menu-recolhido .item-menu::before {
         content: none;
     }
