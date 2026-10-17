@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Finanças | CoupleCare</title>
+
+    <!-- Arquivo de estilos compartilhado do projeto -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Estrutura principal da aplicação -->
+    <div class="aplicacao">
+
+        <!-- Menu lateral -->
+        <aside class="menu-lateral">
+
+            <!-- Logo do CoupleCare -->
+            <div class="logo-container">
+                <a href="index.html" aria-label="Voltar ao Dashboard">
+                    <img
+                        src="../assets/images/couplecare-logo-header.svg"
+                        alt="CoupleCare"
+                        class="logo"
+                    >
+                </a>
+            </div>
+
+            <!-- Navegação entre páginas -->
+            <nav class="navegacao" aria-label="Menu principal">
+
+                <a href="index.html" class="item-menu">
+                    <span class="icone-menu">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="tarefas.html" class="item-menu">
+                    <span class="icone-menu">✓</span>
+                    <span>Tarefas</span>
+                </a>
+
+                <a href="calendario.html" class="item-menu">
+                    <span class="icone-menu">▦</span>
+                    <span>Calendário</span>
+                </a>
+
+                <a
+                    href="financas.html"
+                    class="item-menu ativo"
+                    aria-current="page"
+                >
+                    <span class="icone-menu">R$</span>
+                    <span>Finanças</span>
+                </a>
+
+                <a href="#" class="item-menu">
+                    <span class="icone-menu">⚙</span>
+                    <span>Configurações</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- Área principal -->
+        <main class="conteudo-principal">
+
+            <div class="conteudo-financas">
+
+                <!-- Apresentação da página -->
+                <header class="introducao-financas">
+                    <h1>Nossas finanças</h1>
+
+                    <p>
+                        Organizem o dinheiro do casal e acompanhem
+                        receitas, despesas e contas a pagar.
+                    </p>
+                </header>
+
+                <!-- Resumo dos valores do mês -->
+                <section
+                    class="resumo-financeiro"
+                    aria-label="Resumo financeiro"
+                >
+
+                    <!-- Saldo -->
+                    <article class="cartao-financeiro">
+                        <div class="cabecalho-cartao-financeiro">
+                            <h2 class="titulo-cartao-financeiro">
+                                Saldo total
+                            </h2>
+
+                            <span class="icone-financeiro" aria-hidden="true">
+                                💰
+                            </span>
+                        </div>
+
+                        <p class="valor-financeiro">R$ 4.250,00</p>
+
+                        <p class="descricao-financeira">
+                            Saldo demonstrativo do casal
+                        </p>
+                    </article>
+
+                    <!-- Receitas -->
+                    <article class="cartao-financeiro">
+                        <div class="cabecalho-cartao-financeiro">
+                            <h2 class="titulo-cartao-financeiro">
+                                Receitas do mês
+                            </h2>
+
+                            <span class="icone-financeiro" aria-hidden="true">
+                                ↗
+                            </span>
+                        </div>
+
+                        <p class="valor-financeiro">R$ 6.500,00</p>
+
+                        <p class="descricao-financeira">
+                            Entradas registradas neste mês
+                        </p>
+                    </article>
+
+                    <!-- Despesas -->
+                    <article class="cartao-financeiro">
+                        <div class="cabecalho-cartao-financeiro">
+                            <h2 class="titulo-cartao-financeiro">
+                                Despesas do mês
+                            </h2>
+
+                            <span class="icone-financeiro" aria-hidden="true">
+                                ↘
+                            </span>
+                        </div>
+
+                        <p class="valor-financeiro">R$ 2.250,00</p>
+
+                        <p class="descricao-financeira">
+                            Saídas registradas neste mês
+                        </p>
+                    </article>
+
+                    <!-- Contas a vencer -->
+                    <article class="cartao-financeiro">
+                        <div class="cabecalho-cartao-financeiro">
+                            <h2 class="titulo-cartao-financeiro">
+                                Contas a vencer
+                            </h2>
+
+                            <span class="icone-financeiro" aria-hidden="true">
+                                📅
+                            </span>
+                        </div>
+
+                        <p class="valor-financeiro">R$ 780,00</p>
+
+                        <p class="descricao-financeira">
+                            Valores pendentes de pagamento
+                        </p>
+                    </article>
+
+                </section>
+
+                <!-- Conexão com bancos -->
+                <section class="painel-contas">
+
+                    <div class="cabecalho-financas">
+                        <div>
+                            <h2>Contas bancárias</h2>
+
+                            <p>
+                                Centralizem as informações financeiras do casal.
+                            </p>
+                        </div>
+
+                        <span class="status-conexao">
+                            <span
+                                class="indicador-conexao"
+                                aria-hidden="true"
+                            ></span>
+
+                            Não conectado
+                        </span>
+                    </div>
+
+                    <div class="estado-contas">
+
+                        <span class="icone-banco" aria-hidden="true">
+                            🏦
+                        </span>
+
+                        <h3>Conectem suas contas bancárias</h3>
+
+                        <p>
+                            No futuro, vocês poderão conectar seus bancos
+                            através do Open Finance para importar
+                            movimentações e atualizar os dados financeiros
+                            automaticamente, mediante autorização.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="botao-conectar-banco"
+                            disabled
+                        >
+                            Conectar banco em breve
+                        </button>
+
+                    </div>
+
+                </section>
+
+                <!-- Movimentações financeiras -->
+                <section class="painel-movimentacoes">
+
+                    <div class="cabecalho-financas">
+                        <div>
+                            <h2>Últimas movimentações</h2>
+
+                            <p>
+                                Visualizem as entradas e saídas do casal.
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="botao-nova-movimentacao"
+                            disabled
+                        >
+                            + Nova movimentação
+                        </button>
+                    </div>
+
+                    <div class="lista-movimentacoes">
+
+                        <!-- Despesa de supermercado -->
+                        <article class="movimentacao">
+
+                            <div class="detalhes-movimentacao">
+
+                                <span
+                                    class="icone-movimentacao"
+                                    aria-hidden="true"
+                                >
+                                    🛒
+                                </span>
+
+                                <div class="texto-movimentacao">
+                                    <h3>Supermercado</h3>
+                                    <p>15/10/2026 · Alimentação</p>
+                                </div>
+
+                            </div>
+
+                            <span class="valor-movimentacao valor-saida">
+                                - R$ 350,00
+                            </span>
+
+                        </article>
+
+                        <!-- Receita de salário -->
+                        <article class="movimentacao">
+
+                            <div class="detalhes-movimentacao">
+
+                                <span
+                                    class="icone-movimentacao"
+                                    aria-hidden="true"
+                                >
+                                    💵
+                                </span>
+
+                                <div class="texto-movimentacao">
+                                    <h3>Salário</h3>
+                                    <p>10/10/2026 · Renda</p>
+                                </div>
+
+                            </div>
+
+                            <span class="valor-movimentacao valor-entrada">
+                                + R$ 3.500,00
+                            </span>
+
+                        </article>
+
+                        <!-- Despesa de energia -->
+                        <article class="movimentacao">
+
+                            <div class="detalhes-movimentacao">
+
+                                <span
+                                    class="icone-movimentacao"
+                                    aria-hidden="true"
+                                >
+                                    💡
+                                </span>
+
+                                <div class="texto-movimentacao">
+                                    <h3>Conta de luz</h3>
+                                    <p>08/10/2026 · Moradia</p>
+                                </div>
+
+                            </div>
+
+                            <span class="valor-movimentacao valor-saida">
+                                - R$ 180,00
+                            </span>
+
+                        </article>
+
+                    </div>
+
+                    <p class="aviso-financas">
+                        Os valores e as movimentações desta página são
+                        fictícios e servem apenas para demonstrar a interface.
+                        Nenhum banco está conectado.
+                    </p>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Define a codificação para exibir acentos corretamente -->
+    <meta charset="UTF-8">
+
+    <!-- Adapta o layout para celulares e computadores -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Nome exibido na aba do navegador -->
+    <title>Calendário | CoupleCare</title>
+
+    <!-- Conecta o arquivo CSS que já existe no projeto -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="aplicacao">
+
+    <!-- =========================================
+         MENU LATERAL
+         ========================================= -->
+    <aside class="menu-lateral">
+
+        <div class="menu-lateral-cabecalho">
+
+            <!-- Logo do CoupleCare -->
+            <img
+                src="../assets/images/couplecare-logo-header.svg"
+                alt="CoupleCare"
+                class="logo-couplecare">
+
+            <!-- Botão visual: a funcionalidade virá com JavaScript -->
+            <button
+                type="button"
+                class="botao-menu"
+                id="botao-menu"
+                aria-label="Recolher menu"
+                aria-expanded="true">
+
+                <img
+                    src="../assets/images/menu_icon.png"
+                    alt=""
+                    class="icone-menu">
+            </button>
+        </div>
+
+        <!-- Links para navegar entre as páginas -->
+        <nav class="navegacao" aria-label="Navegação principal">
+
+            <a href="index.html" class="item-menu">
+                <svg class="icone-item-menu" viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="tarefas.html" class="item-menu">
+                <svg class="icone-item-menu" viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <rect x="4" y="3" width="16" height="18" rx="2"/>
+                    <path d="m8 12 2.5 2.5L16 9"/>
+                </svg>
+                <span>Tarefas</span>
+            </a>
+
+            <!-- Página atual -->
+            <a
+                href="calendario.html"
+                class="item-menu ativo"
+                aria-current="page">
+
+                <svg class="icone-item-menu" viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="16" rx="2"/>
+                    <path d="M16 3v4M8 3v4M3 10h18"/>
+                </svg>
+                <span>Calendário</span>
+            </a>
+
+            <a href="#" class="item-menu">
+                <svg class="icone-item-menu" viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"/>
+                </svg>
+                <span>Menstruação</span>
+            </a>
+
+            <a href="financas.html" class="item-menu">
+                <svg class="icone-item-menu" viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <rect x="3" y="6" width="18" height="14" rx="2"/>
+                    <path d="M3 11h18M7 16h3"/>
+                </svg>
+                <span>Finanças</span>
+            </a>
+
+            <a href="#" class="item-menu">
+                <svg class="icone-item-menu" viewBox="0 0 24 24"
+                    aria-hidden="true">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z"
+                        transform="translate(-1 -1) scale(1.08)"/>
+                </svg>
+                <span>Configurações</span>
+            </a>
+
+        </nav>
+    </aside>
+
+    <!-- =========================================
+         CONTEÚDO PRINCIPAL
+         ========================================= -->
+    <div class="conteudo-principal">
+
+        <!-- Cabeçalho da página -->
+        <header class="cabecalho">
+            <h1>Calendário</h1>
+            <p>Organizando nossos dias, construindo nossa vida ❤️</p>
+        </header>
+
+        <main class="conteudo conteudo-calendario">
+
+            <!-- Introdução e identificação do mês -->
+            <section class="introducao-calendario">
+                <div>
+                    <span class="texto-destaque">NOSSA ROTINA</span>
+                    <h2>Planejem juntos</h2>
+                    <p>
+                        Tarefas, contas e momentos importantes em um só lugar.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Calendário e agenda do dia -->
+            <div class="layout-calendario">
+
+                <!-- Grade do calendário mensal -->
+                <section
+                    class="painel-calendario"
+                    aria-label="Calendário mensal">
+
+                    <div class="cabecalho-mes">
+                        <!-- Controles visuais por enquanto -->
+                        <button
+                            type="button"
+                            class="botao-mes"
+                            aria-label="Mês anterior">
+                            &#8592;
+                        </button>
+
+                        <h2>Outubro 2026</h2>
+
+                        <button
+                            type="button"
+                            class="botao-mes"
+                            aria-label="Próximo mês">
+                            &#8594;
+                        </button>
+                    </div>
+
+                    <!-- Dias da semana, começando na segunda-feira -->
+                    <div class="grade-calendario">
+                        <div class="dia-semana">Seg</div>
+                        <div class="dia-semana">Ter</div>
+                        <div class="dia-semana">Qua</div>
+                        <div class="dia-semana">Qui</div>
+                        <div class="dia-semana">Sex</div>
+                        <div class="dia-semana">Sáb</div>
+                        <div class="dia-semana">Dom</div>
+
+                        <!-- Dias do mês anterior -->
+                        <div class="dia-calendario outro-mes">
+                            <span>28</span>
+                        </div>
+                        <div class="dia-calendario outro-mes">
+                            <span>29</span>
+                        </div>
+                        <div class="dia-calendario outro-mes">
+                            <span>30</span>
+                        </div>
+
+                        <!-- Dias de outubro -->
+                        <div class="dia-calendario">
+                            <span>1</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>2</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>3</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>4</span>
+                        </div>
+
+                        <div class="dia-calendario">
+                            <span>5</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>6</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>7</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>8</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>9</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>10</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>11</span>
+                        </div>
+
+                        <div class="dia-calendario">
+                            <span>12</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>13</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>14</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>15</span>
+                        </div>
+
+                        <!-- Dia selecionado: sexta-feira, 16 de outubro -->
+                        <div class="dia-calendario selecionado">
+                            <span>16</span>
+                            <div class="indicadores-eventos">
+                                <span class="indicador indicador-tarefa"></span>
+                            </div>
+                        </div>
+
+                        <div class="dia-calendario">
+                            <span>17</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>18</span>
+                        </div>
+
+                        <div class="dia-calendario">
+                            <span>19</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>20</span>
+                            <div class="indicadores-eventos">
+                                <span class="indicador indicador-financa"></span>
+                            </div>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>21</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>22</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>23</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>24</span>
+                            <div class="indicadores-eventos">
+                                <span class="indicador indicador-compromisso"></span>
+                            </div>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>25</span>
+                        </div>
+
+                        <div class="dia-calendario">
+                            <span>26</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>27</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>28</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>29</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>30</span>
+                        </div>
+                        <div class="dia-calendario">
+                            <span>31</span>
+                        </div>
+
+                        <!-- Primeiro dia do mês seguinte -->
+                        <div class="dia-calendario outro-mes">
+                            <span>1</span>
+                        </div>
+                    </div>
+
+                    <!-- Explicação das cores -->
+                    <div class="legenda-calendario">
+                        <span>
+                            <i class="indicador indicador-tarefa"></i>
+                            Tarefas
+                        </span>
+                        <span>
+                            <i class="indicador indicador-financa"></i>
+                            Finanças
+                        </span>
+                        <span>
+                            <i class="indicador indicador-compromisso"></i>
+                            Compromissos
+                        </span>
+                    </div>
+                </section>
+
+                <!-- Agenda do dia selecionado -->
+                <section class="painel-agenda">
+
+                    <div class="cabecalho-agenda">
+                        <span class="texto-destaque">AGENDA DO DIA</span>
+                        <h2>16 de outubro</h2>
+                        <p>Sexta-feira</p>
+                    </div>
+
+                    <div class="lista-eventos">
+
+                        <!-- Evento relacionado a uma tarefa -->
+                        <article class="evento evento-tarefa">
+                            <span class="tipo-evento">TAREFA</span>
+                            <h3>Organizar compras da semana</h3>
+                            <p>Separar os itens e conferir a lista.</p>
+                            <span class="responsavel-evento">
+                                Responsáveis: Nós dois
+                            </span>
+                        </article>
+
+                        <!-- Mensagem exibida quando não há outros eventos -->
+                        <div class="aviso-agenda">
+                            <p>
+                                Este é um exemplo de agenda.
+                                Os eventos reais serão carregados futuramente.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- Botão visual: será funcional futuramente -->
+                    <button type="button" class="botao-adicionar-evento">
+                        + Novo compromisso
+                    </button>
+
+                </section>
+
+            </div>
+
+        </main>
+    </div>
+
+</div>
+
+</body>
+</html>
