@@ -14,6 +14,36 @@
     <link rel="stylesheet" href="style.css">   
 </head>
 <body>
+
+<div class="aplicacao">
+
+    <!-- Menu lateral de navegação -->
+    <aside class="menu-lateral">
+        <div class="menu-lateral-cabecalho">
+            <h2>CoupleCare</h2>
+            <button
+                type="button"
+                class="botao-menu"
+                id="botao-menu"
+                aria-label="Recolher menu"
+                aria-expanded="true">☰
+            </button>
+        </div>
+
+        <nav class="navegacao" aria-label="Navegação principal">
+            <a href="#" class="item-menu ativo">Dashboard</a>
+            <a href="#" class="item-menu">Tarefas</a>
+            <a href="#" class="item-menu">Calendário</a>
+            <a href="#" class="item-menu">Menstruação</a>
+            <a href="#" class="item-menu">Finanças</a>
+            <a href="#" class="item-menu">Configurações</a>
+        </nav>
+    </aside>
+
+    <!-- Área principal: cabeçalho e conteúdo -->
+    <div class="conteudo-principal">
+
+<!-- ########################################################################## -->
     <!-- Cabeçalho principal da aplicação -->
     <header class="cabecalho">
         <h1>CoupleCare</h1>
@@ -26,7 +56,9 @@
             <h2>Nosso espaço, nossa vida.</h2>
             <p>Organizem as tarefas e construam uma rotina juntos.</p>
         </section>
-    </main>
+    </main>    
+    </div>  <!-- Fim de .conteudo-principal -->
+</div>      <!-- Fim de .aplicacao -->
 
     <!-- Carrega o JavaScript depois do HTML -->
     <script src="script.js"></script>    

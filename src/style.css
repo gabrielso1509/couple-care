@@ -96,3 +96,253 @@ body{
         font-size: 22px;
     }
 }
+
+
+/* ==============================
+   5. Estrutura da aplicação
+   ============================== */
+
+/* Organiza o menu e o conteúdo lado a lado*/
+.aplicacao {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* ==============================
+   6. Menu lateral
+   ============================== */
+
+.menu-lateral {
+    width: 250px;
+    min-width: 250px;
+    background-color: #14224b;
+    color: #ffffff;
+    padding: 24px 16px;
+
+    /* Anima a largura quando o menu for recolhido*/
+    transition:  width 0.3s ease, min-width 0.3s ease;
+}
+
+/* Cabeçalho interno do menu*/
+.menu-lateral-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.menu-lateral-cabecalho h2 {
+    font-size: 21px;
+    white-space: nowrap;
+}
+
+/* Botão para recolher ou expandir o menu */
+.botao-menu {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.botao-menu:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Lista de navegação */
+.navegacao {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.item-menu {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 10px;
+    color: #e4e9f7;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.item-menu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* Destaca a seção selecionada*/
+.item-menu.ativo {
+    background-color: #f3b8d2;
+    color: #14224b;
+    font-weight: bold;
+}
+
+
+/* ==============================
+   7. Ajustes do conteúdo
+   ============================== */
+
+/* Área que contém o cabeçalho e o conteúdo */
+.conteudo-principal {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cabeçalho ocupa toda a largura da área principal */
+.conteudo-principal > .cabecalho {
+    width: 100%;
+    flex: none;
+    text-align: left;
+    padding: 24px 32px;
+}
+
+/* Ajusta o tamanho do título do cabeçalho */
+.conteudo-principal > .cabecalho h1 {
+    font-size: 28px;
+}
+
+/* Conteúdo ocupa o espaço abaixo do cabeçalho */
+.conteudo-principal > .conteudo {
+    width: auto;
+    max-width: none;
+    flex: 1;
+    min-width: 0;
+    margin: 32px;
+}
+
+/* ==============================
+   8. Adaptação para celulares
+   ============================== */
+
+
+@media (max-width: 600px) {
+    .aplicacao {
+        flex-direction: column;
+    }
+
+    .menu-lateral {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+    }
+
+    .menu-lateral-cabecalho {
+        margin-bottom: 16px;
+    }
+
+    .navegacao {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .aplicacao > .cabecalho {
+        text-align: center;
+    }
+
+    .aplicacao > .conteudo {
+        margin: 24px 16px;
+    }
+
+        .conteudo-principal {
+        width: 100%;
+    }
+
+    .conteudo-principal > .cabecalho {
+        padding: 24px 16px;
+        text-align: center;
+    }
+
+    .conteudo-principal > .conteudo {
+        margin: 24px 16px;
+    }  
+}
+
+/* ==============================
+   9. Menu lateral recolhido
+   ============================== */
+
+/* Diminui a largura do menu quando a classe é ativada */
+.aplicacao.menu-recolhido .menu-lateral {
+    width: 76px;
+    min-width: 76px;
+    padding: 24px 10px;
+}
+
+/* Esconde o nome do aplicativo do menu recolhido */
+.aplicacao.menu-recolhido .menu-lateral-cabecalho h2 {
+    display: none;
+}
+
+/* Centraliza o botão de recolher */
+.aplicacao.menu-recolhido .menu-lateral-cabecalho {
+    justify-content: center;
+}
+
+/* Transforma os links em atalhos compactos */
+.aplicacao.menu-recolhido .item-menu {
+    font-size: 0;
+    text-align: center;
+    padding: 12px 0;
+}
+
+/* Adiciona um símbolo a cada atalho */
+.aplicacao.menu-recolhido .item-menu::before {
+    font-size: 20px;
+}
+
+.aplicacao.menu-recolhido .item-menu:nth-child(1)::before {
+    content: "⌂";
+}
+
+.aplicacao.menu-recolhido .item-menu:nth-child(2)::before {
+    content: "✓";
+}
+
+.aplicacao.menu-recolhido .item-menu:nth-child(3)::before {
+    content: "▦";
+}
+
+.aplicacao.menu-recolhido .item-menu:nth-child(4)::before {
+    content: "♡";
+}
+
+.aplicacao.menu-recolhido .item-menu:nth-child(5)::before {
+    content: "$";
+}
+
+.aplicacao.menu-recolhido .item-menu:nth-child(6)::before {
+    content: "⚙";
+}
+
+/* Mantém o menu adaptado para celular */
+@media (max-width: 600px) {
+    .aplicacao.menu-recolhido .menu-lateral {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .aplicacao.menu-recolhido .menu-lateral-cabecalho h2 {
+        display: block;
+    }
+
+    .aplicacao.menu-recolhido .menu-lateral-cabecalho {
+        justify-content: space-between;
+    }
+
+    .aplicacao.menu-recolhido .item-menu {
+        font-size: 16px;
+        text-align: left;
+        padding: 12px 14px;
+    }
+
+    .aplicacao.menu-recolhido .item-menu::before {
+        content: none;
+    }
+}
