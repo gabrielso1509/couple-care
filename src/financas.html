@@ -18,53 +18,74 @@
 
         <!-- Menu lateral -->
         <aside class="menu-lateral">
-
-            <!-- Logo do CoupleCare -->
-            <div class="logo-container">
-                <a href="index.html" aria-label="Voltar ao Dashboard">
+            <!-- Cabeçalho do menu -->
+            <div class="menu-lateral-cabecalho">
+                <img
+                    src="../assets/images/couplecare-logo-header.svg"
+                    alt="CoupleCare"
+                    class="logo-couplecare">
+                <button
+                    type="button"
+                    class="botao-menu"
+                    id="botao-menu"
+                    aria-label="Recolher menu"
+                    aria-expanded="true">
                     <img
-                        src="../assets/images/couplecare-logo-header.svg"
-                        alt="CoupleCare"
-                        class="logo"
-                    >
-                </a>
+                        src="../assets/images/menu_icon.png"
+                        alt=""
+                        class="icone-menu">
+                </button>
             </div>
 
-            <!-- Navegação entre páginas -->
-            <nav class="navegacao" aria-label="Menu principal">
+            <nav class="navegacao" aria-label="Navegação principal">
+            <a href="index.html" class="item-menu"
+                <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>
+                </svg>
+                <span>Dashboard</span>
+            </a>
 
-                <a href="index.html" class="item-menu">
-                    <span class="icone-menu">⌂</span>
-                    <span>Dashboard</span>
-                </a>
+            <a href="tarefas.html" class="item-menu" aria-current="page">
+        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="4" y="3" width="16" height="18" rx="2"/>
+            <path d="m8 12 2.5 2.5L16 9"/>
+        </svg>
+        <span>Tarefas</span>
+    </a>
 
-                <a href="tarefas.html" class="item-menu">
-                    <span class="icone-menu">✓</span>
-                    <span>Tarefas</span>
-                </a>
+    <a href="calendario.html" class="item-menu">
+        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2"/>
+            <path d="M16 3v4M8 3v4M3 10h18"/>
+        </svg>
+        <span>Calendário</span>
+    </a>
 
-                <a href="calendario.html" class="item-menu">
-                    <span class="icone-menu">▦</span>
-                    <span>Calendário</span>
-                </a>
+    <a href="menstruacao.html" class="item-menu">
+        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"/>
+        </svg>
+        <span>Menstruação</span>
+    </a>
 
-                <a
-                    href="financas.html"
-                    class="item-menu ativo"
-                    aria-current="page"
-                >
-                    <span class="icone-menu">R$</span>
-                    <span>Finanças</span>
-                </a>
+    <a href="financas.html" class="item-menu ativo" aria-current="page">
+        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="6" width="18" height="14" rx="2"/>
+            <path d="M3 11h18M7 16h3"/>
+        </svg>
+        <span>Finanças</span>
+    </a>
 
-                <a href="#" class="item-menu">
-                    <span class="icone-menu">⚙</span>
-                    <span>Configurações</span>
-                </a>
+    <a href="config.html" class="item-menu">
+        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z" transform="translate(-1 -1) scale(1.08)"/>
+        </svg>
+        <span>Configurações</span>
+    </a>
 
-            </nav>
-
-        </aside>
+        </nav>
+    </aside>
 
         <!-- Área principal -->
         <main class="conteudo-principal">
@@ -99,7 +120,7 @@
                             </span>
                         </div>
 
-                        <p class="valor-financeiro">R$ 4.250,00</p>
+                        <p class="valor-financeiro">Null</p>
 
                         <p class="descricao-financeira">
                             Saldo demonstrativo do casal
@@ -118,7 +139,7 @@
                             </span>
                         </div>
 
-                        <p class="valor-financeiro">R$ 6.500,00</p>
+                        <p class="valor-financeiro">R$ Null</p>
 
                         <p class="descricao-financeira">
                             Entradas registradas neste mês
@@ -137,7 +158,7 @@
                             </span>
                         </div>
 
-                        <p class="valor-financeiro">R$ 2.250,00</p>
+                        <p class="valor-financeiro">R$ Null</p>
 
                         <p class="descricao-financeira">
                             Saídas registradas neste mês
@@ -156,7 +177,7 @@
                             </span>
                         </div>
 
-                        <p class="valor-financeiro">R$ 780,00</p>
+                        <p class="valor-financeiro">R$ Null</p>
 
                         <p class="descricao-financeira">
                             Valores pendentes de pagamento
@@ -183,7 +204,7 @@
                                 aria-hidden="true"
                             ></span>
 
-                            Não conectado
+                            Não conectado (Ainda n implementado)
                         </span>
                     </div>
 
@@ -207,7 +228,7 @@
                             class="botao-conectar-banco"
                             disabled
                         >
-                            Conectar banco em breve
+                            Conectar banco em breve (Botão ainda nao implementado)
                         </button>
 
                     </div>
@@ -231,93 +252,17 @@
                             class="botao-nova-movimentacao"
                             disabled
                         >
-                            + Nova movimentação
+                            + Nova movimentação (Não implementado)
                         </button>
                     </div>
 
                     <div class="lista-movimentacoes">
-
-                        <!-- Despesa de supermercado -->
-                        <article class="movimentacao">
-
-                            <div class="detalhes-movimentacao">
-
-                                <span
-                                    class="icone-movimentacao"
-                                    aria-hidden="true"
-                                >
-                                    🛒
-                                </span>
-
-                                <div class="texto-movimentacao">
-                                    <h3>Supermercado</h3>
-                                    <p>15/10/2026 · Alimentação</p>
-                                </div>
-
-                            </div>
-
-                            <span class="valor-movimentacao valor-saida">
-                                - R$ 350,00
-                            </span>
-
-                        </article>
-
-                        <!-- Receita de salário -->
-                        <article class="movimentacao">
-
-                            <div class="detalhes-movimentacao">
-
-                                <span
-                                    class="icone-movimentacao"
-                                    aria-hidden="true"
-                                >
-                                    💵
-                                </span>
-
-                                <div class="texto-movimentacao">
-                                    <h3>Salário</h3>
-                                    <p>10/10/2026 · Renda</p>
-                                </div>
-
-                            </div>
-
-                            <span class="valor-movimentacao valor-entrada">
-                                + R$ 3.500,00
-                            </span>
-
-                        </article>
-
-                        <!-- Despesa de energia -->
-                        <article class="movimentacao">
-
-                            <div class="detalhes-movimentacao">
-
-                                <span
-                                    class="icone-movimentacao"
-                                    aria-hidden="true"
-                                >
-                                    💡
-                                </span>
-
-                                <div class="texto-movimentacao">
-                                    <h3>Conta de luz</h3>
-                                    <p>08/10/2026 · Moradia</p>
-                                </div>
-
-                            </div>
-
-                            <span class="valor-movimentacao valor-saida">
-                                - R$ 180,00
-                            </span>
-
-                        </article>
-
+                        <!-- Ainda não foi implementado-->
                     </div>
 
                     <p class="aviso-financas">
-                        Os valores e as movimentações desta página são
-                        fictícios e servem apenas para demonstrar a interface.
-                        Nenhum banco está conectado.
+                        Essa area vai ser desenvolvida mais pra frente,
+                        quando for implementado o open finance!
                     </p>
 
                 </section>
@@ -327,6 +272,6 @@
         </main>
 
     </div>
-
+    <script src="script.js"></script>
 </body>
 </html>

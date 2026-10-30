@@ -1004,8 +1004,8 @@ body {
 
 /* Área principal do menu lateral */
 .menu-lateral {
-    width: 250px;
-    min-width: 250px;
+    width: 240px;
+    min-width: 240px;
     padding: 24px 16px;
     background-color: var(--terracota-escuro);
     color: var(--branco);
@@ -1120,9 +1120,9 @@ body {
 
 /* Reduz a largura do menu */
 .aplicacao.menu-recolhido .menu-lateral {
-    width: 76px;
-    min-width: 76px;
-    padding: 24px 10px;
+    width: 60px;
+    min-width: 40px;
+    padding: 30px 5px ;
 }
 
 /* Esconde a logo no menu recolhido */
@@ -1161,90 +1161,113 @@ body {
    7. RESPONSIVIDADE PARA CELULARES
    ================================================== */
 
-/* Ajustes para telas com largura de até 600px */
+/* Mantém o menu lateral ao lado do conteúdo em telas pequenas */
 @media (max-width: 600px) {
 
-    /* Organiza o menu acima do conteúdo */
     .aplicacao {
-        flex-direction: column;
+        flex-direction: row;
+        min-height: 100vh;
     }
 
-    /* Menu ocupa toda a largura da tela */
+    /* Menu expandido: largura compacta para caber ao lado do conteúdo */
     .menu-lateral {
-        width: 100%;
-        min-width: 0;
-        min-height: auto;
+        width: 160px;
+        min-width: 160px;
+        min-height: 100vh;
+        flex-shrink: 0;
+        padding: 16px 10px;
     }
 
-    /* Reduz o espaço abaixo do cabeçalho do menu */
     .menu-lateral-cabecalho {
-        margin-bottom: 16px;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
     }
 
-    /* Distribui os links em duas colunas */
+    .logo-couplecare {
+        width: 125px;
+    }
+
+    /* Mantém os links em uma coluna */
     .navegacao {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
     }
 
-    /* Conteúdo principal ocupa toda a largura */
+    .item-menu {
+        gap: 8px;
+        padding: 10px 6px;
+        font-size: 12px;
+        white-space: normal;
+    }
+
+    .icone-item-menu {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Conteúdo principal usa todo o espaço restante */
     .conteudo-principal {
-        width: 100%;
+        flex: 1;
+        min-width: 0;
+        width: auto;
     }
 
-    /* Centraliza o cabeçalho no celular */
     .conteudo-principal > .cabecalho {
-        padding: 24px 16px;
+        padding: 20px 12px;
         text-align: center;
     }
 
-    /* Ajusta as margens do conteúdo */
     .conteudo-principal > .conteudo {
-        margin: 24px 16px;
+        margin: 16px 12px;
     }
 
-    /* Reduz o espaço interno do cartão */
     .boas-vindas {
-        padding: 24px;
+        padding: 18px;
     }
 
-    /* Reduz o título do cabeçalho */
-    .cabecalho h1 {
-        font-size: 26px;
-    }
-
-    /* Reduz o título do cartão */
     .boas-vindas h2 {
-        font-size: 22px;
+        font-size: 20px;
     }
 
-    /* No celular, o menu recolhido continua ocupando a largura toda */
+    /* Menu recolhido: mostra somente os ícones */
     .aplicacao.menu-recolhido .menu-lateral {
-        width: 100%;
-        min-width: 0;
+        width: 60px;
+        min-width: 40px;
+        flex-shrink: 0;
+        padding: 30px 5px;
     }
 
-    /* Mantém a logo visível no celular */
-    .aplicacao.menu-recolhido .menu-lateral-cabecalho h2,
-    .aplicacao.menu-recolhido .logo-couplecare {
-        display: block;
+    .aplicacao.menu-recolhido .logo-couplecare,
+    .aplicacao.menu-recolhido .menu-lateral-cabecalho h2 {
+        display: none;
     }
 
-    /* Mantém o botão à direita no celular */
     .aplicacao.menu-recolhido .menu-lateral-cabecalho {
-        justify-content: space-between;
+        justify-content: center;
+        align-items: center;
     }
 
-    /* Mantém ícones e textos visíveis no celular */
+    .aplicacao.menu-recolhido .navegacao {
+        display: flex;
+        flex-direction: column;
+    }
+
     .aplicacao.menu-recolhido .item-menu {
-        justify-content: flex-start;
-        gap: 12px;
-        padding: 12px 14px;
-        font-size: 16px;
-        text-align: left;
+        justify-content: center;
+        gap: 0;
+        padding: 12px 0;
+        font-size: 0;
+        text-align: center;
     }
 
-    /* Responsividade da navegação */
+    .aplicacao.menu-recolhido .icone-item-menu {
+        width: 24px;
+        height: 24px;
+    }
+
     .aplicacao.menu-recolhido .item-menu::before {
         content: none;
     }
