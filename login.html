@@ -1,14 +1,184 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>CoupleCare Login</title>
+
+    <!-- CSS exclusivo da tela de login -->
+    <link rel="stylesheet" href="src/css/login.css">
 </head>
-<body>
+
+<body class="pagina-login">
+
+    <main class="login-container">
+
+        <!-- ========================================
+             LADO ESQUERDO: FORMULÁRIO DE LOGIN
+        ======================================== -->
+
+        <section class="login-formulario">
+
+            <!-- Logo -->
+            <a href="index.html" class="login-logo">
+                <span class="login-logo-icone">C</span>
+                <span>CoupleCare</span>
+            </a>
+
+            <!-- Conteúdo do formulário -->
+            <div class="login-conteudo">
+
+                <p class="login-etiqueta">BEM-VINDO DE VOLTA</p>
+
+                <h1>Que bom ter você aqui.</h1>
+
+                <p class="login-descricao">
+                    Entre na sua conta e continue cuidando da vida a dois.
+                </p>
+
+                <!-- Formulário -->
+                <form class="login-form">
+
+                    <!-- Campo de e-mail -->
+                    <div class="login-campo">
+
+                        <label for="email">E-mail</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Digite seu e-mail"
+                            required
+                        >
+
+                    </div>
+
+                    <!-- Campo de senha -->
+                    <div class="login-campo">
+
+                        <label for="senha">Senha</label>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            name="senha"
+                            placeholder="Digite sua senha"
+                            required
+                        >
+
+                    </div>
+
+                    <!-- Opções do login -->
+                    <div class="login-opcoes">
+
+                        <label class="login-lembrar">
+                            <input type="checkbox" name="lembrar">
+                            <span>Manter conectado</span>
+                        </label>
+
+                        <a href="#" class="login-esqueci-senha">
+                            Esqueci minha senha
+                        </a>
+
+                    </div>
+
+                    <!-- Botão de entrar -->
+                    <button type="submit" class="login-botao">
+                        Entrar na minha conta
+                    </button>
+
+                </form>
+
+                <!-- Cadastro -->
+                <p class="login-cadastro">
+                    Ainda não tem uma conta?
+                    <a href="#">Criar conta</a>
+                </p>
+
+            </div>
+
+            <!-- Rodapé do formulário -->
+            <p class="login-rodape">
+                © 2026 CoupleCare. Todos os direitos reservados.
+            </p>
+
+        </section>
 
 
+        <!-- ========================================
+             LADO DIREITO: APRESENTAÇÃO DO PRODUTO
+        ======================================== -->
 
+        <section class="login-apresentacao">
+
+            <div class="login-apresentacao-conteudo">
+
+                <!-- Cartão visual -->
+                <div class="login-cartao-visual">
+
+                    <!-- Conteúdo central do cartão -->
+                    <div class="login-cartao-centro">
+
+                        <span class="login-cartao-icone">♡</span>
+
+                        <strong>Construindo juntos.</strong>
+
+                        <span>
+                            Pequenos cuidados, grandes conquistas
+                        </span>
+
+                    </div>
+
+                    <!-- Categorias do CoupleCare -->
+                    <div class="login-cartao-rodape">
+
+                        <span>FINANÇAS</span>
+                        <span>ROTINA</span>
+                        <span>BEM-ESTAR</span>
+
+                    </div>
+
+                </div>
+
+                <!-- Título da apresentação -->
+                <h2>
+                    Uma vida a dois,
+                    <span>mais leve.</span>
+                </h2>
+
+                <!-- Descrição -->
+                <p>
+                    Organizem as finanças, dividam as tarefas
+                    e acompanhem os momentos importantes
+                    em um só lugar.
+                </p>
+
+                <!-- Selo abaixo dos elementos -->
+                <span class="login-selo">
+
+                    <span class="login-selo-ponto"></span>
+
+                    MAIS ORGANIZAÇÃO, JUNTOS
+
+                </span>
+
+            </div>
+
+            <!-- Rodapé da apresentação -->
+            <div class="login-apresentacao-rodape">
+                Feito para compartilhar a vida.
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- JavaScript -->
     <script src="src/script.js"></script>
+
 </body>
 </html>

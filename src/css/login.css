@@ -1,0 +1,419 @@
+:root {
+    /* CORES PRINCIPAIS */
+    --cor-primaria: #14243b;
+    --cor-destaque: #F28C45;
+    --cor-secundaria: #A99BE8;
+    --cor-secundaria-clara: #C88DF2;
+
+    /* COR DE FUNDO */
+    --fundo: #F1EEE8;
+    --branco: #FFFFFF;
+
+    /* TEXTOS */
+    --texto-principal: #14243B;
+    --texto-secundario: #7B8491;
+
+    /* BORDAS */
+    --borda: #E3E0DA;
+
+    /* ESTADOS */
+    --cor-sucesso: #4F9875;
+    --cor-alerta: #E5B84B;
+    --cor-erro: #D96666;
+}
+
+/* ========================================
+   1.0 TELA DE LOGIN
+======================================== */
+
+/* Fundo e estrutura principal */
+
+.pagina-login {
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--branco);
+}
+
+.login-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    width: calc(100% - 40px);
+    max-width: 1100px;
+    height: 680px;
+
+    margin: 40px auto;
+    gap: 18px;
+
+    box-sizing: border-box;
+    align-items: stretch;
+}
+
+/* ========================================
+   1.1 LADO DO FORMULÁRIO
+======================================== */
+
+.login-formulario {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 35px;
+    border-radius: 24px;
+
+    background-color: #101D30;
+    color: var(--branco);
+}
+
+/* Logo */
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--branco);
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.login-logo-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background-color: var(--cor-destaque);
+    border-radius: 12px;
+    color: var(--cor-primaria);
+}
+
+/* Conteudo central */
+
+.login-conteudo {
+    width: 100%;
+    max-width: 420px;
+    margin: 50px auto;
+}
+
+.login-etiqueta {
+    color: var(--cor-secundaria);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.login-conteudo h1 {
+    margin: 15px 0;
+    color: var(--branco);
+    font-size: 36px;
+    line-height: 1.2;
+}
+
+.login-descricao {
+    margin-bottom: 35px;
+    color: #AAB4C2;
+    line-height: 1.6;
+}
+
+/* Campos */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.login-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.login-campo label {
+    color: var(--branco);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.login-campo input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    border: 1px solid #34445A;
+    border-radius: 12px;
+    outline: none;
+    background-color: #17263B;
+    color: var(--branco);
+    font-size: 14px;
+}
+
+.login-campo input::placeholder {
+    color: #8290A2;
+}
+
+.login-campo input:focus {
+    border-color: var(--cor-secundaria);
+}
+
+/* Opçoes do formulario */
+
+.login-opcoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+}
+
+.login-lembrar {
+    display: flex;
+    align-items: center;
+    gap: 7Px;
+    color: #AAB4C2;
+    font-size: 16px;
+}
+
+.login-lembrar input {
+    accent-color: var(--cor-destaque);
+}
+
+.login-esqueci-senha,
+.login-cadastro a {
+    color: var(--cor-destaque);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+/* Botão */
+
+.login-botao {
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: var(--cor-destaque);
+    color: var(--cor-primaria);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.login-botao:hover {
+    filter: brightness(1.1);
+}
+
+.login-cadastro {
+    margin-top: 30px;
+    color: #AAB4C2;
+    text-align: center;
+    font-size: 13px;
+}
+
+.login-cadastro a {
+    font-weight: 700;
+}
+
+.login-rodape {
+    color: #718096;
+    font-size: 11px;
+}
+
+/* ========================================
+   1.2 LADO DE APRESENTAÇÃO
+======================================== */
+
+.login-apresentacao {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 40px;
+    overflow: hidden;
+
+    border-radius: 24px;
+    background-color: var(--cor-primaria);
+    color: var(--branco);
+}
+
+.login-apresentacao-conteudo {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Selo */
+
+.login-selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-top: 10px;
+
+    color: var(--cor-secundaria);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.login-selo-ponto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--cor-destaque);
+}
+
+/* Texto principal */
+
+.login-apresentacao h2 {
+    margin: 25px 0 18px;
+    font-size: 48px;
+    line-height: 1.1;
+}
+
+.login-apresentacao h2 span {
+    color: var(--cor-destaque);
+}
+
+.login-apresentacao-conteudo > p {
+    max-width: 420px;
+    color: #C1CBD8;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+/* Cartão visual */
+
+.login-cartao-visual {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    min-height: 230px;
+
+    margin-top: 20px;
+    margin-bottom: 25px;
+
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+
+    background: linear-gradient(
+        135deg,
+        #203653,
+        #17263B
+    );
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.login-cartao-cabecalho,
+.login-cartao-rodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-cartao-cabecalho {
+    color: #C1CBD8;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.login-cartao-simbolo {
+    color: var(--cor-destaque);
+    font-size: 24px;
+}
+
+.login-cartao-centro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.login-cartao-icone {
+    color: var(--cor-destaque);
+    font-size: 60px;
+}
+
+.login-cartao-centro strong {
+    font-size: 32px;
+}
+
+.login-cartao-centro > span:last-child {
+    color: #AAB4C2;
+    font-size: 16px;
+}
+
+.login-cartao-rodape {
+    color: var(--cor-secundaria);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+}
+
+/* Rodapé da apresentação */
+
+.login-apresentacao-rodape {
+    color: #AAB4C2;
+    font-size: 14px;
+}
+
+/* ========================================
+   1.3 RESPONSIVIDADE DO LOGIN
+======================================== */
+
+@media (max-width: 900px) {
+
+    .login-container {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .login-formulario {
+        min-height: 600px;
+    }
+
+    .login-apresentacao {
+        min-height: 500px;
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    .login-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .login-formulario,
+    .login-apresentacao {
+        height: 100%;
+        min-height: 0;
+        box-sizing: border-box;
+}
+
+    .login-conteudo h1 {
+        font-size: 29px;
+    }
+
+    .login-apresentacao h2 {
+        font-size: 36px;
+    }
+
+    .login-opcoes {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .login-cartao-visual {
+        min-height: 200px;
+        margin-top: 35px;
+    }
+
+}
