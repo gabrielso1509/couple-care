@@ -5,17 +5,27 @@
 
 /* Cores oficiais da identidade visual do CoupleCare */
 :root {
-    --terracota-escuro: #713B32;
-    --terracota: #98472F;
-    --terracota-medio: #B76B54;
-    --rosa-terracota: #D39580;
+    /* CORES PRINCIPAIS */
+    --cor-primaria: #14243b;
+    --cor-destaque: #F28C45;
+    --cor-secundaria: #A99BE8;
+    --cor-secundaria-clara: #C88DF2;
 
-    --fundo: #F7F1ED;
+    /* COR DE FUNDO */
+    --fundo: #F1EEE8;
     --branco: #FFFFFF;
 
-    --texto-principal: #352925;
-    --texto-secundario: #6F5B53;
-    --borda: #E8DCD5;
+    /* TEXTOS */
+    --texto-principal: #14243B;
+    --texto-secundario: #7B8491;
+
+    /* BORDAS */
+    --borda: #E3E0DA;
+
+    /* ESTADOS */
+    --cor-sucesso: #4F9875;
+    --cor-alerta: #E5B84B;
+    --cor-erro: #D96666;
 }
 
 /* Remove margens e preenchimentos padrão do navegador */
@@ -59,7 +69,7 @@ body {
 
 /* Cabeçalho da página */
 .cabecalho {
-    background-color: var(--terracota-escuro);
+    background-color: var(--cor-primaria);
     color: var(--branco);
     text-align: center;
     padding: 32px 20px;
@@ -73,16 +83,24 @@ body {
 
 /* Frase abaixo do título */
 .cabecalho p {
-    color: var(--rosa-terracota);
+    color: var(--cor-secundaria-clara);
     font-size: 16px;
 }
 
 /* Ajustes do cabeçalho dentro da aplicação */
 .conteudo-principal > .cabecalho {
-    width: 100%;
+    width: auto;
     flex: none;
     text-align: left;
+    margin: 16px 16px 0;
     padding: 24px 32px;
+
+    /* Bordas arredondadas */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+
+    /* Efeito suspenso */
+    box-shadow: 0 8px 24px rgba(20, 36, 59, 0.12);
 }
 
 /* Título do cabeçalho dentro da aplicação */
@@ -116,12 +134,12 @@ body {
     padding: 32px;
     border: 1px solid var(--borda);
     border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.08);
+    box-shadow: 0 4px 16px rgba(20, 36, 59, 0.05);
 }
 
 /* Título do cartão */
 .boas-vindas h2 {
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 26px;
     margin-bottom: 8px;
 }
@@ -153,7 +171,7 @@ body {
 }
 
 .texto-destaque {
-    color: var(--terracota);
+    color: var(--cor-destaque);
     font-size: 12px;
     font-weight: bold;
     letter-spacing: 1.5px;
@@ -161,7 +179,7 @@ body {
 
 .introducao-tarefas h2 {
     margin: 4px 0;
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 28px;
 }
 
@@ -174,7 +192,7 @@ body {
     padding: 12px 18px;
     border: none;
     border-radius: 10px;
-    background-color: var(--terracota);
+    background-color: var(--cor-destaque);
     color: var(--branco);
     font-size: 14px;
     font-weight: bold;
@@ -184,7 +202,7 @@ body {
 
 /* Efeito visual ao passar o mouse */
 .botao-nova-tarefa:hover {
-    background-color: var(--terracota-escuro);
+    background-color: var(--cor-primaria);
 }
 
 /* Cartões com o resumo das tarefas */
@@ -213,7 +231,7 @@ body {
     flex-shrink: 0;
     border-radius: 12px;
     background-color: var(--fundo);
-    color: var(--terracota);
+    color: var(--cor-destaque);
     font-size: 22px;
 }
 
@@ -223,7 +241,7 @@ body {
 }
 
 .cartao-resumo h3 {
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 26px;
 }
 
@@ -245,7 +263,7 @@ body {
 }
 
 .cabecalho-painel-tarefas h2 {
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 21px;
 }
 
@@ -258,7 +276,7 @@ body {
     padding: 6px 10px;
     border-radius: 20px;
     background-color: var(--fundo);
-    color: var(--terracota);
+    color: var(--cor-destaque);
     font-size: 12px;
     font-weight: bold;
     white-space: nowrap;
@@ -281,8 +299,8 @@ body {
 }
 
 .filtro-tarefa.selecionado {
-    border-color: var(--terracota);
-    background-color: var(--terracota);
+    border-color: var(--cor-destaque);
+    background-color: var(--cor-destaque);
     color: var(--branco);
 }
 
@@ -313,7 +331,7 @@ body {
     height: 20px;
     flex-shrink: 0;
     margin-top: 3px;
-    border: 2px solid var(--rosa-terracota);
+    border: 2px solid var(--cor-secundaria-clara);
     border-radius: 50%;
 }
 
@@ -393,7 +411,7 @@ body {
 
 .introducao-calendario h2 {
     margin: 4px 0;
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 28px;
 }
 
@@ -430,7 +448,7 @@ body {
 }
 
 .cabecalho-mes h2 {
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 20px;
     text-align: center;
 }
@@ -443,7 +461,7 @@ body {
     border: 1px solid var(--borda);
     border-radius: 8px;
     background-color: var(--branco);
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 22px;
     cursor: pointer;
 }
@@ -495,9 +513,9 @@ body {
 /* Destaque do dia selecionado */
 .dia-calendario.selecionado {
     background-color: #F8E8E1;
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-weight: bold;
-    outline: 2px solid var(--terracota);
+    outline: 2px solid var(--cor-destaque);
     outline-offset: -2px;
 }
 
@@ -520,7 +538,7 @@ body {
 
 /* Cor para tarefas */
 .indicador-tarefa {
-    background-color: var(--terracota);
+    background-color: var(--cor-destaque);
 }
 
 /* Cor para vencimentos financeiros */
@@ -557,7 +575,7 @@ body {
 
 .cabecalho-agenda h2 {
     margin-top: 8px;
-    color: var(--terracota-escuro);
+    color: var(--cor-primaria);
     font-size: 22px;
 }
 
@@ -577,18 +595,18 @@ body {
 /* Cartão de cada evento */
 .evento {
     padding: 16px;
-    border-left: 4px solid var(--terracota);
+    border-left: 4px solid var(--cor-destaque);
     border-radius: 8px;
     background-color: #FBF5F1;
 }
 
 .evento-tarefa {
-    border-left-color: var(--terracota);
+    border-left-color: var(--cor-destaque);
 }
 
 /* Categoria do evento */
 .tipo-evento {
-    color: var(--terracota);
+    color: var(--cor-destaque);
     font-size: 10px;
     font-weight: bold;
     letter-spacing: 1px;
@@ -626,7 +644,7 @@ body {
     padding: 12px;
     border: none;
     border-radius: 8px;
-    background-color: var(--terracota);
+    background-color: var(--cor-destaque);
     color: var(--branco);
     font-size: 14px;
     font-weight: bold;
@@ -634,7 +652,7 @@ body {
 }
 
 .botao-adicionar-evento:hover {
-    background-color: var(--terracota-escuro);
+    background-color: var(--cor-primaria);
 }
 
 
@@ -676,7 +694,7 @@ body {
 .cartao-financeiro {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;
     min-width: 0;
     padding: 22px;
     background-color: var(--branco);
@@ -771,7 +789,7 @@ body {
     width: 8px;
     height: 8px;
     flex-shrink: 0;
-    background-color: var(--rosa-terracota);
+    background-color: var(--cor-secundaria-clara);
     border-radius: 50%;
 }
 
@@ -822,7 +840,7 @@ body {
     padding: 12px 18px;
     border: none;
     border-radius: 10px;
-    background-color: var(--terracota);
+    background-color: var(--cor-destaque);
     color: var(--branco);
     font-family: inherit;
     font-size: 14px;
@@ -833,7 +851,7 @@ body {
 
 .botao-conectar-banco:hover,
 .botao-nova-movimentacao:hover {
-    background-color: var(--terracota-escuro);
+    background-color: var(--cor-primaria);
 }
 
 .botao-conectar-banco:disabled,
@@ -910,7 +928,7 @@ body {
 }
 
 .valor-saida {
-    color: var(--terracota);
+    color: var(--cor-destaque);
 }
 
 /* Aviso de dados demonstrativos */
@@ -1006,12 +1024,22 @@ body {
 .menu-lateral {
     width: 240px;
     min-width: 240px;
+    margin: 8px 0 8px 8px;
     padding: 24px 16px;
-    background-color: var(--terracota-escuro);
+
+    background-color: var(--cor-primaria);
+
+    /* Bordas arredondadas */
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+
+    /* Efeito de painel suspenso */
+    box-shadow: 4px 0 16px rgba(20, 36, 59, 0.3);
+
     color: var(--branco);
 
     /* Anima a largura ao recolher ou expandir */
-    transition: width 0.3s ease, min-width 0.3s ease;
+    transition: width 0.5s ease, min-width 0.3s ease;
 }
 
 /* Cabeçalho interno do menu */
@@ -1020,7 +1048,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 32px;
+    margin-bottom: 16px;
 }
 
 /* Título antigo, caso ainda seja utilizado */
@@ -1108,7 +1136,7 @@ body {
 
 /* Aparência da página selecionada */
 .item-menu.ativo {
-    background-color: var(--terracota);
+    background-color: var(--cor-destaque);
     color: var(--branco);
     font-weight: bold;
 }
@@ -1176,6 +1204,8 @@ body {
         min-height: 100vh;
         flex-shrink: 0;
         padding: 16px 10px;
+        margin: 8px 0 8px 8px;
+        border-radius: 16px;
     }
 
     .menu-lateral-cabecalho {
@@ -1216,6 +1246,7 @@ body {
     }
 
     .conteudo-principal > .cabecalho {
+        margin: 12px 8px 0;
         padding: 20px 12px;
         text-align: center;
     }
@@ -1235,7 +1266,7 @@ body {
     /* Menu recolhido: mostra somente os ícones */
     .aplicacao.menu-recolhido .menu-lateral {
         width: 60px;
-        min-width: 40px;
+        min-width: 60px;
         flex-shrink: 0;
         padding: 30px 5px;
     }
