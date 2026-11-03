@@ -1192,15 +1192,63 @@ body {
    7. RESPONSIVIDADE PARA CELULARES
    ================================================== */
 
-/* Mantém o menu lateral ao lado do conteúdo em telas pequenas */
+/* ========================================
+   RESPONSIVIDADE: TELAS ATÉ 600px
+======================================== */
+
 @media (max-width: 600px) {
 
+    /* ========================================
+       1. ESTRUTURA PRINCIPAL
+    ======================================== */
+
+    /* Inclui bordas e padding na largura dos elementos */
+    .aplicacao,
+    .aplicacao *,
+    .aplicacao *::before,
+    .aplicacao *::after {
+        box-sizing: border-box;
+    }
+
+    /* Mantém o menu ao lado do conteúdo */
     .aplicacao {
         flex-direction: row;
         min-height: 100vh;
+        min-width: 0;
     }
 
-    /* Menu expandido: largura compacta para caber ao lado do conteúdo */
+    /* Permite que o conteúdo encolha ao lado do menu */
+    .conteudo-principal {
+        flex: 1;
+        min-width: 0;
+        width: auto;
+        overflow-wrap: anywhere;
+    }
+
+    .conteudo-principal > .cabecalho {
+        margin: 12px 8px 0;
+        padding: 20px 12px;
+        text-align: center;
+    }
+
+    .conteudo-principal > .conteudo {
+        min-width: 0;
+        margin: 16px 12px;
+    }
+
+    .boas-vindas {
+        min-width: 0;
+        padding: 18px;
+    }
+
+    .boas-vindas h2 {
+        font-size: 20px;
+    }
+
+    /* ========================================
+       2. MENU EXPANDIDO
+    ======================================== */
+
     .menu-lateral {
         width: 160px;
         min-width: 160px;
@@ -1220,6 +1268,8 @@ body {
 
     .logo-couplecare {
         width: 125px;
+        max-width: 100%;
+        height: auto;
     }
 
     /* Mantém os links em uma coluna */
@@ -1227,46 +1277,29 @@ body {
         display: flex;
         flex-direction: column;
         gap: 6px;
+        min-width: 0;
     }
 
     .item-menu {
+        min-width: 0;
         gap: 8px;
         padding: 10px 6px;
         font-size: 12px;
         white-space: normal;
+        overflow-wrap: anywhere;
     }
 
+    /* Evita que o texto comprima os ícones */
     .icone-item-menu {
         width: 20px;
         height: 20px;
+        flex-shrink: 0;
     }
 
-    /* Conteúdo principal usa todo o espaço restante */
-    .conteudo-principal {
-        flex: 1;
-        min-width: 0;
-        width: auto;
-    }
+    /* ========================================
+       3. MENU RECOLHIDO
+    ======================================== */
 
-    .conteudo-principal > .cabecalho {
-        margin: 12px 8px 0;
-        padding: 20px 12px;
-        text-align: center;
-    }
-
-    .conteudo-principal > .conteudo {
-        margin: 16px 12px;
-    }
-
-    .boas-vindas {
-        padding: 18px;
-    }
-
-    .boas-vindas h2 {
-        font-size: 20px;
-    }
-
-    /* Menu recolhido: mostra somente os ícones */
     .aplicacao.menu-recolhido .menu-lateral {
         width: 60px;
         min-width: 60px;
@@ -1306,59 +1339,84 @@ body {
         content: none;
     }
 
-    /* Responsividade da página de tarefas */
+    /* ========================================
+       4. PÁGINA DE TAREFAS
+    ======================================== */
+
     .introducao-tarefas {
+        min-width: 0;
         align-items: flex-start;
         flex-direction: column;
+        gap: 12px;
     }
 
     .introducao-tarefas h2 {
         font-size: 23px;
     }
 
+    /* Impede que o conteúdo force a largura da coluna */
     .resumo-tarefas {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .cartao-resumo {
+        min-width: 0;
         padding: 16px;
     }
 
     .painel-tarefas {
+        min-width: 0;
         padding: 18px;
     }
 
     .cabecalho-painel-tarefas {
+        min-width: 0;
         align-items: flex-start;
         flex-direction: column;
+        gap: 12px;
     }
 
+    /* Permite distribuir as informações em mais de uma linha */
     .metadados-tarefa {
+        flex-wrap: wrap;
         gap: 8px;
     }
 
-    /* Responsividade da página de calendário */
+    /* ========================================
+       5. PÁGINA DE CALENDÁRIO
+    ======================================== */
+
     .layout-calendario {
+        min-width: 0;
         grid-template-columns: minmax(0, 1fr);
         gap: 16px;
     }
 
     .painel-calendario,
     .painel-agenda {
+        min-width: 0;
         padding: 16px;
     }
 
     .dia-calendario {
+        min-width: 0;
         min-height: 56px;
         padding: 8px 1px;
         font-size: 12px;
     }
 
+    .cabecalho-mes {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
     .cabecalho-mes h2 {
+        min-width: 0;
         font-size: 17px;
     }
 
     .legenda-calendario {
+        flex-wrap: wrap;
         gap: 10px;
     }
 
