@@ -1,189 +1,66 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta name="google-site-verification" content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI" />
-    
-    <title>CoupleCare Login</title>
-
-    <!-- CSS exclusivo da tela de login -->
-    <link rel="stylesheet" href="src/css/login.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI">
+  <meta name="theme-color" content="#101c33">
+  <title>Entrar | CoupleCare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/css/login.css">
+  <script defer src="/src/js/analytics.js"></script>
 </head>
+<body>
+  <!-- 1. Navegação compacta -->
+  <header class="topbar">
+    <a class="marca" href="index.html" aria-label="CoupleCare, início">
+      <span class="marca-icone" aria-hidden="true">♡</span><span>Couple<span class="laranja">Care</span></span>
+    </a>
+    <span class="topbar-tag">Seu espaço a dois <span aria-hidden="true">✦</span></span>
+  </header>
 
-<body class="pagina-login">
+  <main class="layout">
+    <!-- 2. Área de login: visual, ainda sem autenticação -->
+    <section class="entrada" aria-labelledby="titulo-login">
+      <div class="entrada-conteudo">
+        <div class="etiqueta"><span class="ponto"></span> ORGANIZE O QUE IMPORTA</div>
+        <h1 id="titulo-login">A vida fica melhor <em>juntos.</em></h1>
+        <p class="subtitulo">Sua rotina, seus planos e os pequenos momentos — tudo no mesmo lugar.</p>
+        <form class="formulario" id="formulario-login">
+          <div class="campo"><label for="email">E-mail</label><input id="email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required></div>
+          <div class="campo"><div class="campo-cabecalho"><label for="senha">Senha</label><span class="futuro">Recuperação em breve</span></div><input id="senha" name="senha" type="password" placeholder="Sua senha" autocomplete="current-password" required></div>
+          <button class="botao-entrar" type="submit">Entrar na minha conta <span aria-hidden="true">↗</span></button>
+          <p class="feedback" id="feedback-login" role="status" aria-live="polite"></p>
+        </form>
+        <p class="cadastro">Ainda não tem uma conta? <span>Cadastro em breve</span></p>
+      </div>
+      <div class="rodape">© 2026 CoupleCare <span>Feito para construir juntos.</span></div>
+    </section>
 
-    <!-- Vercel Web Analytics -->
-    <script defer src="/src/js/analytics.js"></script>
-    
-    <main class="login-container">
-
-        <!-- ========================================
-             LADO ESQUERDO: FORMULÁRIO DE LOGIN
-        ======================================== -->
-
-        <section class="login-formulario">
-
-            <!-- Logo -->
-            <a href="index.html" class="login-logo">
-                <span class="login-logo-icone">C</span>
-                <span>CoupleCare</span>
-            </a>
-
-            <!-- Conteúdo do formulário -->
-            <div class="login-conteudo">
-
-                <p class="login-etiqueta">BEM-VINDO DE VOLTA</p>
-
-                <h1>Que bom ter você aqui.</h1>
-
-                <p class="login-descricao">
-                    Entre na sua conta e continue cuidando da vida a dois.
-                </p>
-
-                <!-- Formulário -->
-                <form class="login-form">
-
-                    <!-- Campo de e-mail -->
-                    <div class="login-campo">
-
-                        <label for="email">E-mail</label>
-
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Digite seu e-mail"
-                            required
-                        >
-
-                    </div>
-
-                    <!-- Campo de senha -->
-                    <div class="login-campo">
-
-                        <label for="senha">Senha</label>
-
-                        <input
-                            type="password"
-                            id="senha"
-                            name="senha"
-                            placeholder="Digite sua senha"
-                            required
-                        >
-
-                    </div>
-
-                    <!-- Opções do login -->
-                    <div class="login-opcoes">
-
-                        <label class="login-lembrar">
-                            <input type="checkbox" name="lembrar">
-                            <span>Manter conectado</span>
-                        </label>
-
-                        <a href="#" class="login-esqueci-senha">
-                            Esqueci minha senha
-                        </a>
-
-                    </div>
-
-                    <!-- Botão de entrar -->
-                    <button type="submit" class="login-botao">
-                        Entrar na minha conta
-                    </button>
-
-                </form>
-
-                <!-- Cadastro -->
-                <p class="login-cadastro">
-                    Ainda não tem uma conta?
-                    <a href="#">Criar conta</a>
-                </p>
-
-            </div>
-
-            <!-- Rodapé do formulário -->
-            <p class="login-rodape">
-                © 2026 CoupleCare. Todos os direitos reservados.
-            </p>
-
-        </section>
-
-
-        <!-- ========================================
-             LADO DIREITO: APRESENTAÇÃO DO PRODUTO
-        ======================================== -->
-
-        <section class="login-apresentacao">
-
-            <div class="login-apresentacao-conteudo">
-
-                <!-- Cartão visual -->
-                <div class="login-cartao-visual">
-
-                    <!-- Conteúdo central do cartão -->
-                    <div class="login-cartao-centro">
-
-                        <span class="login-cartao-icone">♡</span>
-
-                        <strong>Construindo juntos.</strong>
-
-                        <span>
-                            Pequenos cuidados, grandes conquistas
-                        </span>
-
-                    </div>
-
-                    <!-- Categorias do CoupleCare -->
-                    <div class="login-cartao-rodape">
-
-                        <span>FINANÇAS</span>
-                        <span>ROTINA</span>
-                        <span>BEM-ESTAR</span>
-
-                    </div>
-
-                </div>
-
-                <!-- Título da apresentação -->
-                <h2>
-                    Uma vida a dois,
-                    <span>mais leve.</span>
-                </h2>
-
-                <!-- Descrição -->
-                <p>
-                    Organizem as finanças, dividam as tarefas
-                    e acompanhem os momentos importantes
-                    em um só lugar.
-                </p>
-
-                <!-- Selo abaixo dos elementos -->
-                <span class="login-selo">
-
-                    <span class="login-selo-ponto"></span>
-
-                    MAIS ORGANIZAÇÃO, JUNTOS
-
-                </span>
-
-            </div>
-
-            <!-- Rodapé da apresentação -->
-            <div class="login-apresentacao-rodape">
-                Feito para compartilhar a vida.
-            </div>
-
-        </section>
-
-    </main>
-
-    <!-- JavaScript -->
-    <script src="src/script.js"></script>
-
+    <!-- 3. Ilustração de produto: órbitas e logo animados apenas com CSS -->
+    <section class="universo" aria-label="Ilustração das funcionalidades do CoupleCare">
+      <div class="universo-fundo"></div>
+      <div class="orbitas" aria-hidden="true"><div class="orbita orbita-um"></div><div class="orbita orbita-dois"></div><div class="orbita orbita-tres"></div><div class="centro-brilho"></div>
+        <!-- Dois traços de coração representam duas pessoas conectadas -->
+        <div class="coracao"><svg viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M90 136C65 114 28 88 28 55C28 36 41 23 59 23C73 23 83 30 90 42" stroke="#F28C45" stroke-width="14" stroke-linecap="round"/><path d="M90 136C115 114 152 88 152 55C152 36 139 23 121 23C107 23 97 30 90 42" stroke="#B6A3FF" stroke-width="14" stroke-linecap="round"/><path d="M90 42C83 30 73 23 59 23" stroke="#FFB17C" stroke-width="4" stroke-linecap="round"/></svg><span>couple<span>care</span></span></div>
+        <span class="estrela estrela-a">✦</span><span class="estrela estrela-b">✧</span><span class="estrela estrela-c">✦</span>
+      </div>
+      <div class="cartao-flutuante cartao-tarefas"><span class="cartao-icone lilas">✓</span><span><strong>Tarefas</strong><small>Rotina em sintonia</small></span></div>
+      <div class="cartao-flutuante cartao-calendario"><span class="cartao-icone laranja-fundo">▦</span><span><strong>Calendário</strong><small>Momentos especiais</small></span></div>
+      <div class="cartao-flutuante cartao-financas"><span class="cartao-icone lilas">◈</span><span><strong>Finanças</strong><small>Planos compartilhados</small></span></div>
+      <div class="universo-legenda"><span class="linha"></span> UM LUGAR PARA O QUE É DE VOCÊS</div>
+    </section>
+  </main>
+  <!-- 4. Demonstração segura: não simula login bem-sucedido -->
+  <script>
+    const formularioLogin = document.querySelector('#formulario-login');
+    const feedbackLogin = document.querySelector('#feedback-login');
+    formularioLogin.addEventListener('submit', function (evento) {
+      evento.preventDefault();
+      feedbackLogin.textContent = 'O login ainda não está disponível. Vamos implementar a autenticação na próxima etapa.';
+    });
+  </script>
 </body>
 </html>
