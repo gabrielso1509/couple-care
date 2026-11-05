@@ -1,0 +1,95 @@
+/* 1. Calendário mensal: sete colunas, iniciando na segunda-feira */
+.pagina-orbital .layout-calendario-app {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.85fr);
+    gap: 24px;
+    align-items: start;
+}
+.pagina-orbital .controle-mes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.pagina-orbital .controle-mes h2 {
+    margin: 0;
+    font-size: 22px;
+    text-align: center;
+    text-transform: capitalize;
+}
+.pagina-orbital .controle-mes button {
+    min-width: 44px;
+    padding: 8px;
+    flex-shrink: 0;
+}
+.pagina-orbital .semana-app,
+.pagina-orbital .dias-app {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 5px;
+}
+.pagina-orbital .semana-app {
+    margin: 24px 0 10px;
+    color: var(--orbital-suave);
+    font-size: 12px;
+    text-align: center;
+}
+.pagina-orbital .dia-app {
+    min-width: 0;
+    min-height: 48px;
+    padding: 8px 0;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: #ffffff09;
+    color: var(--orbital-texto);
+    font: 500 14px var(--fonte-texto);
+    cursor: pointer;
+    position: relative;
+}
+.pagina-orbital .dia-app:hover {
+    border-color: var(--cor-secundaria);
+}
+.pagina-orbital .dia-app.hoje {
+    border-color: var(--cor-destaque);
+}
+.pagina-orbital .dia-app[aria-pressed="true"] {
+    background: #a99be847;
+    color: white;
+}
+.pagina-orbital .dia-app.com-evento::after {
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--cor-destaque);
+    bottom: 4px;
+    left: calc(50% - 2px);
+}
+@media (max-width: 1200px) {
+    .pagina-orbital .layout-calendario-app {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+@media (max-width: 600px) {
+    .pagina-orbital .dias-app,
+    .pagina-orbital .semana-app {
+        gap: 3px;
+    }
+    .pagina-orbital .dia-app {
+        min-height: 38px;
+        font-size: 12px;
+    }
+    .pagina-orbital .controle-mes {
+        flex-wrap: wrap;
+    }
+    .pagina-orbital .controle-mes h2 {
+        flex: 1;
+        min-width: 80px;
+        font-size: 17px;
+    }
+    .pagina-orbital .semana-app {
+        font-size: 10px;
+    }
+}

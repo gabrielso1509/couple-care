@@ -1,0 +1,48 @@
+/* ========================================
+   MENSTRUAÇÃO: ORGANIZAÇÃO DOS CARTÕES
+   Os estilos comuns continuam em componentes.css.
+======================================== */
+
+/* Separa os formulários, o diário e o compartilhamento. */
+.pagina-orbital #individual {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Os cartões da mesma linha acompanham a altura do maior. */
+.pagina-orbital #individual > .duas-colunas {
+    align-items: stretch;
+}
+
+/* Permite que o formulário ocupe o espaço abaixo do título. */
+.pagina-orbital #individual > .duas-colunas > .painel {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Aqui o formulário usa Flex para alinhar o botão na base.
+   O espaçamento entre campos é herdado de componentes.css. */
+.pagina-orbital #individual .form-app {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* O espaço livre fica acima do botão, sem altura fixa. */
+.pagina-orbital #individual .form-app > .botao-primario {
+    margin-top: auto;
+}
+
+/* Dá respiro ao botão do cartão de compartilhamento. */
+.pagina-orbital #individual > .painel:last-child > button {
+    margin-top: 16px;
+}
+
+/* Em telas largas, os formulários têm a mesma largura.
+   Até 1100px, vale a coluna única já definida em componentes.css. */
+@media (min-width: 1101px) {
+    .pagina-orbital #individual > .duas-colunas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

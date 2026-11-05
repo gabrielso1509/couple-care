@@ -1,0 +1,10 @@
+{
+    "rewrites": [
+        { "source": "/dashboard", "destination": "/src/index.html" },
+        { "source": "/tarefas", "destination": "/src/tarefas.html" },
+        { "source": "/calendario", "destination": "/src/calendario.html" },
+        { "source": "/menstruacao", "destination": "/src/menstruacao.html" },
+        { "source": "/financas", "destination": "/src/financas.html" },
+        { "source": "/configuracoes", "destination": "/src/config.html" }
+    ]
+}

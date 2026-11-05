@@ -1,0 +1,18 @@
+/* ========================================
+   ESTILOS DAS PÁGINAS INTERNAS
+   Os módulos abaixo mantêm a ordem original.
+   O login carrega login.css separadamente.
+======================================== */
+
+@import url("./base.css");
+@import url("./estrutura.css");
+@import url("./tarefas.css");
+@import url("./calendario.css");
+@import url("./financas.css");
+@import url("./menu.css");
+@import url("./responsividade.css");
+@import url("./orbital.css");
+
+@import url("./componentes.css");
+@import url("./calendario-app.css");
+@import url("./menstruacao.css");

@@ -1,0 +1,358 @@
+/* ==================================================
+   4.3. PÁGINA DE FINANÇAS
+   ================================================== */
+
+/* Área principal */
+.conteudo-financas {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* Introdução */
+.introducao-financas {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.introducao-financas h1 {
+    color: var(--texto-principal);
+    font-size: 30px;
+}
+
+.introducao-financas p {
+    color: var(--texto-secundario);
+    line-height: 1.6;
+}
+
+/* Cartões do resumo financeiro */
+.resumo-financeiro {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.cartao-financeiro {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+    padding: 22px;
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+.cabecalho-cartao-financeiro {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.titulo-cartao-financeiro {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.icone-financeiro {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    background-color: var(--fundo);
+    border-radius: 12px;
+    font-size: 19px;
+}
+
+.valor-financeiro {
+    color: var(--texto-principal);
+    font-size: 25px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.descricao-financeira {
+    color: var(--texto-secundario);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Painéis financeiros */
+.painel-contas,
+.painel-movimentacoes {
+    min-width: 0;
+    padding: 24px;
+    background-color: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+.cabecalho-financas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.cabecalho-financas h2 {
+    margin-bottom: 6px;
+    color: var(--texto-principal);
+    font-size: 20px;
+}
+
+.cabecalho-financas p {
+    color: var(--texto-secundario);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Status da conexão bancária */
+.status-conexao {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: var(--texto-secundario);
+    background-color: var(--fundo);
+    border-radius: 20px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.indicador-conexao {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    background-color: var(--cor-secundaria-clara);
+    border-radius: 50%;
+}
+
+/* Estado inicial das contas */
+.estado-contas {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    background-color: var(--fundo);
+    border: 1px dashed var(--borda);
+    border-radius: 14px;
+}
+
+.icone-banco {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    background-color: var(--branco);
+    border-radius: 18px;
+    font-size: 28px;
+}
+
+.estado-contas h3 {
+    color: var(--texto-principal);
+    font-size: 18px;
+}
+
+.estado-contas p {
+    max-width: 480px;
+    color: var(--texto-secundario);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* Botões financeiros */
+.botao-conectar-banco,
+.botao-nova-movimentacao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--cor-destaque);
+    color: var(--branco);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.botao-conectar-banco:hover,
+.botao-nova-movimentacao:hover {
+    background-color: var(--cor-primaria);
+}
+
+.botao-conectar-banco:disabled,
+.botao-nova-movimentacao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Lista de movimentações */
+.lista-movimentacoes {
+    display: flex;
+    flex-direction: column;
+}
+
+.movimentacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.movimentacao:last-child {
+    border-bottom: none;
+}
+
+.detalhes-movimentacao {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.icone-movimentacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    background-color: var(--fundo);
+    border-radius: 12px;
+    font-size: 20px;
+}
+
+.texto-movimentacao {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.texto-movimentacao h3 {
+    color: var(--texto-principal);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.texto-movimentacao p {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+.valor-movimentacao {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.valor-entrada {
+    color: #367a53;
+}
+
+.valor-saida {
+    color: var(--cor-destaque);
+}
+
+/* Aviso de dados demonstrativos */
+.aviso-financas {
+    margin-top: 18px;
+    padding: 14px;
+    color: var(--texto-secundario);
+    background-color: var(--fundo);
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Responsividade para tablets */
+@media (max-width: 1000px) {
+    .resumo-financeiro {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Responsividade para celulares */
+@media (max-width: 600px) {
+    .conteudo-financas {
+        gap: 20px;
+    }
+
+    .introducao-financas h1 {
+        font-size: 25px;
+    }
+
+    .resumo-financeiro {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .cartao-financeiro {
+        padding: 18px;
+    }
+
+    .valor-financeiro {
+        font-size: 23px;
+    }
+
+    .painel-contas,
+    .painel-movimentacoes {
+        padding: 18px;
+    }
+
+    .cabecalho-financas {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .status-conexao {
+        white-space: normal;
+    }
+
+    .estado-contas {
+        padding: 24px 14px;
+    }
+
+    .botao-conectar-banco,
+    .botao-nova-movimentacao {
+        width: 100%;
+    }
+
+    .movimentacao {
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .detalhes-movimentacao {
+        gap: 10px;
+    }
+
+    .icone-movimentacao {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+
+    .valor-movimentacao {
+        font-size: 12px;
+    }
+}

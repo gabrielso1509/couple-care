@@ -1,0 +1,261 @@
+/* ==================================================
+   4.2. PÁGINA DE CALENDÁRIO
+   ================================================== */
+
+/* Organiza os elementos da página */
+.conteudo-calendario {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Introdução da página */
+.introducao-calendario {
+    margin-bottom: 0;
+}
+
+.introducao-calendario h2 {
+    margin: 4px 0;
+    color: var(--cor-primaria);
+    font-size: 28px;
+}
+
+.introducao-calendario p {
+    color: var(--texto-secundario);
+}
+
+/* Organiza calendário e agenda lado a lado */
+.layout-calendario {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(250px, 1fr);
+    align-items: start;
+    gap: 24px;
+}
+
+/* Cartões principais do calendário e da agenda */
+.painel-calendario,
+.painel-agenda {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    background-color: var(--branco);
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.05);
+}
+
+/* Cabeçalho com o nome do mês e as setas */
+.cabecalho-mes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.cabecalho-mes h2 {
+    color: var(--cor-primaria);
+    font-size: 20px;
+    text-align: center;
+}
+
+/* Botões para trocar o mês */
+.botao-mes {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background-color: var(--branco);
+    color: var(--cor-primaria);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.botao-mes:hover {
+    background-color: var(--fundo);
+}
+
+/* Grade do calendário: sete colunas, uma por dia da semana */
+.grade-calendario {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-top: 1px solid var(--borda);
+    border-left: 1px solid var(--borda);
+}
+
+/* Nomes dos dias da semana */
+.dia-semana {
+    padding: 10px 0;
+    background-color: var(--fundo);
+    color: var(--texto-secundario);
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Quadrados individuais dos dias */
+.dia-calendario {
+    display: flex;
+    min-width: 0;
+    min-height: 76px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 2px;
+    border-right: 1px solid var(--borda);
+    border-bottom: 1px solid var(--borda);
+    background-color: var(--branco);
+    color: var(--texto-principal);
+    font-size: 13px;
+}
+
+/* Dias que pertencem ao mês anterior ou seguinte */
+.dia-calendario.outro-mes {
+    background-color: #faf8f6;
+    color: #b9aaa3;
+}
+
+/* Destaque do dia selecionado */
+.dia-calendario.selecionado {
+    background-color: #f8e8e1;
+    color: var(--cor-primaria);
+    font-weight: bold;
+    outline: 2px solid var(--cor-destaque);
+    outline-offset: -2px;
+}
+
+/* Indicadores dos eventos existentes em cada dia */
+.indicadores-eventos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* Aparência comum dos indicadores */
+.indicador {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+/* Cor para tarefas */
+.indicador-tarefa {
+    background-color: var(--cor-destaque);
+}
+
+/* Cor para vencimentos financeiros */
+.indicador-financa {
+    background-color: #4778b8;
+}
+
+/* Cor para compromissos */
+.indicador-compromisso {
+    background-color: #8b62ad;
+}
+
+/* Legenda abaixo do calendário */
+.legenda-calendario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.legenda-calendario span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--texto-secundario);
+    font-size: 11px;
+}
+
+/* Cabeçalho da agenda diária */
+.cabecalho-agenda {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho-agenda h2 {
+    margin-top: 8px;
+    color: var(--cor-primaria);
+    font-size: 22px;
+}
+
+.cabecalho-agenda p {
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+/* Lista de eventos do dia */
+.lista-eventos {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+/* Cartão de cada evento */
+.evento {
+    padding: 16px;
+    border-left: 4px solid var(--cor-destaque);
+    border-radius: 8px;
+    background-color: #fbf5f1;
+}
+
+.evento-tarefa {
+    border-left-color: var(--cor-destaque);
+}
+
+/* Categoria do evento */
+.tipo-evento {
+    color: var(--cor-destaque);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Título e descrição do evento */
+.evento h3 {
+    margin: 6px 0;
+    color: var(--texto-principal);
+    font-size: 15px;
+}
+
+.evento p,
+.responsavel-evento {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+/* Responsável pelo evento */
+.responsavel-evento {
+    display: block;
+    margin-top: 12px;
+}
+
+/* Aviso de conteúdo demonstrativo */
+.aviso-agenda {
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+/* Botão de novo compromisso */
+.botao-adicionar-evento {
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--cor-destaque);
+    color: var(--branco);
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.botao-adicionar-evento:hover {
+    background-color: var(--cor-primaria);
+}

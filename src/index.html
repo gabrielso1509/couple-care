@@ -1,114 +1,252 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <!-- Define a codificação para exibir acentos corretamente -->
-    <meta charset="UTF-8">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Adapta o layout para celulares e computadores -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Nome exibido na aba do navegador -->
-    <title>CoupleCare</title>
+        <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
+        <base href="/src/" />
+        
+        <title>Dashboard | CoupleCare</title>
+        <!-- 1. Fontes e estilos compartilhados. O login tem seu CSS separado. -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/style.css" />
+        <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
+        <script defer src="script.js"></script>
+        <script defer src="js/dados.js"></script>
+        <script defer src="js/utilidades.js"></script>
+    </head>
+    <body class="pagina-orbital">
+        <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
+        <div class="aplicacao">
+            <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
+            <aside class="menu-lateral">
+                <div class="menu-lateral-cabecalho">
+                    <a
+                        class="marca-tarefas"
+                        href="../index.html"
+                        aria-label="CoupleCare, página inicial"
+                        ><span class="marca-tarefas-icone" aria-hidden="true"
+                            >♡</span
+                        ><span class="marca-tarefas-nome"
+                            >Couple<span>Care</span></span
+                        ></a
+                    >
 
-    <!-- Conecta o arquivo CSS responsável pelo visual -->
-    <link rel="stylesheet" href="style.css">   
-</head>
-<body>
+                    <!-- Botão controlado pelo script compartilhado do menu -->
+                    <button
+                        type="button"
+                        class="botao-menu"
+                        id="botao-menu"
+                        aria-label="Recolher menu"
+                        aria-expanded="true"
+                        aria-controls="navegacao-tarefas"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
 
-<div class="aplicacao">
+                <!-- LINKS DE NAVEGAÇÃO -->
+                <nav
+                    id="navegacao-tarefas"
+                    class="navegacao"
+                    aria-label="Navegação principal"
+                >
+                    <a
+                        href="index.html"
+                        class="item-menu ativo"
+                        aria-current="page"
+                        aria-label="Dashboard"
+                        title="Dashboard"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"
+                            />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
 
-    <!-- Menu lateral de navegação -->
-    <aside class="menu-lateral">
-        <div class="menu-lateral-cabecalho">
-            <!--Logo do app-->
-            <img
-                src="../assets/images/couplecare-logo-header.svg"
-                alt="CoupleCare"
-                class="logo-couplecare">
-            <button
-                type="button"
-                class="botao-menu"
-                id="botao-menu"
-                aria-label="Recolher menu"
-                aria-expanded="true">
-                <img
-                    src="../assets/images/menu_icon.png"
-                    alt=""
-                    class="icone-menu">
-            </button>
+                    <a
+                        href="tarefas.html"
+                        class="item-menu"
+                        aria-label="Tarefas"
+                        title="Tarefas"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <rect x="4" y="3" width="16" height="18" rx="2" />
+                            <path d="m8 12 2.5 2.5L16 9" />
+                        </svg>
+                        <span>Tarefas</span>
+                    </a>
+
+                    <a
+                        href="calendario.html"
+                        class="item-menu"
+                        aria-label="Calendário"
+                        title="Calendário"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <rect x="3" y="5" width="18" height="16" rx="2" />
+                            <path d="M16 3v4M8 3v4M3 10h18" />
+                        </svg>
+                        <span>Calendário</span>
+                    </a>
+
+                    <a
+                        href="menstruacao.html"
+                        class="item-menu"
+                        aria-label="Menstruação"
+                        title="Menstruação"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"
+                            />
+                        </svg>
+                        <span>Menstruação</span>
+                    </a>
+
+                    <a
+                        href="financas.html"
+                        class="item-menu"
+                        aria-label="Finanças"
+                        title="Finanças"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <rect x="3" y="6" width="18" height="14" rx="2" />
+                            <path d="M3 11h18M7 16h3" />
+                        </svg>
+                        <span>Finanças</span>
+                    </a>
+
+                    <a
+                        href="config.html"
+                        class="item-menu"
+                        aria-label="Configurações"
+                        title="Configurações"
+                    >
+                        <svg
+                            class="icone-item-menu"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z"
+                                transform="translate(-1 -1) scale(1.08)"
+                            />
+                        </svg>
+                        <span>Configurações</span>
+                    </a>
+                </nav>
+            </aside>
+            <div class="conteudo-principal">
+                <header class="cabecalho">
+                    <div>
+                        <span class="texto-destaque">SEU ESPAÇO A DOIS</span>
+                        <h1>Dashboard</h1>
+                        <p>Um espaço para o que importa.</p>
+                    </div>
+                    <span class="selo-tarefas"
+                        >Feito para construir juntos</span
+                    >
+                </header>
+                <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
+                <main id="conteudo-pagina" class="conteudo" tabindex="-1">
+                    <section class="painel">
+                        <h2>Pequenos cuidados. Mais vida juntos.</h2>
+                        <p class="texto-suave">
+                            Escolha uma área para começar. O resumo real da
+                            conta estará disponível depois da integração.
+                        </p>
+                    </section>
+                    <section class="cards-dashboard">
+                        <a class="painel atalho-dashboard" href="tarefas.html"
+                            ><span class="texto-destaque">ROTINA</span>
+                            <h2>Tarefas ↗</h2>
+                            <p>Dividam responsabilidades.</p></a
+                        ><a
+                            class="painel atalho-dashboard"
+                            href="calendario.html"
+                            ><span class="texto-destaque">TEMPO</span>
+                            <h2>Calendário ↗</h2>
+                            <p>Organizem os próximos momentos.</p></a
+                        ><a class="painel atalho-dashboard" href="financas.html"
+                            ><span class="texto-destaque">PLANOS</span>
+                            <h2>Finanças ↗</h2>
+                            <p>Acompanhem entradas e saídas.</p></a
+                        ><a
+                            class="painel atalho-dashboard"
+                            href="menstruacao.html"
+                            ><span class="texto-destaque">CUIDADO</span>
+                            <h2>Bem-estar ↗</h2>
+                            <p>Um acompanhamento individual.</p></a
+                        >
+                    </section>
+                    <section class="painel">
+                        <h2>Resumo da conta</h2>
+                        <div class="metricas">
+                            <div>
+                                <h3>Tarefas pendentes</h3>
+                                <p class="numero">—</p>
+                            </div>
+                            <div>
+                                <h3>Próximos eventos</h3>
+                                <p class="numero">—</p>
+                            </div>
+                            <div>
+                                <h3>Saldo compartilhado</h3>
+                                <p class="numero">—</p>
+                            </div>
+                        </div>
+                        <p class="texto-suave">
+                            Sem dados da conta: autenticação e banco ainda não
+                            integrados. As prévias não são sincronizadas entre
+                            páginas.
+                        </p>
+                    </section>
+                    <noscript
+                        ><p>
+                            Ative o JavaScript para usar os controles.
+                        </p></noscript
+                    >
+                    <footer class="rodape-tarefas">
+                        CoupleCare <span>Seu espaço para o que importa.</span>
+                    </footer>
+                </main>
+            </div>
         </div>
-
-        <nav class="navegacao" aria-label="Navegação principal">
-            <a href="index.html" class="item-menu ativo" aria-current="page">
-                <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>
-                </svg>
-                <span>Dashboard</span>
-            </a>
-
-            <a href="tarefas.html" class="item-menu" aria-current="page">
-        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="4" y="3" width="16" height="18" rx="2"/>
-            <path d="m8 12 2.5 2.5L16 9"/>
-        </svg>
-        <span>Tarefas</span>
-    </a>
-
-    <a href="calendario.html" class="item-menu">
-        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="16" rx="2"/>
-            <path d="M16 3v4M8 3v4M3 10h18"/>
-        </svg>
-        <span>Calendário</span>
-    </a>
-
-    <a href="menstruacao.html" class="item-menu">
-        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"/>
-        </svg>
-        <span>Menstruação</span>
-    </a>
-
-    <a href="financas.html" class="item-menu">
-        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="6" width="18" height="14" rx="2"/>
-            <path d="M3 11h18M7 16h3"/>
-        </svg>
-        <span>Finanças</span>
-    </a>
-
-    <a href="config.html" class="item-menu">
-        <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z" transform="translate(-1 -1) scale(1.08)"/>
-        </svg>
-        <span>Configurações</span>
-    </a>
-
-        </nav>
-    </aside>
-
-    <!-- Área principal: cabeçalho e conteúdo -->
-    <div class="conteudo-principal">
-
-<!-- ########################################################################## -->
-    <!-- Cabeçalho principal da aplicação -->
-    <header class="cabecalho">
-        <h1>Dashboard</h1>
-        <p>Cuidando da nossa vida juntos ❤️</p>
-    </header>
-
-    <!-- Conteúdo principal da página -->
-    <main class="conteudo">
-        <section class="boas-vindas">
-            <h2>Nosso espaço, nossa vida.</h2>
-            <p>Organizem as tarefas e construam uma rotina juntos.</p>
-        </section>
-    </main>    
-    </div>  <!-- Fim de .conteudo-principal -->
-</div>      <!-- Fim de .aplicacao -->
-
-    <!-- Carrega o JavaScript depois do HTML -->
-    <script src="script.js"></script>    
-</body>
+    </body>
 </html>

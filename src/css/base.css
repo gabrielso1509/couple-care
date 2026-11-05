@@ -1,0 +1,43 @@
+/* ==================================================
+   1. CONFIGURAÇÕES GERAIS
+   ================================================== */
+
+/* Cores oficiais da identidade visual do CoupleCare */
+:root {
+    /* CORES PRINCIPAIS */
+    --cor-primaria: #14243b;
+    --cor-destaque: #f28c45;
+    --cor-secundaria: #a99be8;
+    --cor-secundaria-clara: #c88df2;
+
+    /* COR DE FUNDO */
+    --fundo: #f1eee8;
+    --branco: #ffffff;
+
+    /* TEXTOS */
+    --texto-principal: #14243b;
+    --texto-secundario: #7b8491;
+
+    /* BORDAS */
+    --borda: #e3e0da;
+
+    /* ESTADOS */
+    --cor-sucesso: #4f9875;
+    --cor-alerta: #e5b84b;
+    --cor-erro: #d96666;
+}
+
+/* Remove margens e preenchimentos padrão do navegador */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo padrão da página */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--fundo);
+    color: var(--texto-principal);
+    line-height: 1.6;
+}

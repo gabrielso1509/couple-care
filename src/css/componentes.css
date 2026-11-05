@@ -1,0 +1,218 @@
+/* 1. Estrutura compartilhada das páginas ORBITAL */
+.pagina-orbital .conteudo {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.pagina-orbital .painel,
+.pagina-orbital .boas-vindas {
+    min-width: 0;
+    padding: 26px;
+    background: linear-gradient(
+        130deg,
+        rgba(71, 79, 117, 0.28),
+        rgba(26, 39, 66, 0.72)
+    );
+    border: 1px solid var(--orbital-borda);
+    border-radius: 20px;
+    box-shadow: 0 16px 40px #0002;
+}
+.pagina-orbital .painel h2,
+.pagina-orbital .boas-vindas h2 {
+    font: 500 24px/1.35 var(--fonte-titulo);
+    color: var(--orbital-texto);
+    margin-bottom: 16px;
+}
+.pagina-orbital .boas-vindas h2 {
+    font-size: clamp(28px, 3vw, 40px);
+    max-width: 600px;
+}
+.pagina-orbital .texto-suave,
+.pagina-orbital .boas-vindas p {
+    color: var(--orbital-suave);
+    font-size: 14px;
+    line-height: 1.8;
+}
+.pagina-orbital .duas-colunas {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 24px;
+    align-items: start;
+}
+.pagina-orbital .cards-dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.pagina-orbital .atalho-dashboard {
+    text-decoration: none;
+    color: var(--orbital-texto);
+}
+.pagina-orbital .atalho-dashboard:hover {
+    border-color: var(--cor-secundaria);
+}
+.pagina-orbital .atalho-dashboard h2 {
+    margin-top: 14px;
+}
+.pagina-orbital .atalho-dashboard p {
+    color: var(--orbital-suave);
+}
+.pagina-orbital .metricas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+.pagina-orbital .metricas h2,
+.pagina-orbital .metricas h3 {
+    font: 500 14px var(--fonte-texto);
+    color: var(--orbital-suave);
+}
+.pagina-orbital .numero {
+    font: 500 clamp(22px, 2.4vw, 34px)/1.4 var(--fonte-titulo);
+    margin-top: 12px;
+    overflow-wrap: anywhere;
+}
+.pagina-orbital .aviso-preview {
+    border-left: 3px solid var(--cor-secundaria);
+    padding: 12px 16px;
+    border-radius: 0 12px 12px 0;
+    background: #a99be814;
+    color: #c8c2e6;
+    font-size: 13px;
+    line-height: 1.8;
+}
+/* 2. Campos e botões: foco visível definido no tema compartilhado */
+.pagina-orbital .form-app {
+    display: grid;
+    gap: 18px;
+    margin-top: 22px;
+}
+.pagina-orbital .campo-app {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+}
+.pagina-orbital .campo-app label {
+    color: #e3e8f3;
+    font-size: 13px;
+    font-weight: 600;
+}
+.pagina-orbital input,
+.pagina-orbital select,
+.pagina-orbital textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 12px;
+    border: 1px solid #ffffff2e;
+    border-radius: 12px;
+    background: #1a2943;
+    color: #f4f6fc;
+    font: inherit;
+    font-size: 16px;
+    color-scheme: dark;
+}
+.pagina-orbital textarea {
+    resize: vertical;
+}
+.pagina-orbital .botao-primario,
+.pagina-orbital .botao-secundario,
+.pagina-orbital .acoes-app button,
+.pagina-orbital .controle-mes button,
+.pagina-orbital .painel > button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid var(--orbital-borda);
+    border-radius: 12px;
+    color: #e0d7ff;
+    background: #a99be814;
+    font: 600 14px var(--fonte-texto);
+    cursor: pointer;
+}
+.pagina-orbital .botao-primario {
+    color: #14243b;
+    background: linear-gradient(110deg, #f28c45, #ffab67);
+    border-color: transparent;
+}
+.pagina-orbital button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.pagina-orbital .acoes-app {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0;
+}
+.pagina-orbital .acoes-app [aria-pressed="true"] {
+    color: #ffb985;
+    background: #f28c4521;
+    border-color: #b27751;
+}
+.pagina-orbital .feedback-app {
+    color: #ffd2a9;
+    font-size: 13px;
+    line-height: 1.8;
+}
+.pagina-orbital .feedback-app:empty {
+    display: none;
+}
+/* 3. Listas usam apenas registros informados nesta prévia */
+.pagina-orbital .lista-app {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+.pagina-orbital .registro-app {
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--orbital-borda);
+    border-radius: 14px;
+    background: #ffffff06;
+    overflow-wrap: anywhere;
+}
+.pagina-orbital .registro-app h3 {
+    font: 500 19px/1.4 var(--fonte-titulo);
+    margin-bottom: 8px;
+}
+.pagina-orbital .registro-app .botao-secundario {
+    margin-top: 12px;
+}
+.pagina-orbital .estado-vazio {
+    padding: 28px 8px;
+    color: var(--orbital-suave);
+    font-size: 14px;
+    text-align: center;
+}
+.pagina-orbital .valor-registro {
+    color: #ffb985;
+    font-weight: 600;
+}
+.pagina-orbital [hidden] {
+    display: none;
+}
+/* 4. Ajustes para tablet e celular */
+@media (max-width: 1100px) {
+    .pagina-orbital .duas-colunas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+@media (max-width: 650px) {
+    .pagina-orbital .cards-dashboard,
+    .pagina-orbital .metricas {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .pagina-orbital .painel,
+    .pagina-orbital .boas-vindas {
+        padding: 18px;
+    }
+    .pagina-orbital .painel h2 {
+        font-size: 22px;
+    }
+    .pagina-orbital .registro-app {
+        padding: 12px;
+    }
+    .pagina-orbital .botao-primario {
+        width: 100%;
+    }
+}

@@ -1,0 +1,168 @@
+/* ==================================================
+   5. MENU LATERAL E NAVEGAÇÃO
+   ================================================== */
+
+/* Área principal do menu lateral */
+.menu-lateral {
+    width: 240px;
+    min-width: 240px;
+    margin: 8px 0 8px 8px;
+    padding: 24px 16px;
+
+    background-color: var(--cor-primaria);
+
+    /* Bordas arredondadas */
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+
+    /* Efeito de painel suspenso */
+    box-shadow: 4px 0 16px rgba(20, 36, 59, 0.3);
+
+    color: var(--branco);
+
+    /* Anima a largura ao recolher ou expandir */
+    transition:
+        width 0.5s ease,
+        min-width 0.3s ease;
+}
+
+/* Cabeçalho interno do menu */
+.menu-lateral-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+/* Título antigo, caso ainda seja utilizado */
+.menu-lateral-cabecalho h2 {
+    font-size: 21px;
+    white-space: nowrap;
+}
+
+/* Logo do CoupleCare */
+.logo-couplecare {
+    display: block;
+    width: 160px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Botão para recolher ou expandir o menu */
+.botao-menu {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background-color: transparent;
+    color: var(--branco);
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/* Efeito visual do botão ao passar o mouse */
+.botao-menu:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Imagem do botão do menu */
+.icone-menu {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* Organiza os links verticalmente */
+.navegacao {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Links de navegação: ícone e texto */
+.item-menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    color: #f7f1ed;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+/* Ícones SVG da navegação */
+.icone-item-menu {
+    display: block;
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Efeito dos links ao passar o mouse */
+.item-menu:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--branco);
+}
+
+/* Aparência da página selecionada */
+.item-menu.ativo {
+    background-color: var(--cor-destaque);
+    color: var(--branco);
+    font-weight: bold;
+}
+
+/* ==================================================
+   6. MENU LATERAL RECOLHIDO
+   ================================================== */
+
+/* Reduz a largura do menu */
+.aplicacao.menu-recolhido .menu-lateral {
+    width: 60px;
+    min-width: 40px;
+    padding: 30px 5px;
+}
+
+/* Esconde a logo no menu recolhido */
+.aplicacao.menu-recolhido .menu-lateral-cabecalho h2,
+.aplicacao.menu-recolhido .logo-couplecare {
+    display: none;
+}
+
+/* Centraliza o botão no cabeçalho do menu */
+.aplicacao.menu-recolhido .menu-lateral-cabecalho {
+    justify-content: center;
+}
+
+/* Centraliza os links quando o menu está recolhido */
+.aplicacao.menu-recolhido .item-menu {
+    justify-content: center;
+    gap: 0;
+    padding: 12px 0;
+    font-size: 0;
+    text-align: center;
+}
+
+/* Ajusta o tamanho dos ícones no menu recolhido */
+.aplicacao.menu-recolhido .icone-item-menu {
+    width: 24px;
+    height: 24px;
+}
+
+/* Impede a exibição dos símbolos provisórios antigos */
+.aplicacao.menu-recolhido .item-menu::before {
+    content: none;
+}

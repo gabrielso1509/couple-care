@@ -1,0 +1,240 @@
+/* ==================================================
+   4.1. PÁGINA DE TAREFAS
+   ================================================== */
+
+/* Área exclusiva da página de tarefas */
+.conteudo-tarefas {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Introdução e botão de nova tarefa */
+.introducao-tarefas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.texto-destaque {
+    color: var(--cor-destaque);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+.introducao-tarefas h2 {
+    margin: 4px 0;
+    color: var(--cor-primaria);
+    font-size: 28px;
+}
+
+.introducao-tarefas p {
+    color: var(--texto-secundario);
+}
+
+/* Botão visual para adicionar tarefas */
+.botao-nova-tarefa {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--cor-destaque);
+    color: var(--branco);
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Efeito visual ao passar o mouse */
+.botao-nova-tarefa:hover {
+    background-color: var(--cor-primaria);
+}
+
+/* Cartões com o resumo das tarefas */
+.resumo-tarefas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.cartao-resumo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    background-color: var(--branco);
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+.resumo-icone {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background-color: var(--fundo);
+    color: var(--cor-destaque);
+    font-size: 22px;
+}
+
+.cartao-resumo p {
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+.cartao-resumo h3 {
+    color: var(--cor-primaria);
+    font-size: 26px;
+}
+
+/* Painel branco que envolve a lista */
+.painel-tarefas {
+    padding: 26px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    background-color: var(--branco);
+    box-shadow: 0 4px 16px rgba(113, 59, 50, 0.04);
+}
+
+/* Título e contador do painel */
+.cabecalho-painel-tarefas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.cabecalho-painel-tarefas h2 {
+    color: var(--cor-primaria);
+    font-size: 21px;
+}
+
+.cabecalho-painel-tarefas p {
+    color: var(--texto-secundario);
+    font-size: 14px;
+}
+
+.contador-tarefas {
+    padding: 6px 10px;
+    border-radius: 20px;
+    background-color: var(--fundo);
+    color: var(--cor-destaque);
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Filtros da lista */
+.filtros-tarefas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0;
+}
+
+.filtro-tarefa {
+    padding: 8px 14px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+.filtro-tarefa.selecionado {
+    border-color: var(--cor-destaque);
+    background-color: var(--cor-destaque);
+    color: var(--branco);
+}
+
+/* Título do grupo de tarefas */
+.titulo-grupo-tarefas {
+    margin-bottom: 8px;
+    color: var(--texto-principal);
+    font-size: 15px;
+}
+
+/* Cartão individual de tarefa */
+.item-tarefa {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.item-tarefa:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Círculo visual de conclusão */
+.marcador-conclusao {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 3px;
+    border: 2px solid var(--cor-secundaria-clara);
+    border-radius: 50%;
+}
+
+/* Informações da tarefa */
+.detalhes-tarefa {
+    flex: 1;
+    min-width: 0;
+}
+
+.detalhes-tarefa h3 {
+    color: var(--texto-principal);
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.detalhes-tarefa > p {
+    margin-top: 3px;
+    color: var(--texto-secundario);
+    font-size: 13px;
+}
+
+/* Prazo, responsável e prioridade */
+.metadados-tarefa {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    color: var(--texto-secundario);
+    font-size: 12px;
+}
+
+/* Etiquetas de prioridade */
+.prioridade-tarefa {
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.prioridade-urgente {
+    background-color: #fce8e6;
+    color: #b42318;
+}
+
+.prioridade-alta {
+    background-color: #fcebdd;
+    color: #a94f19;
+}
+
+.prioridade-media {
+    background-color: #fff3cd;
+    color: #8a6500;
+}
+
+.prioridade-baixa {
+    background-color: #e4f3e8;
+    color: #287443;
+}

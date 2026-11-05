@@ -1,0 +1,103 @@
+/* ==================================================
+   2. ESTRUTURA DA APLICAÇÃO
+   ================================================== */
+
+/* Organiza o menu e o conteúdo lado a lado */
+.aplicacao {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Área que contém o cabeçalho e o conteúdo principal */
+.conteudo-principal {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* ==================================================
+   3. CABEÇALHO PRINCIPAL
+   ================================================== */
+
+/* Cabeçalho da página */
+.cabecalho {
+    background-color: var(--cor-primaria);
+    color: var(--branco);
+    text-align: center;
+    padding: 32px 20px;
+}
+
+/* Título do cabeçalho */
+.cabecalho h1 {
+    font-size: 32px;
+    margin-bottom: 4px;
+}
+
+/* Frase abaixo do título */
+.cabecalho p {
+    color: var(--cor-secundaria-clara);
+    font-size: 16px;
+}
+
+/* Ajustes do cabeçalho dentro da aplicação */
+.conteudo-principal > .cabecalho {
+    width: auto;
+    flex: none;
+    text-align: left;
+    margin: 16px 16px 0;
+    padding: 24px 32px;
+
+    /* Bordas arredondadas */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+
+    /* Efeito suspenso */
+    box-shadow: 0 8px 24px rgba(20, 36, 59, 0.12);
+}
+
+/* Título do cabeçalho dentro da aplicação */
+.conteudo-principal > .cabecalho h1 {
+    font-size: 28px;
+}
+
+/* ==================================================
+   4. CONTEÚDO PRINCIPAL
+   ================================================== */
+
+/* Área que envolve o conteúdo da página */
+.conteudo {
+    width: min(100% - 32px, 1000px);
+    margin: 40px auto;
+}
+
+/* Ajustes do conteúdo dentro da aplicação */
+.conteudo-principal > .conteudo {
+    width: auto;
+    max-width: none;
+    flex: 1;
+    min-width: 0;
+    margin: 32px;
+}
+
+/* Cartão de boas-vindas */
+.boas-vindas {
+    background-color: var(--branco);
+    padding: 32px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(20, 36, 59, 0.05);
+}
+
+/* Título do cartão */
+.boas-vindas h2 {
+    color: var(--cor-primaria);
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+/* Texto do cartão */
+.boas-vindas p {
+    color: var(--texto-secundario);
+    font-size: 16px;
+}
