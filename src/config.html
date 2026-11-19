@@ -212,9 +212,8 @@
                 <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
                 <main id="conteudo-pagina" class="conteudo" tabindex="-1">
                     <p class="aviso-preview">
-                        Prévia sem conexão com a conta. Os registros ficam
-                        apenas na memória desta página e são perdidos ao
-                        atualizar ou navegar. Nada é enviado ao banco.
+                        A área Meu casal consulta seu vínculo real.
+                        O formulário de perfil ainda funciona apenas como prévia.
                     </p>
                     <div class="duas-colunas">
                         <section class="painel">
@@ -272,14 +271,25 @@
                             </div>
                         </section>
                     </div>
-                    <section class="painel">
-                        <h2>Conta e privacidade</h2>
-                        <p class="texto-suave">
-                            Troca de senha, exclusão da conta e permissões serão
-                            implementadas com a autenticação. Esta prévia não
-                            altera uma conta real.
+                    <!-- Dados reais do vínculo, consultados no Supabase. -->
+                    <section class="painel" aria-labelledby="titulo-meu-casal">
+                        <h2 id="titulo-meu-casal">Meu casal</h2>
+
+                        <p id="status-casal" class="texto-suave" role="status" aria-live="polite">
+                            Carregando seu casal…
                         </p>
+
+                        <ul id="participantes-casal" class="lista-casal"></ul>
+
+                        <button
+                            type="button"
+                            class="botao-primario"
+                            id="atualizar-casal"
+                        >
+                            Atualizar
+                        </button>
                     </section>
+
                     <noscript
                         ><p>
                             Ative o JavaScript para usar os controles.

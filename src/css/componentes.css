@@ -216,3 +216,27 @@
         width: 100%;
     }
 }
+
+/* Participantes do casal nas configurações. */
+.lista-casal {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lista-casal li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid rgba(169, 155, 232, 0.25);
+    border-radius: 16px;
+}
+
+.lista-casal li > span:last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
