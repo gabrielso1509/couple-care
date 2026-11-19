@@ -77,8 +77,8 @@ formularioLogin.addEventListener('submit', async function (evento) {
             return;
         }
 
-        feedbackLogin.textContent =
-            'Login realizado! Bem-vindo(a), ' + perfil.display_name + '.';
+        // Abre o dashboard após autenticar e carregar o perfil.
+        window.location.replace('/src/index.html');
 
     } catch (erro) {
         feedbackLogin.textContent =

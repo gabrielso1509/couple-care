@@ -17,14 +17,22 @@
         />
         <link rel="stylesheet" href="css/style.css" />
         <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
+        <!-- Autenticação compartilhada: mantenha esta ordem. -->
+        <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script defer src="js/supabase-client.js"></script>
+        <script defer src="js/sessao.js"></script>
         <script defer src="script.js"></script>
         <script defer src="js/dados.js"></script>
         <script defer src="js/utilidades.js"></script>
         <script defer src="js/calendario.js"></script>
     </head>
     <body class="pagina-orbital">
+        <!-- Conteúdo oculto até validar a sessão e carregar o perfil. -->
+        <p id="status-sessao" role="status" aria-live="polite">
+            Verificando sua sessão…
+        </p>
         <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
-        <div class="aplicacao">
+        <div class="aplicacao" hidden>
             <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
             <aside class="menu-lateral">
                 <div class="menu-lateral-cabecalho">
@@ -172,6 +180,23 @@
                         <span>Configurações</span>
                     </a>
                 </nav>
+
+            <!-- Conta do usuário autenticado. -->
+            <div class="conta-menu">
+                <span class="conta-avatar" id="avatar-usuario" aria-hidden="true">…</span>
+                <span class="conta-nome" id="nome-usuario">Carregando…</span>
+                <button
+                    type="button"
+                    class="conta-sair"
+                    id="botao-sair"
+                    aria-label="Sair da conta"
+                    title="Sair da conta"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M9 5H5v14h4M9 12h12M17 8l4 4-4 4" />
+                    </svg>
+                </button>
+            </div>
             </aside>
             <div class="conteudo-principal">
                 <header class="cabecalho">
@@ -286,3 +311,4 @@
         </div>
     </body>
 </html>
+

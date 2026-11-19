@@ -16,3 +16,8 @@
 @import url("./componentes.css");
 @import url("./calendario-app.css");
 @import url("./menstruacao.css");
+
+/* Mantém o conteúdo oculto enquanto a sessão é verificada. */
+.aplicacao[hidden] {
+    display: none !important;
+}

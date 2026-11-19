@@ -25,6 +25,19 @@
     background: rgba(20, 32, 55, 0.94);
     border: 1px solid var(--orbital-borda);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
+
+    /* Mantém o menu visível durante a rolagem. */
+    position: sticky;
+    top: 16px;
+    align-self: flex-start;
+
+    /* Altura da janela, descontando as margens superior e inferior. */
+    height: calc(100dvh - 32px);
+    min-height: 0;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
 }
 .pagina-orbital .menu-lateral-cabecalho {
     gap: 8px;
@@ -290,6 +303,10 @@
         min-width: 140px;
         padding: 16px 8px;
         margin: 8px 0 8px 8px;
+        
+        /* No celular, as margens são de 8px. */
+        top: 8px;
+        height: calc(100dvh - 16px);
     }
     .pagina-orbital .marca-tarefas {
         font-size: 16px;

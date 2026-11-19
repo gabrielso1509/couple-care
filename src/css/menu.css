@@ -166,3 +166,118 @@
 .aplicacao.menu-recolhido .item-menu::before {
     content: none;
 }
+
+/* ========================================
+   CONTA DO USUÁRIO NO MENU
+======================================== */
+.menu-lateral {
+    display: flex;
+    flex-direction: column;
+}
+
+.conta-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 18px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Só os links rolam caso não caibam na altura disponível. */
+.menu-lateral .navegacao {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+/* Mantém o cabeçalho e a conta fora da área de rolagem. */
+.menu-lateral-cabecalho,
+.conta-menu {
+    flex-shrink: 0;
+}
+
+.conta-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #a99be8;
+    color: #14243b;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.conta-nome {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #f1eee8;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.conta-sair {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: transparent;
+    color: #aebbd1;
+    cursor: pointer;
+}
+
+.conta-sair svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.conta-sair:hover {
+    background: rgba(242, 140, 69, 0.12);
+    color: #f28c45;
+}
+
+.conta-sair:focus-visible {
+    outline: 2px solid #a99be8;
+    outline-offset: 3px;
+}
+
+.conta-sair:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* No menu recolhido, mantém avatar e saída acessíveis. */
+.aplicacao.menu-recolhido .conta-menu {
+    flex-direction: column;
+}
+
+.aplicacao.menu-recolhido .conta-nome {
+    display: none;
+}
+
+/* A lateral fica mais estreita no celular. */
+@media (max-width: 600px) {
+    .conta-menu {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .conta-nome {
+        font-size: 12px;
+    }
+}
