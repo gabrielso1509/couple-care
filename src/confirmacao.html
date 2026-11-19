@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Confirmar e-mail | CoupleCare</title>
+
+    <link rel="stylesheet" href="css/login.css">
+
+    <!-- Mantém a ordem: biblioteca, cliente e comportamento da página. -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase-client.js"></script>
+    <script defer src="js/confirmacao.js"></script>
+</head>
+
+<body class="pagina-confirmacao">
+    <main class="cartao-confirmacao" aria-labelledby="titulo-confirmacao">
+        <a class="marca" href="/index.html" aria-label="CoupleCare, início">
+            <span class="marca-icone" aria-hidden="true">♡</span>
+            <span>Couple<span class="laranja">Care</span></span>
+        </a>
+
+        <span class="confirmacao-simbolo" id="simbolo-confirmacao" aria-hidden="true">
+            …
+        </span>
+
+        <!-- A região anuncia o resultado da verificação. -->
+        <div role="status" aria-live="polite" aria-atomic="true">
+            <h1 id="titulo-confirmacao">Confirmando seu e-mail…</h1>
+
+            <p class="confirmacao-mensagem" id="mensagem-confirmacao">
+                Só um instante. Estamos verificando seu link.
+            </p>
+        </div>
+
+        <button class="botao-entrar" id="tentar-confirmacao" type="button" hidden>
+            Tentar novamente
+        </button>
+
+        <a class="confirmacao-voltar" id="acao-confirmacao" href="/index.html">
+            Voltar para o login
+        </a>
+
+        <p class="confirmacao-rodape">Seu espaço para construir juntos.</p>
+    </main>
+</body>
+</html>

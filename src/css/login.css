@@ -885,3 +885,92 @@ body.cadastro-aberto {
         font-size: 16px;
     }
 }
+
+/* ========================================
+   PÁGINA DE CONFIRMAÇÃO DE E-MAIL
+======================================== */
+.pagina-confirmacao {
+    display: grid;
+    place-items: center;
+    min-height: 100dvh;
+    padding: 24px 16px;
+}
+
+.cartao-confirmacao {
+    width: min(100%, 500px);
+    padding: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 28px;
+    background: linear-gradient(145deg, #1b2b46, #0d172b);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.cartao-confirmacao .marca {
+    justify-content: center;
+}
+
+.confirmacao-simbolo {
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    margin: 36px auto 24px;
+    border: 1px solid rgba(169, 155, 232, 0.35);
+    border-radius: 50%;
+    background: rgba(169, 155, 232, 0.1);
+    color: var(--lilas);
+    font-size: 34px;
+}
+
+.cartao-confirmacao h1 {
+    margin: 0 0 16px;
+    font-size: clamp(28px, 6vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.confirmacao-mensagem {
+    margin: 0 0 28px;
+    color: var(--texto-suave);
+    line-height: 1.7;
+}
+
+.cartao-confirmacao .botao-entrar {
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+/* Preserva o atributo hidden apesar do display da classe do botão. */
+.cartao-confirmacao [hidden] {
+    display: none;
+}
+
+.confirmacao-voltar {
+    display: inline-block;
+    padding: 10px;
+    color: var(--lilas);
+    font-weight: 700;
+}
+
+.confirmacao-voltar:hover {
+    text-decoration: underline;
+}
+
+.confirmacao-voltar:focus-visible,
+.cartao-confirmacao .botao-entrar:focus-visible {
+    outline: 2px solid var(--lilas);
+    outline-offset: 4px;
+}
+
+.confirmacao-rodape {
+    margin: 26px 0 0;
+    color: var(--texto-suave);
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    .cartao-confirmacao {
+        padding: 28px 22px;
+    }
+}

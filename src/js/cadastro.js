@@ -118,7 +118,8 @@ formularioCadastro.addEventListener('submit', async function (evento) {
         password: senhaCadastro.value,
         options: {
             // Endereço de retorno após confirmar o e-mail.
-            emailRedirectTo: window.location.origin + window.location.pathname,
+            // Página que receberá e validará o código de confirmação.
+            emailRedirectTo: window.location.origin + '/src/confirmacao.html',
             data: {
                 display_name: nomeCadastro.value.trim(),
                 gender: generoCadastro.value
