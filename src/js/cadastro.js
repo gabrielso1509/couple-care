@@ -12,6 +12,13 @@ const senhaCadastro = document.querySelector('#cadastro-senha');
 const confirmacaoCadastro = document.querySelector('#cadastro-confirmacao');
 const feedbackCadastro = document.querySelector('#feedback-cadastro');
 
+const emailCadastro = document.querySelector('#cadastro-email');
+const generoCadastro = document.querySelector('#cadastro-genero');
+const botaoEnviarCadastro = formularioCadastro.querySelector('[type="submit"]');
+
+// Impede envios repetidos enquanto aguardamos o Supabase.
+let cadastroEmAndamento = false;
+
 /* ========================================
    2. ABERTURA E FECHAMENTO
 ======================================== */
@@ -28,6 +35,10 @@ function abrirCadastro() {
 }
 
 function fecharCadastro() {
+    if (cadastroEmAndamento) {
+        return;
+    }
+
     modalCadastro.close();
 }
 
@@ -46,6 +57,13 @@ modalCadastro.addEventListener('close', function () {
     feedbackCadastro.textContent = '';
 
     botaoAbrirCadastro.focus();
+});
+
+// Evita fechar e limpar o formulário durante uma requisição.
+modalCadastro.addEventListener('cancel', function (evento) {
+    if (cadastroEmAndamento) {
+        evento.preventDefault();
+    }
 });
 
 /* ========================================
@@ -76,12 +94,16 @@ formularioCadastro.addEventListener('input', function () {
     feedbackCadastro.textContent = '';
 });
 
+
 /* ========================================
-   4. ENVIO — INTEGRAÇÃO AINDA PENDENTE
+   4. ENVIO DO CADASTRO AO SUPABASE
 ======================================== */
-formularioCadastro.addEventListener('submit', function (evento) {
-    // Impede recarregar a página e enviar os campos pela URL.
+formularioCadastro.addEventListener('submit', async function (evento) {
     evento.preventDefault();
+
+    if (cadastroEmAndamento) {
+        return;
+    }
 
     validarNomeCadastro();
     validarConfirmacaoCadastro();
@@ -90,7 +112,74 @@ formularioCadastro.addEventListener('submit', function (evento) {
         return;
     }
 
-    // Não simula sucesso nem armazena senhas no navegador.
-    feedbackCadastro.textContent =
-        'O cadastro ainda não está disponível. A conexão com o Supabase será implementada na próxima etapa.';
+    // Captura os dados antes de bloquear os campos.
+    const dadosCadastro = {
+        email: emailCadastro.value.trim(),
+        password: senhaCadastro.value,
+        options: {
+            // Endereço de retorno após confirmar o e-mail.
+            emailRedirectTo: window.location.origin + window.location.pathname,
+            data: {
+                display_name: nomeCadastro.value.trim(),
+                gender: generoCadastro.value
+            }
+        }
+    };
+
+    const controles = formularioCadastro.querySelectorAll('input, select, button');
+    const textoOriginalBotao = botaoEnviarCadastro.innerHTML;
+
+    cadastroEmAndamento = true;
+    formularioCadastro.setAttribute('aria-busy', 'true');
+    botaoFecharCadastro.disabled = true;
+    botaoVoltarLogin.disabled = true;
+
+    controles.forEach(function (controle) {
+        controle.disabled = true;
+    });
+
+    botaoEnviarCadastro.textContent = 'Criando conta…';
+    feedbackCadastro.textContent = 'Aguarde enquanto enviamos seu cadastro.';
+
+    try {
+        // O Auth cria a conta; o gatilho no banco cria o perfil.
+        const { data, error } = await supabaseClient.auth.signUp(dadosCadastro);
+
+        if (error) {
+            feedbackCadastro.textContent =
+                'Não foi possível concluir o cadastro. Confira os dados e tente novamente.';
+
+            // Registra apenas o diagnóstico, sem os dados do formulário.
+            console.error('Falha no cadastro:', error.code, error.message);
+            return;
+        }
+
+        formularioCadastro.reset();
+        nomeCadastro.setCustomValidity('');
+        confirmacaoCadastro.setCustomValidity('');
+
+        if (data.session) {
+            feedbackCadastro.textContent =
+                'Conta criada e sessão iniciada. O acesso ao painel será implementado na próxima etapa.';
+        } else {
+            // Mensagem neutra: o Auth pode ocultar se um e-mail já está cadastrado.
+            feedbackCadastro.textContent =
+                'Solicitação processada. Confira seu e-mail para confirmar o cadastro. Se já possui uma conta, use o login.';
+        }
+    } catch (erro) {
+        feedbackCadastro.textContent =
+            'Não foi possível comunicar com o serviço. Confira sua conexão e tente novamente.';
+    } finally {
+        // Libera o formulário mesmo se ocorrer um erro.
+        cadastroEmAndamento = false;
+        formularioCadastro.removeAttribute('aria-busy');
+        botaoFecharCadastro.disabled = false;
+        botaoVoltarLogin.disabled = false;
+
+        controles.forEach(function (controle) {
+            controle.disabled = false;
+        });
+
+        botaoEnviarCadastro.innerHTML = textoOriginalBotao;
+    }
 });
