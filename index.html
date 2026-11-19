@@ -17,6 +17,7 @@
 
   <!-- Configuração e criação do cliente. -->
   <script defer src="src/js/supabase-client.js"></script>
+  <script defer src="src/js/login.js"></script>
 
   <!-- Comportamento do formulário de cadastro. -->
   <script defer src="src/js/cadastro.js"></script>
@@ -187,14 +188,6 @@
         </p>
     </div>
 </dialog>
-  <!-- 4. Demonstração segura: não simula login bem-sucedido -->
-  <script>
-    const formularioLogin = document.querySelector('#formulario-login');
-    const feedbackLogin = document.querySelector('#feedback-login');
-    formularioLogin.addEventListener('submit', function (evento) {
-      evento.preventDefault();
-      feedbackLogin.textContent = 'O login ainda não está disponível. Vamos implementar a autenticação na próxima etapa.';
-    });
-  </script>
+
 </body>
 </html>
