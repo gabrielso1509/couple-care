@@ -673,3 +673,215 @@ h1 em {
     }
 
 }
+
+/* ========================================
+   9. MODAL DE CADASTRO
+======================================== */
+
+/* Botões com aparência de link. */
+.link-cadastro {
+    padding: 4px;
+    border: 0;
+    background: transparent;
+    color: var(--lilas);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.link-cadastro:hover {
+    color: #d2c7ff;
+    text-decoration: underline;
+}
+
+.link-cadastro:focus-visible,
+.modal-fechar:focus-visible,
+.modal-cadastro .botao-entrar:focus-visible {
+    outline: 2px solid var(--lilas);
+    outline-offset: 4px;
+}
+
+/* Impede a rolagem da página atrás do modal. */
+body.cadastro-aberto {
+    overflow: hidden;
+}
+
+.modal-cadastro {
+    width: min(560px, calc(100% - 32px));
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 28px;
+    color: var(--branco);
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(169, 155, 232, 0.15),
+            transparent 45%
+        ),
+        linear-gradient(145deg, #1b2b46, #0d172b);
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+    color-scheme: dark;
+}
+
+/* Escurece e desfoca a página atrás do dialog. */
+.modal-cadastro::backdrop {
+    background: rgba(5, 10, 21, 0.76);
+    backdrop-filter: blur(8px);
+}
+
+.modal-conteudo {
+    position: relative;
+    padding: 36px;
+}
+
+.modal-fechar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--texto-suave);
+    font-size: 27px;
+    cursor: pointer;
+}
+
+.modal-fechar:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--branco);
+}
+
+.modal-cabecalho {
+    margin-bottom: 26px;
+    padding-right: 20px;
+}
+
+.modal-simbolo {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(242, 140, 69, 0.25);
+    border-radius: 16px;
+    background: rgba(242, 140, 69, 0.1);
+    color: var(--laranja);
+    font-size: 34px;
+}
+
+.modal-etiqueta {
+    margin: 0 0 10px;
+    color: var(--lilas);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+}
+
+.modal-cabecalho h2 {
+    margin: 0 0 12px;
+    font-family: var(--fonte-titulo);
+    font-size: clamp(28px, 5vw, 36px);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.modal-cabecalho h2 span {
+    color: var(--laranja);
+}
+
+.modal-cabecalho > p:last-child {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.formulario-cadastro {
+    max-width: none;
+    gap: 18px;
+}
+
+/* O input já herda o visual da classe campo existente. */
+.modal-cadastro .campo input,
+.modal-cadastro .campo select {
+    min-width: 0;
+    height: 51px;
+    border-radius: 14px;
+}
+
+.modal-cadastro .campo select {
+    width: 100%;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    background: rgba(255, 255, 255, 0.065);
+    color: var(--branco);
+    font: inherit;
+}
+
+.modal-cadastro .campo select:focus {
+    outline: none;
+    border-color: var(--lilas);
+    box-shadow: 0 0 0 3px rgba(169, 155, 232, 0.13);
+}
+
+.modal-cadastro .campo select option {
+    background: var(--marinho);
+    color: var(--branco);
+}
+
+.cadastro-senhas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.cadastro-ajuda {
+    margin: -8px 0 0;
+    color: var(--texto-suave);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.modal-rodape {
+    margin: 24px 0 0;
+    text-align: center;
+    color: var(--texto-suave);
+    font-size: 13px;
+}
+
+/* Mantém o formulário utilizável em telas pequenas. */
+@media (max-width: 600px) {
+    .modal-cadastro {
+        width: calc(100% - 24px);
+        max-height: calc(100dvh - 24px);
+        border-radius: 22px;
+    }
+
+    .modal-conteudo {
+        padding: 28px 22px;
+    }
+
+    .modal-cabecalho {
+        padding-right: 28px;
+    }
+
+    .cadastro-senhas {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    /* Evita zoom automático ao preencher campos no iPhone. */
+    .modal-cadastro .campo input,
+    .modal-cadastro .campo select {
+        font-size: 16px;
+    }
+}

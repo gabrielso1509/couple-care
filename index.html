@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/css/login.css">
   <script defer src="/src/js/analytics.js"></script>
+  <script defer src="src/js/cadastro.js"></script>
 </head>
 <body>
   <!-- 1. Navegação compacta -->
@@ -34,7 +35,12 @@
           <button class="botao-entrar" type="submit">Entrar na minha conta <span aria-hidden="true">↗</span></button>
           <p class="feedback" id="feedback-login" role="status" aria-live="polite"></p>
         </form>
-        <p class="cadastro">Ainda não tem uma conta? <span>Cadastro em breve</span></p>
+        <p class="cadastro">
+            Ainda não tem uma conta?
+            <button class="link-cadastro" id="abrir-cadastro" type="button">
+                Criar conta
+            </button>
+        </p>
       </div>
       <div class="rodape">© 2026 CoupleCare <span>Feito para construir juntos.</span></div>
     </section>
@@ -53,6 +59,126 @@
       <div class="universo-legenda"><span class="linha"></span> UM LUGAR PARA O QUE É DE VOCÊS</div>
     </section>
   </main>
+  <!-- Cadastro sobre a página de login. -->
+<dialog
+    class="modal-cadastro"
+    id="modal-cadastro"
+    aria-labelledby="titulo-cadastro"
+    aria-describedby="descricao-cadastro"
+>
+    <div class="modal-conteudo">
+        <button
+            class="modal-fechar"
+            id="fechar-cadastro"
+            type="button"
+            aria-label="Fechar cadastro"
+        >
+            <span aria-hidden="true">×</span>
+        </button>
+
+        <header class="modal-cabecalho">
+            <span class="modal-simbolo" aria-hidden="true">♡</span>
+            <p class="modal-etiqueta">SEU ESPAÇO A DOIS</p>
+
+            <h2 id="titulo-cadastro">
+                Tudo começa <span>com você.</span>
+            </h2>
+
+            <p id="descricao-cadastro">
+                Crie sua conta para começar a organizar sua vida a dois.
+            </p>
+        </header>
+
+        <!-- Ainda sem envio ao Supabase. -->
+        <form class="formulario formulario-cadastro" id="formulario-cadastro">
+            <div class="campo">
+                <label for="cadastro-nome">Nome de exibição</label>
+                <input
+                    id="cadastro-nome"
+                    name="display_name"
+                    type="text"
+                    placeholder="Como podemos te chamar?"
+                    autocomplete="nickname"
+                    required
+                    autofocus
+                >
+            </div>
+
+            <div class="campo">
+                <label for="cadastro-genero">Gênero</label>
+                <select id="cadastro-genero" name="gender" required>
+                    <option value="" disabled selected>Selecione seu gênero</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="feminino">Feminino</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="cadastro-email">E-mail</label>
+                <input
+                    id="cadastro-email"
+                    name="email"
+                    type="email"
+                    placeholder="voce@exemplo.com"
+                    autocomplete="email"
+                    required
+                >
+            </div>
+
+            <div class="cadastro-senhas">
+                <div class="campo">
+                    <label for="cadastro-senha">Senha</label>
+                    <input
+                        id="cadastro-senha"
+                        name="password"
+                        type="password"
+                        placeholder="No mínimo 8 caracteres"
+                        autocomplete="new-password"
+                        minlength="8"
+                        aria-describedby="cadastro-ajuda-senha"
+                        required
+                    >
+                </div>
+
+                <div class="campo">
+                    <label for="cadastro-confirmacao">Confirme a senha</label>
+                    <input
+                        id="cadastro-confirmacao"
+                        name="password_confirmation"
+                        type="password"
+                        placeholder="Repita sua senha"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+                </div>
+            </div>
+
+            <p class="cadastro-ajuda" id="cadastro-ajuda-senha">
+                Use pelo menos 8 caracteres na sua senha.
+            </p>
+
+            <button class="botao-entrar" type="submit">
+                Criar minha conta
+                <span aria-hidden="true">↗</span>
+            </button>
+
+            <p
+                class="feedback"
+                id="feedback-cadastro"
+                role="status"
+                aria-live="polite"
+            ></p>
+        </form>
+
+        <p class="modal-rodape">
+            Já tem uma conta?
+            <button class="link-cadastro" id="voltar-login" type="button">
+                Entrar
+            </button>
+        </p>
+    </div>
+</dialog>
   <!-- 4. Demonstração segura: não simula login bem-sucedido -->
   <script>
     const formularioLogin = document.querySelector('#formulario-login');
