@@ -1,190 +1,141 @@
 <!doctype html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
-        <base href="/src/" />
-        
-        <title>Configurações | CoupleCare</title>
-        <!-- 1. Fontes e estilos compartilhados. O login tem seu CSS separado. -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="css/style.css" />
-        <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
-        <!-- Autenticação compartilhada: mantenha esta ordem. -->
-        <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script defer src="js/supabase-client.js"></script>
-        <script defer src="js/sessao.js"></script>
-        <script defer src="script.js"></script>
-        <script defer src="js/dados.js"></script>
-        <script defer src="js/utilidades.js"></script>
-        <script defer src="js/config.js"></script>
-    </head>
-    <body class="pagina-orbital">
-        <!-- Conteúdo oculto até validar a sessão e carregar o perfil. -->
-        <p id="status-sessao" role="status" aria-live="polite">
-            Verificando sua sessão…
-        </p>
-        <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
-        <div class="aplicacao" hidden>
-            <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
-            <aside class="menu-lateral">
-                <div class="menu-lateral-cabecalho">
-                    <a
-                        class="marca-tarefas"
-                        href="../index.html"
-                        aria-label="CoupleCare, página inicial"
-                        ><span class="marca-tarefas-icone" aria-hidden="true"
-                            >♡</span
-                        ><span class="marca-tarefas-nome"
-                            >Couple<span>Care</span></span
-                        ></a
-                    >
+    <!-- Resolve os caminhos relativos a partir de src. -->
+    <base href="/src/">
 
-                    <!-- Botão controlado pelo script compartilhado do menu -->
-                    <button
-                        type="button"
-                        class="botao-menu"
-                        id="botao-menu"
-                        aria-label="Recolher menu"
-                        aria-expanded="true"
-                        aria-controls="navegacao-tarefas"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
+    <title>Configurações | CoupleCare</title>
 
-                <!-- LINKS DE NAVEGAÇÃO -->
-                <nav
-                    id="navegacao-tarefas"
-                    class="navegacao"
-                    aria-label="Navegação principal"
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Autenticação: mantenha esta ordem. -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script defer src="js/supabase-client.js"></script>
+    <script defer src="js/sessao.js"></script>
+
+    <!-- Comportamentos compartilhados e da página. -->
+    <script defer src="script.js"></script>
+    <script defer src="js/dados.js"></script>
+    <script defer src="js/utilidades.js"></script>
+    <script defer src="js/config.js"></script>
+</head>
+
+<body class="pagina-orbital">
+    <p id="status-sessao" role="status" aria-live="polite">
+        Verificando sua sessão…
+    </p>
+
+    <a class="pular-conteudo" href="#conteudo-pagina">
+        Ir para o conteúdo
+    </a>
+
+    <!-- Só aparece após validar a sessão. -->
+    <div class="aplicacao" hidden>
+        <aside class="menu-lateral">
+            <div class="menu-lateral-cabecalho">
+                <a
+                    class="marca-tarefas"
+                    href="../index.html"
+                    aria-label="CoupleCare, página inicial"
                 >
-                    <a
-                        href="index.html"
-                        class="item-menu"
-                        aria-label="Dashboard"
-                        title="Dashboard"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"
-                            />
-                        </svg>
-                        <span>Dashboard</span>
-                    </a>
+                    <span class="marca-tarefas-icone" aria-hidden="true">♡</span>
+                    <span class="marca-tarefas-nome">
+                        Couple<span>Care</span>
+                    </span>
+                </a>
 
-                    <a
-                        href="tarefas.html"
-                        class="item-menu"
-                        aria-label="Tarefas"
-                        title="Tarefas"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="4" y="3" width="16" height="18" rx="2" />
-                            <path d="m8 12 2.5 2.5L16 9" />
-                        </svg>
-                        <span>Tarefas</span>
-                    </a>
+                <button
+                    type="button"
+                    class="botao-menu"
+                    id="botao-menu"
+                    aria-label="Recolher menu"
+                    aria-expanded="true"
+                    aria-controls="navegacao-tarefas"
+                >
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 6h16M4 12h16M4 18h16">
+                        </path>
+                    </svg>
+                </button>
+            </div>
 
-                    <a
-                        href="calendario.html"
-                        class="item-menu"
-                        aria-label="Calendário"
-                        title="Calendário"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="3" y="5" width="18" height="16" rx="2" />
-                            <path d="M16 3v4M8 3v4M3 10h18" />
-                        </svg>
-                        <span>Calendário</span>
-                    </a>
+            <!-- Navegação principal. -->
+            <nav
+                id="navegacao-tarefas"
+                class="navegacao"
+                aria-label="Navegação principal"
+            >
+                <a href="index.html" class="item-menu" title="Dashboard">
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z">
+                        </path>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
 
-                    <a
-                        href="menstruacao.html"
-                        class="item-menu"
-                        aria-label="Menstruação"
-                        title="Menstruação"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"
-                            />
-                        </svg>
-                        <span>Menstruação</span>
-                    </a>
+                <a href="tarefas.html" class="item-menu" title="Tarefas">
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="4" y="3" width="16" height="18" rx="2"></rect>
+                        <path d="m8 12 2.5 2.5L16 9"></path>
+                    </svg>
+                    <span>Tarefas</span>
+                </a>
 
-                    <a
-                        href="financas.html"
-                        class="item-menu"
-                        aria-label="Finanças"
-                        title="Finanças"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="3" y="6" width="18" height="14" rx="2" />
-                            <path d="M3 11h18M7 16h3" />
-                        </svg>
-                        <span>Finanças</span>
-                    </a>
+                <a href="calendario.html" class="item-menu" title="Calendário">
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                        <path d="M16 3v4M8 3v4M3 10h18"></path>
+                    </svg>
+                    <span>Calendário</span>
+                </a>
 
-                    <a
-                        href="config.html"
-                        class="item-menu ativo"
-                        aria-current="page"
-                        aria-label="Configurações"
-                        title="Configurações"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z"
-                                transform="translate(-1 -1) scale(1.08)"
-                            />
-                        </svg>
-                        <span>Configurações</span>
-                    </a>
-                </nav>
+                <a href="menstruacao.html" class="item-menu" title="Menstruação">
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z">
+                        </path>
+                    </svg>
+                    <span>Menstruação</span>
+                </a>
+
+                <a href="financas.html" class="item-menu" title="Finanças">
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="6" width="18" height="14" rx="2"></rect>
+                        <path d="M3 11h18M7 16h3"></path>
+                    </svg>
+                    <span>Finanças</span>
+                </a>
+
+                <a
+                    href="config.html"
+                    class="item-menu ativo"
+                    aria-current="page"
+                    title="Configurações"
+                >
+                    <svg class="icone-item-menu" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z"
+                            transform="translate(-1 -1) scale(1.08)"
+                        ></path>
+                    </svg>
+                    <span>Configurações</span>
+                </a>
+            </nav>
 
             <!-- Conta do usuário autenticado. -->
             <div class="conta-menu">
                 <span class="conta-avatar" id="avatar-usuario" aria-hidden="true">…</span>
                 <span class="conta-nome" id="nome-usuario">Carregando…</span>
+
                 <button
                     type="button"
                     class="conta-sair"
@@ -193,93 +144,177 @@
                     title="Sair da conta"
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M9 5H5v14h4M9 12h12M17 8l4 4-4 4" />
+                        <path d="M9 5H5v14h4M9 12h12M17 8l4 4-4 4"></path>
                     </svg>
                 </button>
             </div>
-            </aside>
-            <div class="conteudo-principal">
-                <header class="cabecalho">
-                    <div>
-                        <span class="texto-destaque">SEU ESPAÇO A DOIS</span>
-                        <h1>Configurações</h1>
-                        <p>Seu espaço, do seu jeito.</p>
-                    </div>
-                    <span class="selo-tarefas"
-                        >Feito para construir juntos</span
-                    >
-                </header>
-                <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-                <main id="conteudo-pagina" class="conteudo" tabindex="-1">
-                    <p class="aviso-preview">
-                        A área Meu casal consulta seu vínculo real.
-                        O formulário de perfil ainda funciona apenas como prévia.
-                    </p>
-                    <div class="duas-colunas">
-                        <section class="painel">
-                            <h2>Seu perfil</h2>
-                            <form id="form-perfil" class="form-app">
-                                <div class="campo-app">
-                                    <label for="nome"
-                                        >Como você quer ser chamado(a)?</label
-                                    ><input
-                                        id="nome"
-                                        type="text"
-                                        required
-                                        maxlength="100"
-                                        autocomplete="given-name"
-                                    />
-                                </div>
-                                <div class="campo-app">
-                                    <label for="sexo"
-                                        >Sexo informado (opcional)</label
-                                    ><select id="sexo">
-                                        <option value="">
-                                            Prefiro não informar
-                                        </option>
-                                        <option value="feminino">
-                                            Feminino
-                                        </option>
-                                        <option value="masculino">
-                                            Masculino
-                                        </option>
-                                    </select>
-                                </div>
-                                <button class="botao-primario" type="submit">
-                                    Adicionar à prévia
-                                </button>
-                                <p
-                                    class="feedback-app"
-                                    id="feedback"
-                                    role="status"
-                                    aria-live="polite"
-                                ></p>
-                            </form>
-                        </section>
-                        <section class="painel">
-                            <h2>Seu casal</h2>
-                            <p class="texto-suave">
-                                Nenhum vínculo carregado. Criar casal e aceitar
-                                convites dependem de autenticação real.
-                            </p>
-                            <div class="acoes-app">
-                                <button type="button" disabled>
-                                    Criar casal</button
-                                ><button type="button" disabled>
-                                    Gerar convite
-                                </button>
+        </aside>
+
+        <div class="conteudo-principal">
+            <header class="cabecalho">
+                <div>
+                    <span class="texto-destaque">SEU ESPAÇO A DOIS</span>
+                    <h1>Configurações</h1>
+                    <p>Seu espaço, do seu jeito.</p>
+                </div>
+
+                <span class="selo-tarefas">Feito para construir juntos</span>
+            </header>
+
+            <main id="conteudo-pagina" class="conteudo" tabindex="-1">
+                <p class="aviso-preview">
+                    A área Meu casal utiliza dados reais da conta.
+                    O formulário de perfil ainda funciona apenas como prévia.
+                </p>
+
+                <div class="duas-colunas">
+                    <!-- Formulário de perfil ainda sem gravação no Supabase. -->
+                    <section class="painel">
+                        <h2>Seu perfil</h2>
+
+                        <form id="form-perfil" class="form-app">
+                            <div class="campo-app">
+                                <label for="nome">Como você quer ser chamado(a)?</label>
+                                <input
+                                    id="nome"
+                                    type="text"
+                                    required
+                                    maxlength="100"
+                                    autocomplete="given-name"
+                                >
                             </div>
-                        </section>
-                    </div>
-                    <!-- Dados reais do vínculo, consultados no Supabase. -->
-                    <section class="painel" aria-labelledby="titulo-meu-casal">
+
+                            <div class="campo-app">
+                                <label for="sexo">Sexo informado (opcional)</label>
+                                <select id="sexo">
+                                    <option value="">Prefiro não informar</option>
+                                    <option value="feminino">Feminino</option>
+                                    <option value="masculino">Masculino</option>
+                                </select>
+                            </div>
+
+                            <button class="botao-primario" type="submit">
+                                Adicionar à prévia
+                            </button>
+
+                            <p
+                                class="feedback-app"
+                                id="feedback"
+                                role="status"
+                                aria-live="polite"
+                            ></p>
+                        </form>
+                    </section>
+
+                    <!-- Vínculo real e controles do casal. -->
+                    <section
+                        class="painel meu-casal"
+                        aria-labelledby="titulo-meu-casal"
+                    >
                         <h2 id="titulo-meu-casal">Meu casal</h2>
 
-                        <p id="status-casal" class="texto-suave" role="status" aria-live="polite">
+                        <p
+                            id="status-casal"
+                            class="texto-suave"
+                            role="status"
+                            aria-live="polite"
+                        >
                             Carregando seu casal…
                         </p>
 
                         <ul id="participantes-casal" class="lista-casal"></ul>
+
+                        <!-- Visível somente quando não existe vínculo. -->
+                        <div id="casal-sem-vinculo" hidden>
+                            <button
+                                type="button"
+                                class="botao-primario"
+                                id="criar-casal"
+                                disabled
+                            >
+                                Criar nosso casal
+                            </button>
+
+                            <form id="form-aceitar-convite" class="form-app">
+                                <div class="campo-app">
+                                    <label for="codigo-convite">
+                                        Recebeu um convite?
+                                    </label>
+                                    <input
+                                        id="codigo-convite"
+                                        name="token"
+                                        type="text"
+                                        placeholder="Cole o código do convite"
+                                        autocomplete="off"
+                                        spellcheck="false"
+                                        required
+                                        disabled
+                                    >
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="botao-primario"
+                                    id="aceitar-convite"
+                                    disabled
+                                >
+                                    Aceitar convite
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Visível somente quando há uma vaga disponível. -->
+                        <div id="casal-com-vaga" hidden>
+                            <p class="texto-suave">
+                                Gere um convite para conectar a outra pessoa.
+                                Gerar outro código invalida o anterior.
+                            </p>
+
+                            <button
+                                type="button"
+                                class="botao-primario"
+                                id="gerar-convite"
+                                disabled
+                            >
+                                Gerar convite
+                            </button>
+
+                            <div id="convite-gerado" class="form-app" hidden>
+                                <div class="campo-app">
+                                    <label for="convite-para-copiar">
+                                        Código do convite
+                                    </label>
+                                    <input
+                                        id="convite-para-copiar"
+                                        type="text"
+                                        readonly
+                                        autocomplete="off"
+                                        spellcheck="false"
+                                    >
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="botao-primario"
+                                    id="copiar-convite"
+                                    disabled
+                                >
+                                    Copiar código
+                                </button>
+
+                                <p class="texto-suave">
+                                    Válido por 24 horas e para uma única aceitação.
+                                    Compartilhe somente com quem vai entrar no casal.
+                                </p>
+                            </div>
+                        </div>
+
+                        <p
+                            id="feedback-casal"
+                            class="feedback-app"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
 
                         <button
                             type="button"
@@ -289,18 +324,18 @@
                             Atualizar
                         </button>
                     </section>
+                </div>
 
-                    <noscript
-                        ><p>
-                            Ative o JavaScript para usar os controles.
-                        </p></noscript
-                    >
-                    <footer class="rodape-tarefas">
-                        CoupleCare <span>Seu espaço para o que importa.</span>
-                    </footer>
-                </main>
-            </div>
+                <noscript>
+                    <p>Ative o JavaScript para usar os controles.</p>
+                </noscript>
+
+                <footer class="rodape-tarefas">
+                    CoupleCare <span>Seu espaço para o que importa.</span>
+                </footer>
+            </main>
         </div>
-    </body>
+    </div>
+</body>
 </html>
 

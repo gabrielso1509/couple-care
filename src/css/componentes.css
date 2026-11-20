@@ -240,3 +240,22 @@
     min-width: 0;
     overflow-wrap: anywhere;
 }
+
+/* Preserva os estados ocultos, mesmo em elementos com display definido. */
+.meu-casal [hidden] {
+    display: none !important;
+}
+
+.meu-casal .form-app {
+    margin-top: 20px;
+}
+
+.meu-casal > #atualizar-casal {
+    margin-top: 16px;
+}
+
+.meu-casal button:disabled,
+.meu-casal input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
