@@ -1,24 +1,163 @@
-/* 1. Prepara o perfil, mas não altera uma conta real nem cria vínculo. */
+/* ========================================
+   PERFIL — LEITURA E GRAVAÇÃO NO SUPABASE
+======================================== */
 (function () {
-    document
-        .getElementById("form-perfil")
-        .addEventListener("submit", function (e) {
-            e.preventDefault();
-            const nome = CoupleCare.ui.valor("nome");
-            if (!nome) {
-                document.getElementById("feedback").textContent =
-                    "Informe seu nome.";
+    const formulario = document.querySelector('#form-perfil');
+    const campoNome = document.querySelector('#nome');
+    const campoGenero = document.querySelector('#sexo');
+    const feedback = document.querySelector('#feedback');
+    const botaoSalvar = formulario.querySelector('[type="submit"]');
+
+    let usuarioId = null;
+    let salvando = false;
+
+    // Centraliza o bloqueio dos campos durante as requisições.
+    function bloquearFormulario(bloquear) {
+        campoNome.disabled = bloquear;
+        campoGenero.disabled = bloquear;
+        botaoSalvar.disabled = bloquear;
+
+        if (bloquear) {
+            formulario.setAttribute('aria-busy', 'true');
+        } else {
+            formulario.removeAttribute('aria-busy');
+        }
+    }
+
+    /* 1. Carrega o perfil real. */
+    async function carregarPerfil() {
+        bloquearFormulario(true);
+
+        try {
+            const { data: autenticacao, error: erroAutenticacao } =
+                await supabaseClient.auth.getUser();
+
+            if (erroAutenticacao || !autenticacao.user) {
+                throw new Error('Não foi possível validar a conta.');
+            }
+
+            const { data: perfil, error: erroPerfil } = await supabaseClient
+                .from('profiles')
+                .select('id, display_name, gender')
+                .eq('id', autenticacao.user.id)
+                .single();
+
+            if (erroPerfil) {
+                throw erroPerfil;
+            }
+
+            usuarioId = perfil.id;
+            campoNome.value = perfil.display_name;
+            campoGenero.value = perfil.gender;
+            feedback.textContent = '';
+        } catch (erro) {
+            feedback.textContent =
+                'Não foi possível carregar seu perfil. Confira a conexão e recarregue a página.';
+        } finally {
+            // Se a leitura falhar, não libera um formulário vazio para salvar.
+            bloquearFormulario(usuarioId === null);
+            formulario.removeAttribute('aria-busy');
+        }
+    }
+
+    /* 2. Valida nomes compostos apenas por espaços. */
+    campoNome.addEventListener('input', function () {
+        campoNome.setCustomValidity('');
+    });
+
+    /* 3. Salva somente nome e gênero do próprio perfil. */
+    formulario.addEventListener('submit', async function (evento) {
+        evento.preventDefault();
+
+        if (salvando || !usuarioId) {
+            return;
+        }
+
+        const nome = campoNome.value.trim();
+
+        campoNome.setCustomValidity(
+            nome ? '' : 'Informe um nome de exibição.'
+        );
+
+        if (!formulario.reportValidity()) {
+            return;
+        }
+
+        const genero = campoGenero.value;
+
+        salvando = true;
+        bloquearFormulario(true);
+        botaoSalvar.textContent = 'Salvando…';
+        feedback.textContent = '';
+
+        try {
+            // Confere novamente a identidade antes de salvar.
+            const { data: autenticacao, error: erroAutenticacao } =
+                await supabaseClient.auth.getUser();
+
+            if (
+                erroAutenticacao ||
+                !autenticacao.user ||
+                autenticacao.user.id !== usuarioId
+            ) {
+                feedback.textContent =
+                    'Sua sessão mudou. Recarregue a página antes de salvar.';
                 return;
             }
-            CoupleCare.dados.substituir("profiles", {
-                nome: nome,
-                sexo: CoupleCare.ui.valor("sexo") || null,
-            });
-            document.getElementById("feedback").textContent =
-                "Perfil de " +
-                nome +
-                " preparado somente nesta página. A conta não foi alterada.";
-        });
+
+            const { data: perfil, error } = await supabaseClient
+                .from('profiles')
+                .update({
+                    display_name: nome,
+                    gender: genero
+                })
+                .eq('id', usuarioId)
+                .select('display_name, gender')
+                .single();
+
+            if (error) {
+                throw error;
+            }
+
+            // Usa os valores efetivamente retornados pelo banco.
+            campoNome.value = perfil.display_name;
+            campoGenero.value = perfil.gender;
+
+            const nomeMenu = document.querySelector('#nome-usuario');
+            const avatarMenu = document.querySelector('#avatar-usuario');
+
+            if (nomeMenu) {
+                nomeMenu.textContent = perfil.display_name;
+                nomeMenu.title = perfil.display_name;
+            }
+
+            if (avatarMenu) {
+                avatarMenu.textContent = perfil.display_name
+                    .trim()
+                    .charAt(0)
+                    .toUpperCase();
+            }
+
+            feedback.textContent = 'Perfil atualizado com sucesso!';
+
+            // Atualiza também o nome exibido na lista do casal.
+            const botaoAtualizarCasal =
+                document.querySelector('#atualizar-casal');
+
+            if (botaoAtualizarCasal) {
+                botaoAtualizarCasal.click();
+            }
+        } catch (erro) {
+            feedback.textContent =
+                'Não foi possível confirmar o salvamento. Recarregue a página para conferir os dados antes de tentar novamente.';
+        } finally {
+            salvando = false;
+            bloquearFormulario(false);
+            botaoSalvar.textContent = 'Salvar alterações';
+        }
+    });
+
+    carregarPerfil();
 })();
 
 /* ========================================

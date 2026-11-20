@@ -169,32 +169,35 @@
 
                 <div class="duas-colunas">
                     <!-- Formulário de perfil ainda sem gravação no Supabase. -->
-                    <section class="painel">
-                        <h2>Seu perfil</h2>
+                    <!-- Perfil real da conta autenticada. -->
+                    <section class="painel" aria-labelledby="titulo-perfil">
+                        <h2 id="titulo-perfil">Seu perfil</h2>
 
                         <form id="form-perfil" class="form-app">
                             <div class="campo-app">
-                                <label for="nome">Como você quer ser chamado(a)?</label>
+                                <label for="nome">Nome de exibição</label>
                                 <input
                                     id="nome"
+                                    name="display_name"
                                     type="text"
                                     required
                                     maxlength="100"
-                                    autocomplete="given-name"
+                                    autocomplete="nickname"
+                                    disabled
                                 >
                             </div>
 
                             <div class="campo-app">
-                                <label for="sexo">Sexo informado (opcional)</label>
-                                <select id="sexo">
-                                    <option value="">Prefiro não informar</option>
+                                <label for="sexo">Gênero</label>
+                                <select id="sexo" name="gender" required disabled>
+                                    <option value="" disabled>Selecione seu gênero</option>
                                     <option value="feminino">Feminino</option>
                                     <option value="masculino">Masculino</option>
                                 </select>
                             </div>
 
-                            <button class="botao-primario" type="submit">
-                                Adicionar à prévia
+                            <button class="botao-primario" type="submit" disabled>
+                                Salvar alterações
                             </button>
 
                             <p
@@ -202,7 +205,9 @@
                                 id="feedback"
                                 role="status"
                                 aria-live="polite"
-                            ></p>
+                            >
+                                Carregando seu perfil…
+                            </p>
                         </form>
                     </section>
 
