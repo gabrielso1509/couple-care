@@ -1,10 +1,45 @@
-/* 1. Calendário mensal: sete colunas, iniciando na segunda-feira */
+/* ========================================
+   1. ORGANIZAÇÃO DA PÁGINA
+======================================== */
+
+.calendario-real [hidden] {
+    display: none !important;
+}
+
 .pagina-orbital .layout-calendario-app {
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.85fr);
     gap: 24px;
     align-items: start;
 }
+
+.calendario-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.calendario-barra > button {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+#status-calendario {
+    margin: 0;
+    color: var(--orbital-suave);
+    font-size: 13px;
+}
+
+.calendario-real a {
+    color: #c7baff;
+    text-underline-offset: 3px;
+}
+
+/* ========================================
+   2. CONTROLES DO MÊS
+======================================== */
+
 .pagina-orbital .controle-mes {
     display: flex;
     align-items: center;
@@ -12,84 +47,300 @@
     gap: 8px;
     margin-bottom: 16px;
 }
+
 .pagina-orbital .controle-mes h2 {
     margin: 0;
     font-size: 22px;
     text-align: center;
     text-transform: capitalize;
 }
+
 .pagina-orbital .controle-mes button {
     min-width: 44px;
     padding: 8px;
     flex-shrink: 0;
 }
+
+/* ========================================
+   3. GRADE DOS DIAS
+
+   Sete colunas: uma para cada dia da semana.
+======================================== */
+
 .pagina-orbital .semana-app,
 .pagina-orbital .dias-app {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 5px;
 }
+
 .pagina-orbital .semana-app {
     margin: 24px 0 10px;
     color: var(--orbital-suave);
     font-size: 12px;
     text-align: center;
 }
-.pagina-orbital .dia-app {
+
+.pagina-orbital .calendario-real .dia-app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
     min-width: 0;
-    min-height: 48px;
-    padding: 8px 0;
+    min-height: 76px;
+    padding: 8px 2px;
+
     border: 1px solid transparent;
     border-radius: 10px;
+
     background: #ffffff09;
     color: var(--orbital-texto);
+
     font: 500 14px var(--fonte-texto);
     cursor: pointer;
-    position: relative;
 }
+
 .pagina-orbital .dia-app:hover {
     border-color: var(--cor-secundaria);
 }
+
+/* Borda laranja identifica o dia atual. */
 .pagina-orbital .dia-app.hoje {
     border-color: var(--cor-destaque);
 }
+
+/* O JavaScript altera aria-pressed ao selecionar outro dia. */
 .pagina-orbital .dia-app[aria-pressed="true"] {
     background: #a99be847;
     color: white;
 }
-.pagina-orbital .dia-app.com-evento::after {
-    content: "";
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--cor-destaque);
-    bottom: 4px;
-    left: calc(50% - 2px);
+
+.calendario-marcadores {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3px;
+
+    min-height: 17px;
+    font-size: 13px;
+    line-height: 1.3;
 }
+
+/* ========================================
+   4. LEGENDA E TEXTOS DE AJUDA
+======================================== */
+
+.calendario-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    list-style: none;
+    padding: 0;
+    margin: 22px 0 10px;
+
+    color: var(--orbital-suave);
+    font-size: 12px;
+}
+
+.calendario-real small,
+.calendario-ajuda {
+    color: var(--orbital-suave);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* ========================================
+   5. FORMULÁRIOS
+======================================== */
+
+.calendario-formularios {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+}
+
+.calendario-real fieldset {
+    display: grid;
+    gap: 16px;
+
+    min-width: 0;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.calendario-real .campo-app {
+    min-width: 0;
+}
+
+.calendario-linha {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+/* Prevalece sobre os estilos compartilhados dos botões. */
+.pagina-orbital .calendario-real .botao-primario {
+    background: linear-gradient(110deg, #f28c45, #ffab67);
+    color: #14243b;
+    border-color: transparent;
+}
+
+/* ========================================
+   6. SEÇÕES EXPANSÍVEIS
+
+   details abre e fecha pelo clique em summary.
+======================================== */
+
+.calendario-real details {
+    border-top: 1px solid var(--orbital-borda);
+    padding: 16px 0;
+}
+
+.calendario-real summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 4px 0 12px;
+}
+
+/* ========================================
+   7. OPÇÕES DE SENTIMENTOS
+======================================== */
+
+.opcoes-sentimentos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.opcoes-sentimentos label {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    padding: 10px;
+    border: 1px solid var(--orbital-borda);
+    border-radius: 10px;
+
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Destaca o cartão quando seu checkbox está marcado. */
+.opcoes-sentimentos label:has(input:checked) {
+    border-color: #f28c45;
+    background: #f28c4512;
+}
+
+.pagina-orbital .calendario-real input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    min-height: 17px;
+
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
+
+    accent-color: #f28c45;
+}
+
+.calendario-compartilhar {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.calendario-compartilhar input {
+    margin-top: 3px !important;
+}
+
+/* ========================================
+   8. CARTÕES DA AGENDA
+======================================== */
+
+.calendario-real .registro-app {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.calendario-real .registro-app h4 {
+    margin: 0 0 10px;
+    font-family: var(--fonte-titulo);
+    font-size: 17px;
+}
+
+/* Preserva as quebras de linha escritas nas observações. */
+.calendario-real .registro-app p {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* Foco visível para navegação pelo teclado. */
+.calendario-real button:focus-visible,
+.calendario-real summary:focus-visible {
+    outline: 2px solid #c7baff;
+    outline-offset: 3px;
+}
+
+/* ========================================
+   9. TELAS MENORES
+======================================== */
+
 @media (max-width: 1200px) {
-    .pagina-orbital .layout-calendario-app {
+    .pagina-orbital .layout-calendario-app,
+    .calendario-formularios {
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
 @media (max-width: 600px) {
+    .pagina-orbital .calendario-real .painel {
+        padding: 16px 12px;
+    }
+
     .pagina-orbital .dias-app,
     .pagina-orbital .semana-app {
         gap: 3px;
     }
-    .pagina-orbital .dia-app {
-        min-height: 38px;
+
+    .pagina-orbital .calendario-real .dia-app {
+        min-height: 65px;
         font-size: 12px;
     }
+
     .pagina-orbital .controle-mes {
         flex-wrap: wrap;
     }
+
     .pagina-orbital .controle-mes h2 {
         flex: 1;
         min-width: 80px;
         font-size: 17px;
     }
+
     .pagina-orbital .semana-app {
         font-size: 10px;
+    }
+
+    .calendario-marcadores {
+        font-size: 11px;
+        gap: 1px;
+    }
+
+    .opcoes-sentimentos,
+    .calendario-linha {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .calendario-barra {
+        align-items: flex-start;
     }
 }

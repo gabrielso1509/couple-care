@@ -22,8 +22,6 @@
         <script defer src="js/supabase-client.js"></script>
         <script defer src="js/sessao.js"></script>
         <script defer src="script.js"></script>
-        <script defer src="js/dados.js"></script>
-        <script defer src="js/utilidades.js"></script>
         <script defer src="js/calendario.js"></script>
     </head>
     <body class="pagina-orbital">
@@ -210,14 +208,29 @@
                     >
                 </header>
                 <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-                <main id="conteudo-pagina" class="conteudo" tabindex="-1">
-                    <p class="aviso-preview">
-                        Prévia sem conexão com a conta. Os registros ficam
-                        apenas na memória desta página e são perdidos ao
-                        atualizar ou navegar. Nada é enviado ao banco.
-                    </p>
+                <!-- Calendário e registros compartilhados. -->
+                <main
+                    id="conteudo-pagina"
+                    class="conteudo calendario-real"
+                    tabindex="-1"
+                >
+                    <div class="calendario-barra">
+                        <p id="status-calendario" role="status" aria-live="polite">
+                            Carregando seu calendário…
+                        </p>
+
+                        <button
+                            id="atualizar-calendario"
+                            class="botao-secundario"
+                            type="button"
+                        >
+                            Atualizar
+                        </button>
+                    </div>
+
+                    <!-- Calendário mensal e agenda do dia selecionado. -->
                     <div class="layout-calendario-app">
-                        <section class="painel">
+                        <section class="painel" aria-label="Calendário mensal">
                             <div class="controle-mes">
                                 <button
                                     type="button"
@@ -226,7 +239,9 @@
                                 >
                                     ←
                                 </button>
+
                                 <h2 id="mes" aria-live="polite"></h2>
+
                                 <button
                                     type="button"
                                     id="seguinte"
@@ -235,76 +250,307 @@
                                     →
                                 </button>
                             </div>
-                            <button
-                                type="button"
-                                id="hoje"
-                                class="botao-secundario"
-                            >
+
+                            <button type="button" id="hoje" class="botao-secundario">
                                 Hoje
                             </button>
+
                             <div class="semana-app" aria-hidden="true">
-                                <span>Seg</span><span>Ter</span><span>Qua</span
-                                ><span>Qui</span><span>Sex</span><span>Sáb</span
-                                ><span>Dom</span>
+                                <span>Seg</span>
+                                <span>Ter</span>
+                                <span>Qua</span>
+                                <span>Qui</span>
+                                <span>Sex</span>
+                                <span>Sáb</span>
+                                <span>Dom</span>
                             </div>
+
+                            <!-- O JavaScript cria os botões dos dias aqui. -->
                             <div
                                 id="dias"
                                 class="dias-app"
                                 role="group"
                                 aria-label="Escolha um dia"
                             ></div>
-                            <p class="texto-suave">
-                                Borda laranja: hoje · fundo lilás: selecionado ·
-                                ponto: evento desta prévia.
+
+                            <ul class="calendario-legenda" aria-label="Legenda">
+                                <li>📅 Compromisso</li>
+                                <li>✅ Prazo de tarefa</li>
+                                <li>🩸 Menstruação registrada</li>
+                                <li>💭 Sentimentos</li>
+                            </ul>
+
+                            <p class="texto-suave calendario-ajuda">
+                                Borda laranja: hoje. Fundo lilás: dia selecionado.
+                                Selecione um dia para ver os detalhes.
                             </p>
                         </section>
-                        <section class="painel">
-                            <h2>Agenda do dia</h2>
+
+                        <section class="painel" aria-labelledby="titulo-agenda">
+                            <h2 id="titulo-agenda">Agenda do dia</h2>
                             <h3 id="selecionado"></h3>
+
+                            <!-- Eventos, tarefas e registros autorizados aparecem aqui. -->
                             <div id="lista" class="lista-app"></div>
+                        </section>
+                    </div>
+
+                    <div class="calendario-formularios">
+                        <!-- Compromissos: as duas pessoas do casal podem editar. -->
+                        <section class="painel" aria-labelledby="titulo-form-evento">
+                            <h2 id="titulo-form-evento">Novo compromisso</h2>
+
+                            <p id="aviso-casal" class="texto-suave" hidden>
+                                Crie ou entre em um casal nas
+                                <a href="config.html">Configurações</a>
+                                para compartilhar compromissos e tarefas.
+                            </p>
+
                             <form id="form-evento" class="form-app">
-                                <div class="campo-app">
-                                    <label for="titulo">Compromisso</label
-                                    ><input
-                                        id="titulo"
-                                        type="text"
-                                        required
-                                        maxlength="150"
-                                    />
-                                </div>
-                                <div class="campo-app">
-                                    <label for="data">Data</label
-                                    ><input
-                                        id="data"
-                                        type="date"
-                                        required
-                                        min="1900-01-01"
-                                        max="2100-12-31"
-                                    />
-                                </div>
-                                <div class="campo-app">
-                                    <label for="hora">Horário (opcional)</label
-                                    ><input id="hora" type="time" />
-                                </div>
-                                <button class="botao-primario" type="submit">
-                                    Adicionar à prévia
-                                </button>
+                                <!-- Liberado pelo JavaScript após carregar os dados. -->
+                                <fieldset id="campos-evento" disabled>
+                                    <div class="campo-app">
+                                        <label for="titulo">Compromisso</label>
+                                        <input
+                                            id="titulo"
+                                            type="text"
+                                            required
+                                            maxlength="150"
+                                        >
+                                    </div>
+
+                                    <div class="campo-app">
+                                        <label for="descricao-evento">
+                                            Descrição (opcional)
+                                        </label>
+                                        <textarea
+                                            id="descricao-evento"
+                                            rows="3"
+                                            maxlength="3000"
+                                        ></textarea>
+                                    </div>
+
+                                    <div class="campo-app">
+                                        <label for="data">Data</label>
+                                        <input
+                                            id="data"
+                                            type="date"
+                                            required
+                                            min="1900-01-01"
+                                            max="2100-12-31"
+                                        >
+                                    </div>
+
+                                    <div class="calendario-linha">
+                                        <div class="campo-app">
+                                            <label for="hora">Início (opcional)</label>
+                                            <input id="hora" type="time">
+                                        </div>
+
+                                        <div class="campo-app">
+                                            <label for="hora-fim">Fim (opcional)</label>
+                                            <input
+                                                id="hora-fim"
+                                                type="time"
+                                                aria-describedby="ajuda-horarios"
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <small id="ajuda-horarios">
+                                        Sem início, o compromisso é de dia inteiro.
+                                        O fim deve ser depois do início, no mesmo dia.
+                                        Use os horários locais combinados pelo casal.
+                                    </small>
+
+                                    <div class="acoes-app">
+                                        <button
+                                            class="botao-primario"
+                                            type="submit"
+                                            id="salvar-evento"
+                                        >
+                                            Criar compromisso
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            id="cancelar-evento"
+                                            hidden
+                                        >
+                                            Cancelar edição
+                                        </button>
+                                    </div>
+                                </fieldset>
+
                                 <p
+                                    id="feedback-evento"
                                     class="feedback-app"
-                                    id="feedback"
                                     role="status"
                                     aria-live="polite"
                                 ></p>
                             </form>
                         </section>
+
+                        <!-- O JavaScript mostra estes controles na conta feminina. -->
+                        <section
+                            class="painel"
+                            id="painel-pessoal"
+                            aria-labelledby="titulo-pessoal"
+                            hidden
+                        >
+                            <h2 id="titulo-pessoal">Meu registro do dia</h2>
+                            <p id="dia-registro" class="texto-suave"></p>
+
+                            <!-- Sentimentos: emojis e observação opcionais. -->
+                            <details open>
+                                <summary>💭 Como estou me sentindo?</summary>
+
+                                <form id="form-sentimentos" class="form-app">
+                                    <fieldset id="campos-sentimentos" disabled>
+                                        <p class="calendario-ajuda">
+                                            Escolha quantos quiser. Os sentimentos são
+                                            informados por você, com ou sem TPM.
+                                        </p>
+
+                                        <!-- O JavaScript cria as opções de emojis. -->
+                                        <div
+                                            id="opcoes-sentimentos"
+                                            class="opcoes-sentimentos"
+                                            role="group"
+                                            aria-label="Como estou me sentindo"
+                                        ></div>
+
+                                        <div class="campo-app">
+                                            <label for="nota-sentimentos">
+                                                Quero dizer também… (opcional)
+                                            </label>
+
+                                            <textarea
+                                                id="nota-sentimentos"
+                                                rows="3"
+                                                maxlength="1000"
+                                            ></textarea>
+                                        </div>
+
+                                        <label class="calendario-compartilhar">
+                                            <input
+                                                id="compartilhar-sentimentos"
+                                                type="checkbox"
+                                            >
+                                            <span>
+                                                Compartilhar os emojis e esta observação
+                                                com meu parceiro atual
+                                            </span>
+                                        </label>
+
+                                        <p
+                                            id="estado-sentimentos"
+                                            class="calendario-ajuda"
+                                        ></p>
+
+                                        <div class="acoes-app">
+                                            <button
+                                                class="botao-primario"
+                                                type="submit"
+                                            >
+                                                Salvar sentimentos
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                id="excluir-sentimentos"
+                                                hidden
+                                            >
+                                                Apagar registro
+                                            </button>
+                                        </div>
+                                    </fieldset>
+
+                                    <p
+                                        id="feedback-sentimentos"
+                                        class="feedback-app"
+                                        role="status"
+                                        aria-live="polite"
+                                    ></p>
+                                </form>
+                            </details>
+
+                            <!-- Menstruação: o parceiro recebe somente as datas autorizadas. -->
+                            <details>
+                                <summary>🩸 Registrar menstruação</summary>
+
+                                <form id="form-ciclo" class="form-app">
+                                    <fieldset id="campos-ciclo" disabled>
+                                        <p class="calendario-ajuda">
+                                            Salvar marca o dia selecionado como um dia
+                                            de menstruação informado por você.
+                                        </p>
+
+                                        <div class="campo-app">
+                                            <label for="fluxo">
+                                                Fluxo (opcional, só você vê)
+                                            </label>
+
+                                            <select id="fluxo">
+                                                <option value="">Não informar</option>
+                                                <option value="light">Leve</option>
+                                                <option value="moderate">Moderado</option>
+                                                <option value="heavy">Intenso</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="calendario-compartilhar">
+                                            <input
+                                                id="compartilhar-ciclo"
+                                                type="checkbox"
+                                            >
+                                            <span>
+                                                Mostrar ao meu parceiro atual que
+                                                menstruei neste dia
+                                            </span>
+                                        </label>
+
+                                        <p
+                                            id="estado-ciclo"
+                                            class="calendario-ajuda"
+                                        ></p>
+
+                                        <div class="acoes-app">
+                                            <button
+                                                class="botao-primario"
+                                                type="submit"
+                                            >
+                                                Salvar este dia
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                id="excluir-ciclo"
+                                                hidden
+                                            >
+                                                Remover este dia
+                                            </button>
+                                        </div>
+                                    </fieldset>
+
+                                    <p
+                                        id="feedback-ciclo"
+                                        class="feedback-app"
+                                        role="status"
+                                        aria-live="polite"
+                                    ></p>
+                                </form>
+                            </details>
+                        </section>
                     </div>
-                    <noscript
-                        ><p>
-                            Ative o JavaScript para usar os controles.
-                        </p></noscript
-                    >
+
+                    <noscript>
+                        <p>Ative o JavaScript para usar o calendário.</p>
+                    </noscript>
+
                     <footer class="rodape-tarefas">
-                        CoupleCare <span>Seu espaço para o que importa.</span>
+                        CoupleCare
+                        <span>Seu espaço para o que importa.</span>
                     </footer>
                 </main>
             </div>
