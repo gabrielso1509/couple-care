@@ -140,6 +140,8 @@
 
             feedback.textContent = 'Perfil atualizado com sucesso!';
 
+            window.dispatchEvent(new Event('perfil-atualizado'));
+
             // Atualiza também o nome exibido na lista do casal.
             const botaoAtualizarCasal =
                 document.querySelector('#atualizar-casal');
@@ -283,6 +285,13 @@
 
             item.append(avatar, nome);
             listaParticipantes.append(item);
+
+            // Usa a mesma função do menu para mostrar a foto do participante.
+            carregarAvatar(
+                avatar,
+                participante.display_name,
+                participante.avatar_path
+            );
         });
 
         if (data.length === 0) {
@@ -399,6 +408,10 @@
     /* 8. Atualização manual e carregamento inicial. */
     botaoAtualizar.addEventListener('click', function () {
         executarOperacao(consultarCasal);
+    });
+
+    window.addEventListener('perfil-atualizado', function () {
+    executarOperacao(consultarCasal);
     });
 
     executarOperacao(consultarCasal);

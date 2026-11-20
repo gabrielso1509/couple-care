@@ -259,3 +259,58 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* Foto de perfil nas configurações. */
+.foto-perfil {
+    display: grid;
+    gap: 16px;
+    margin: 20px 0 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(169, 155, 232, 0.25);
+}
+
+.foto-perfil-preview {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    overflow: hidden;
+    border: 2px solid #a99be8;
+    border-radius: 50%;
+    background: #a99be8;
+    color: #14243b;
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.foto-perfil-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.foto-perfil-preview [hidden] {
+    display: none !important;
+}
+
+.foto-perfil .acoes-app {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.foto-perfil input[type="file"] {
+    max-width: 100%;
+}
+
+/* Fotos no menu e na lista de participantes. */
+.conta-avatar {
+    overflow: hidden;
+}
+
+.conta-avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

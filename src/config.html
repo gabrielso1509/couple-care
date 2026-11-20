@@ -27,6 +27,7 @@
     <script defer src="js/dados.js"></script>
     <script defer src="js/utilidades.js"></script>
     <script defer src="js/config.js"></script>
+    <script defer src="js/avatar.js"></script>
 </head>
 
 <body class="pagina-orbital">
@@ -172,6 +173,63 @@
                     <!-- Perfil real da conta autenticada. -->
                     <section class="painel" aria-labelledby="titulo-perfil">
                         <h2 id="titulo-perfil">Seu perfil</h2>
+
+                        <!-- Foto de perfil: controles separados da edição de nome e gênero. -->
+                        <div class="foto-perfil">
+                            <div class="foto-perfil-preview">
+                                <span id="foto-perfil-inicial" aria-hidden="true">…</span>
+
+                                <img
+                                    id="foto-perfil-imagem"
+                                    alt="Sua foto de perfil"
+                                    hidden
+                                >
+                            </div>
+
+                            <div class="campo-app">
+                                <label for="arquivo-avatar">Escolher foto de perfil</label>
+                                <input
+                                    id="arquivo-avatar"
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    aria-describedby="ajuda-avatar"
+                                    disabled
+                                >
+                                <p id="ajuda-avatar" class="texto-suave">
+                                    JPG, PNG ou WebP. Tamanho máximo: 2 MB.
+                                </p>
+                            </div>
+
+                            <div class="acoes-app">
+                                <button
+                                    id="salvar-avatar"
+                                    class="botao-primario"
+                                    type="button"
+                                    disabled
+                                >
+                                    Salvar foto
+                                </button>
+
+                                <button
+                                    id="remover-avatar"
+                                    class="botao-primario"
+                                    type="button"
+                                    disabled
+                                >
+                                    Remover foto
+                                </button>
+                            </div>
+
+                            <p
+                                id="feedback-avatar"
+                                class="feedback-app"
+                                role="status"
+                                aria-live="polite"
+                            >
+                                Carregando foto de perfil…
+                            </p>
+                        </div>
+
 
                         <form id="form-perfil" class="form-app">
                             <div class="campo-app">

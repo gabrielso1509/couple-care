@@ -1,4 +1,69 @@
 /* ========================================
+   EXIBIÇÃO COMPARTILHADA DOS AVATARES
+======================================== */
+const estadosAvatares = new WeakMap();
+
+async function carregarAvatar(elemento, nome, caminho) {
+    if (!elemento) {
+        return;
+    }
+
+    const anterior = estadosAvatares.get(elemento);
+
+    if (anterior && anterior.url) {
+        URL.revokeObjectURL(anterior.url);
+    }
+
+    // Identifica esta chamada para ignorar respostas antigas.
+    const estado = { url: null };
+    estadosAvatares.set(elemento, estado);
+
+    elemento.textContent = nome.trim().charAt(0).toUpperCase();
+
+    if (!caminho) {
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .storage
+            .from('avatars')
+            .download(caminho);
+
+        if (error) {
+            throw error;
+        }
+
+        // Outra atualização pode ter ocorrido enquanto aguardávamos.
+        if (
+            estadosAvatares.get(elemento) !== estado ||
+            !elemento.isConnected
+        ) {
+            return;
+        }
+
+        estado.url = URL.createObjectURL(data);
+
+        const imagem = document.createElement('img');
+        imagem.alt = '';
+        imagem.src = estado.url;
+
+        imagem.addEventListener('error', function () {
+            if (estadosAvatares.get(elemento) === estado) {
+                elemento.textContent = nome.trim().charAt(0).toUpperCase();
+                URL.revokeObjectURL(estado.url);
+                estado.url = null;
+            }
+        });
+
+        elemento.replaceChildren(imagem);
+    } catch (erro) {
+        // Uma falha na foto mantém a inicial e não bloqueia a página.
+    }
+}
+
+
+/* ========================================
    1. ELEMENTOS DA PÁGINA E DA CONTA
 ======================================== */
 const conteudoAplicacao = document.querySelector('.aplicacao');
@@ -38,7 +103,7 @@ async function verificarSessao() {
         // Busca o perfil correspondente à conta autenticada.
         const { data: perfil, error: erroPerfil } = await supabaseClient
             .from('profiles')
-            .select('display_name')
+            .select('display_name, avatar_path')
             .eq('id', data.user.id)
             .single();
 
@@ -63,13 +128,12 @@ async function verificarSessao() {
             nomeUsuario.title = perfil.display_name;
         }
 
-        if (avatarUsuario) {
-            // Usa a inicial enquanto não temos uma foto de perfil.
-            avatarUsuario.textContent = perfil.display_name
-                .trim()
-                .charAt(0)
-                .toUpperCase();
-        }
+        // Carrega a foto sem atrasar a abertura do conteúdo.
+        carregarAvatar(
+            avatarUsuario,
+            perfil.display_name,
+            perfil.avatar_path
+        );
 
         // Exibe a página somente após validar a conta e carregar o perfil.
         conteudoAplicacao.hidden = false;
@@ -135,3 +199,6 @@ supabaseClient.auth.onAuthStateChange(function (evento) {
    5. INICIALIZAÇÃO
 ======================================== */
 verificarSessao();
+
+// Atualiza a conta no menu após editar o nome ou a foto.
+window.addEventListener('perfil-atualizado', verificarSessao);
