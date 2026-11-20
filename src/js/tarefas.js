@@ -1,106 +1,363 @@
-/* 1. Tarefas da prévia. Não há persistência nem responsáveis inventados. */
+/* Tarefas reais do casal. A RLS e os gatilhos do banco validam cada operação. */
 (function () {
-    const ui = CoupleCare.ui;
-    const dados = CoupleCare.dados;
-    const lista = document.getElementById("lista");
-    const form = document.getElementById("form-tarefa");
-    let filtro = "all";
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    const form = $('form-tarefa');
+    if (!form) return;
+    const categorias = { house: 'Casa', shopping: 'Compras', bills: 'Contas', care: 'Cuidados', leisure: 'Lazer', other: 'Outros' };
+    const prioridades = { high: 'Alta', normal: 'Normal', low: 'Baixa' };
+    const repeticoes = { daily: 'Diária', weekly: 'Semanal', monthly: 'Mensal' };
+    const acoes = { created: 'criou', edited: 'atualizou', completed: 'concluiu', reopened: 'reabriu', deleted: 'excluiu' };
+    let tarefas = [], membros = [], eventos = [];
+    let casalId = null, usuarioId = null, edicao = null;
+    let ocupado = false, carregando = false, pronto = false, atualizarDepois = false;
+    let filtro = 'all', limite = 30, canal = null, timerRealtime = null;
+    let conectado = false, encerrado = false;
+    const fotos = new Map();
+
+    // Datas sem horário são comparadas no calendário local do usuário.
+    function hoje() {
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function dataCurta(valor) { return valor ? valor.split('-').reverse().join('/') : 'Sem prazo'; }
+    function instante(valor) { return new Date(valor).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }); }
+    function nome(id) { return membros.find(m => m.user_id === id)?.display_name || 'Conta indisponível'; }
+    function elemento(tag, classe, texto) {
+        const el = document.createElement(tag);
+        if (classe) el.className = classe;
+        if (texto !== undefined) el.textContent = texto;
+        return el;
+    }
+    function mensagem(texto) { $('feedback').textContent = texto; }
+    function controles() {
+        const bloqueado = ocupado || carregando || !pronto;
+        $('campos-tarefa').disabled = bloqueado;
+        $('atualizar-tarefas').disabled = ocupado || carregando;
+        $('form-tarefa').setAttribute('aria-busy', String(ocupado));
+        document.querySelectorAll('#lista button, #lista input').forEach(el => { el.disabled = bloqueado; });
+    }
+    function estadoConexao() {
+        if (!casalId) return;
+        $('status-tarefas').textContent = carregando ? 'Atualizando tarefas…' : !pronto
+            ? 'Não foi possível atualizar. Use Atualizar para tentar novamente.'
+            : conectado ? 'Tudo em dia · atualização automática conectada.'
+            : 'Atualização automática desconectada. Você pode usar Atualizar.';
+    }
+
+    // Reutiliza URLs das fotos privadas e libera a memória ao sair da página.
+    async function avatar(el, membro) {
+        el.textContent = membro.display_name.trim().charAt(0).toUpperCase();
+        if (!membro.avatar_path) return;
+        const caminho = membro.avatar_path;
+        if (!fotos.has(caminho)) {
+            fotos.set(caminho, supabaseClient.storage.from('avatars').download(caminho)
+                .then(({ data, error }) => !error && !encerrado ? URL.createObjectURL(data) : null)
+                .catch(() => null));
+        }
+        const url = await fotos.get(caminho);
+        if (url && el.isConnected) {
+            const img = elemento('img'); img.alt = ''; img.src = url;
+            img.addEventListener('error', () => { el.textContent = membro.display_name.charAt(0).toUpperCase(); });
+            el.replaceChildren(img);
+        }
+    }
+    function opcoesMembros() {
+        const selecionado = $('responsavel').value;
+        const filtrado = $('filtro-responsavel').value;
+        $('responsavel').replaceChildren(new Option('Sem responsável', ''));
+        $('filtro-responsavel').replaceChildren(new Option('Todos', 'all'), new Option('Sem responsável', 'unassigned'));
+        membros.forEach(m => {
+            $('responsavel').add(new Option(m.display_name, m.user_id));
+            $('filtro-responsavel').add(new Option(m.display_name, m.user_id));
+        });
+        $('responsavel').value = membros.some(m => m.user_id === selecionado) ? selecionado : '';
+        $('filtro-responsavel').value = ['all', 'unassigned', ...membros.map(m => m.user_id)].includes(filtrado) ? filtrado : 'all';
+    }
+    function botao(texto, acao, tarefa) {
+        const b = elemento('button', '', texto); b.type = 'button';
+        b.dataset.acao = acao; b.dataset.id = tarefa.id;
+        b.setAttribute('aria-label', texto + ': ' + tarefa.title);
+        return b;
+    }
     function renderizar() {
-        lista.replaceChildren();
-        const tarefas = dados.listar("tasks");
-        let total = 0;
-        document.getElementById("resumo").textContent =
-            tarefas.length + " tarefa(s) nesta prévia.";
-        for (let i = 0; i < tarefas.length; i++) {
-            const t = tarefas[i];
-            if (filtro !== "all" && t.status !== filtro) {
-                continue;
+        const dia = hoje();
+        const pendentes = tarefas.filter(t => t.status === 'pending');
+        $('total-pendentes').textContent = pendentes.length;
+        $('total-hoje').textContent = pendentes.filter(t => t.due_date === dia).length;
+        $('total-atrasadas').textContent = pendentes.filter(t => t.due_date && t.due_date < dia).length;
+        const busca = $('busca-tarefa').value.trim().toLocaleLowerCase('pt-BR');
+        const pessoa = $('filtro-responsavel').value;
+        const visiveis = tarefas.filter(t => {
+            if (filtro === 'pending' && t.status !== 'pending') return false;
+            if (filtro === 'completed' && t.status !== 'completed') return false;
+            if (['today', 'upcoming', 'overdue'].includes(filtro)) {
+                if (t.status !== 'pending' || !t.due_date) return false;
+                if (filtro === 'today' && t.due_date !== dia) return false;
+                if (filtro === 'upcoming' && t.due_date <= dia) return false;
+                if (filtro === 'overdue' && t.due_date >= dia) return false;
             }
-            total = total + 1;
-            const item = ui.elemento("article", "registro-app", "");
-            const prioridades = {
-                normal: "Normal",
-                low: "Baixa",
-                high: "Alta",
-            };
-            item.appendChild(ui.elemento("h3", "", t.titulo));
-            item.appendChild(
-                ui.elemento(
-                    "p",
-                    "texto-suave",
-                    (t.status === "completed" ? "Concluída" : "Pendente") +
-                        " · Prioridade " +
-                        prioridades[t.priority],
-                ),
-            );
-            if (t.due_date) {
-                item.appendChild(
-                    ui.elemento(
-                        "p",
-                        "texto-suave",
-                        "Prazo: " + ui.dataTexto(t.due_date),
-                    ),
-                );
+            if (pessoa === 'unassigned' && t.assigned_to) return false;
+            if (pessoa !== 'all' && pessoa !== 'unassigned' && t.assigned_to !== pessoa) return false;
+            return (t.title + ' ' + t.description).toLocaleLowerCase('pt-BR').includes(busca);
+        });
+        const peso = { high: 0, normal: 1, low: 2 };
+        visiveis.sort((a, b) => {
+            const ordem = $('ordenacao').value;
+            if (ordem === 'priority') return peso[a.priority] - peso[b.priority] || (a.due_date || '9999').localeCompare(b.due_date || '9999') || b.created_at.localeCompare(a.created_at);
+            if (ordem === 'newest') return b.created_at.localeCompare(a.created_at) || a.id.localeCompare(b.id);
+            return (a.due_date || '9999').localeCompare(b.due_date || '9999') || peso[a.priority] - peso[b.priority] || b.created_at.localeCompare(a.created_at);
+        });
+        const lista = $('lista'); lista.replaceChildren();
+        $('resumo').textContent = `${visiveis.length} de ${tarefas.length} tarefa(s) neste filtro.`;
+        $('mais-tarefas').hidden = visiveis.length <= limite;
+        if (!visiveis.length) lista.append(elemento('p', 'texto-suave', 'Nenhuma tarefa para este filtro.'));
+        visiveis.slice(0, limite).forEach(t => {
+            const concluida = t.status === 'completed';
+            const atrasada = !concluida && t.due_date && t.due_date < dia;
+            const card = elemento('article', 'tarefa-cartao' + (concluida ? ' concluida' : atrasada ? ' atrasada' : t.due_date === dia ? ' para-hoje' : ''));
+            card.append(elemento('h3', '', t.title));
+            const tags = elemento('div', 'tarefa-etiquetas');
+            tags.append(elemento('span', 'tarefa-etiqueta', categorias[t.category]), elemento('span', 'tarefa-etiqueta' + (t.priority === 'high' ? ' alta' : ''), 'Prioridade ' + prioridades[t.priority].toLowerCase()));
+            tags.append(elemento('span', 'tarefa-etiqueta' + (atrasada ? ' atraso' : ''), (atrasada ? 'Atrasada · ' : !concluida && t.due_date === dia ? 'Hoje · ' : '') + dataCurta(t.due_date)));
+            if (concluida) tags.append(elemento('span', 'tarefa-etiqueta', 'Concluída'));
+            if (t.recurrence !== 'none') tags.append(elemento('span', 'tarefa-etiqueta', 'Repetição ' + repeticoes[t.recurrence].toLowerCase()));
+            card.append(tags);
+            if (t.description) card.append(elemento('p', 'tarefa-descricao', t.description));
+            const responsavel = membros.find(m => m.user_id === t.assigned_to);
+            const pessoaEl = elemento('div', 'tarefa-pessoa');
+            if (responsavel) {
+                const foto = elemento('span', 'tarefa-avatar'); foto.setAttribute('aria-hidden', 'true');
+                pessoaEl.append(foto, elemento('span', '', responsavel.display_name));
+                card.append(pessoaEl);
+                // Aguarda a inserção do cartão no DOM antes de preencher a foto.
+                queueMicrotask(() => avatar(foto, responsavel));
+            } else { pessoaEl.textContent = 'Sem responsável'; card.append(pessoaEl); }
+            if (t.checklist.length) {
+                const feitos = t.checklist.filter(i => i.done).length;
+                card.append(elemento('small', '', `Checklist: ${feitos}/${t.checklist.length}`));
+                const ul = elemento('ul', 'tarefa-checklist');
+                t.checklist.forEach(item => {
+                    const li = elemento('li'), label = elemento('label'), check = elemento('input');
+                    check.type = 'checkbox'; check.checked = item.done;
+                    check.dataset.tarefa = t.id; check.dataset.item = item.id;
+                    label.append(check, elemento('span', '', item.text)); li.append(label); ul.append(li);
+                });
+                card.append(ul);
             }
-            const acoes = ui.elemento("div", "acoes-app", "");
-            acoes.appendChild(
-                ui.botao(
-                    t.status === "completed" ? "Reabrir" : "Concluir",
-                    function () {
-                        t.status =
-                            t.status === "completed" ? "pending" : "completed";
-                        t.completed_at =
-                            t.status === "completed"
-                                ? new Date().toISOString()
-                                : null;
-                        renderizar();
-                    },
-                ),
-            );
-            acoes.appendChild(
-                ui.botao("Remover", function () {
-                    dados.remover("tasks", t.id);
-                    renderizar();
-                }),
-            );
-            item.appendChild(acoes);
-            lista.appendChild(item);
-        }
-        if (!total) {
-            ui.vazio(lista, "Nenhuma tarefa para este filtro.");
+            const buttons = elemento('div', 'tarefa-acoes');
+            buttons.append(botao(concluida ? 'Reabrir' : 'Concluir', 'status', t), botao('Editar', 'editar', t), botao('Excluir', 'excluir', t));
+            card.append(buttons);
+            let autoria = 'Criada por ' + nome(t.created_by) + ' · ' + instante(t.created_at);
+            if (concluida) autoria += ' | Concluída por ' + (t.completed_by ? nome(t.completed_by) : 'conta não registrada') + ' · ' + instante(t.completed_at);
+            card.append(elemento('p', 'tarefa-autoria', autoria)); lista.append(card);
+        });
+        const historico = $('historico-tarefas'); historico.replaceChildren();
+        if (!eventos.length) historico.append(elemento('li', 'texto-suave', 'As próximas atividades aparecerão aqui.'));
+        eventos.forEach(e => {
+            const li = elemento('li', '', `${nome(e.actor_id)} ${acoes[e.action]} “${e.title}”.`);
+            const time = elemento('time', '', instante(e.created_at)); time.dateTime = e.created_at;
+            li.append(time); historico.append(li);
+        });
+        controles();
+    }
+
+    // Busca todas as tarefas em páginas para não truncar no limite da API.
+    async function buscarTarefas() {
+        const resultado = [];
+        for (let inicio = 0; ; inicio += 500) {
+            const { data, error } = await supabaseClient.from('tasks').select('*')
+                .eq('couple_id', casalId).order('id').range(inicio, inicio + 499);
+            if (error) throw error;
+            resultado.push(...data);
+            if (data.length < 500) return resultado;
         }
     }
-    /* 2. Formulário: trim remove espaços; texto vazio não vira tarefa. */
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const titulo = ui.valor("titulo");
-        if (!titulo) {
-            document.getElementById("feedback").textContent =
-                "Informe um título.";
-            return;
-        }
-        dados.adicionar("tasks", {
-            titulo: titulo,
-            due_date: ui.valor("prazo") || null,
-            priority: ui.valor("prioridade"),
-            status: "pending",
-            completed_at: null,
-        });
-        form.reset();
-        renderizar();
-        document.getElementById("feedback").textContent =
-            "Tarefa adicionada somente à prévia.";
-    });
-    /* 3. dataset lê o atributo data-filtro de cada botão. */
-    const botoes = document.querySelectorAll("[data-filtro]");
-    for (let i = 0; i < botoes.length; i++) {
-        botoes[i].addEventListener("click", function () {
-            filtro = botoes[i].dataset.filtro;
-            for (let j = 0; j < botoes.length; j++) {
-                botoes[j].setAttribute("aria-pressed", String(i === j));
+    async function atualizar() {
+        if (!casalId) return iniciar();
+        if (ocupado || carregando) { atualizarDepois = true; return; }
+        carregando = true; atualizarDepois = false; controles(); estadoConexao();
+        try {
+            const [novas, historico, participantes] = await Promise.all([
+                buscarTarefas(),
+                supabaseClient.from('task_events').select('id,actor_id,action,title,created_at')
+                    .eq('couple_id', casalId).order('created_at', { ascending: false }).order('id').limit(30),
+                supabaseClient.rpc('get_couple_members')
+            ]);
+            if (historico.error) throw historico.error;
+            if (participantes.error) throw participantes.error;
+            if (!participantes.data.some(m => m.user_id === usuarioId && m.couple_id === casalId)) {
+                window.location.reload(); return;
             }
+            membros = participantes.data; opcoesMembros();
+            if ($('feedback').textContent.startsWith('Não foi possível carregar as tarefas.')) mensagem('');
+            // Uma migration ausente precisa de uma mensagem útil, sem habilitar gravações.
+            if (novas.some(t => !Array.isArray(t.checklist) || !t.version)) throw new Error('Estrutura de tarefas desatualizada.');
+            tarefas = novas; eventos = historico.data; pronto = true;
             renderizar();
+        } catch (erro) {
+            pronto = false;
+            mensagem('Não foi possível carregar as tarefas. Confira a conexão e se a migration de melhorias foi executada. Depois clique em Atualizar.');
+            console.error('Falha ao carregar tarefas:', erro.code || erro.name);
+        } finally {
+            carregando = false; controles(); estadoConexao();
+            if (atualizarDepois) { atualizarDepois = false; void atualizar(); }
+        }
+    }
+    function limparEditor() {
+        edicao = null; form.reset(); $('titulo').setCustomValidity('');
+        $('prazo').setCustomValidity(''); $('checklist-texto').setCustomValidity('');
+        $('titulo-editor').textContent = 'Uma coisa de cada vez';
+        $('salvar-tarefa').textContent = 'Criar tarefa'; $('cancelar-edicao').hidden = true;
+    }
+    function editar(t) {
+        edicao = structuredClone(t);
+        ['titulo', 'prazo', 'checklist-texto'].forEach(id => $(id).setCustomValidity(''));
+        $('titulo').value = t.title; $('descricao').value = t.description;
+        $('prazo').value = t.due_date || ''; $('prioridade').value = t.priority;
+        $('categoria').value = t.category; $('responsavel').value = t.assigned_to || '';
+        $('repeticao').value = t.recurrence; $('checklist-texto').value = t.checklist.map(i => i.text).join('\n');
+        $('titulo-editor').textContent = 'Editar tarefa'; $('salvar-tarefa').textContent = 'Salvar alterações';
+        $('cancelar-edicao').hidden = false; mensagem('Editando “' + t.title + '”.');
+        $('titulo').focus(); $('titulo-editor').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    function checklistDoEditor() {
+        const linhas = $('checklist-texto').value.split('\n').map(s => s.trim()).filter(Boolean);
+        const usados = new Set();
+        return linhas.map(text => {
+            // Preserva as marcações dos itens que mantiveram o mesmo texto.
+            const antigo = edicao?.checklist.find(i => i.text === text && !usados.has(i.id));
+            if (antigo) { usados.add(antigo.id); return antigo; }
+            return { id: crypto.randomUUID(), text, done: false };
         });
     }
-    renderizar();
+    async function gravar(operacao, sucesso, aoSalvar) {
+        if (ocupado || carregando || !pronto) return;
+        ocupado = true; controles(); mensagem('Salvando…');
+        try {
+            const { data, error } = await operacao();
+            if (error) throw error;
+            if (!data) throw new Error('Registro não retornado.');
+            if (aoSalvar) aoSalvar();
+            mensagem(sucesso);
+        } catch (erro) {
+            const conflito = erro.code === 'PGRST116';
+            mensagem(conflito
+                ? 'Esta tarefa mudou ou foi excluída na outra conta. Cancele a edição e abra a versão atual para tentar novamente.'
+                : 'Não foi possível confirmar a alteração. Atualize e confira a lista antes de tentar novamente.');
+            console.error('Falha ao alterar tarefa:', erro.code || erro.name);
+        } finally {
+            ocupado = false;
+            await atualizar(); controles();
+        }
+    }
+    function atualizarTarefa(t, valores) {
+        // A versão impede sobrescrever uma mudança recente da outra pessoa.
+        return supabaseClient.from('tasks').update(valores).eq('id', t.id)
+            .eq('couple_id', casalId).eq('version', t.version).select('id').single();
+    }
+    form.addEventListener('input', () => {
+        $('titulo').setCustomValidity(''); $('prazo').setCustomValidity(''); $('checklist-texto').setCustomValidity('');
+    });
+    form.addEventListener('submit', async evento => {
+        evento.preventDefault();
+        if (!pronto || ocupado || carregando) return;
+        $('titulo').setCustomValidity($('titulo').value.trim() ? '' : 'Informe o título.');
+        $('prazo').setCustomValidity($('repeticao').value !== 'none' && !$('prazo').value ? 'Escolha um prazo para a repetição.' : '');
+        const checklist = checklistDoEditor();
+        $('checklist-texto').setCustomValidity(checklist.length > 30 || checklist.some(i => i.text.length > 200) ? 'Use até 30 itens, com até 200 caracteres por item.' : '');
+        if (!form.reportValidity()) return;
+        const valores = {
+            title: $('titulo').value.trim(), description: $('descricao').value.trim(),
+            due_date: $('prazo').value || null, priority: $('prioridade').value,
+            category: $('categoria').value, assigned_to: $('responsavel').value || null,
+            recurrence: $('repeticao').value, checklist
+        };
+        const atual = edicao;
+        await gravar(() => atual ? atualizarTarefa(atual, valores)
+            : supabaseClient.from('tasks').insert({ couple_id: casalId, ...valores }).select('id').single(),
+        atual ? 'Tarefa atualizada!' : 'Tarefa criada!', limparEditor);
+    });
+    $('cancelar-edicao').addEventListener('click', () => { limparEditor(); mensagem('Edição cancelada.'); });
+    $('lista').addEventListener('click', async evento => {
+        const b = evento.target.closest('button[data-acao]');
+        if (!b || ocupado || carregando || !pronto) return;
+        const t = tarefas.find(t => t.id === b.dataset.id); if (!t) return;
+        if (b.dataset.acao === 'editar') { editar(t); return; }
+        if (b.dataset.acao === 'excluir') {
+            if (!window.confirm('Excluir “' + t.title + '”? O registro ficará no histórico.')) return;
+            await gravar(() => supabaseClient.from('tasks').delete().eq('id', t.id).eq('couple_id', casalId).eq('version', t.version).select('id').single(), 'Tarefa excluída.', () => { if (edicao?.id === t.id) limparEditor(); });
+        } else {
+            if (edicao?.id === t.id) { mensagem('Salve ou cancele a edição antes de mudar o estado desta tarefa.'); return; }
+            const concluindo = t.status === 'pending';
+            await gravar(() => atualizarTarefa(t, { status: concluindo ? 'completed' : 'pending' }),
+                concluindo && t.recurrence !== 'none' && !t.recurrence_generated ? 'Tarefa concluída! A próxima ocorrência foi criada.' : concluindo ? 'Tarefa concluída!' : 'Tarefa reaberta.');
+        }
+    });
+    $('lista').addEventListener('change', async evento => {
+        const check = evento.target.closest('input[data-item]'); if (!check) return;
+        const t = tarefas.find(t => t.id === check.dataset.tarefa); if (!t) return;
+        if (edicao?.id === t.id || ocupado || carregando || !pronto) {
+            check.checked = !check.checked; mensagem('Salve ou cancele a edição antes de marcar os itens.'); return;
+        }
+        const checklist = t.checklist.map(i => i.id === check.dataset.item ? { ...i, done: check.checked } : i);
+        await gravar(() => atualizarTarefa(t, { checklist }), 'Checklist atualizado.');
+    });
+    document.querySelectorAll('[data-filtro]').forEach(b => b.addEventListener('click', () => {
+        filtro = b.dataset.filtro; limite = 30;
+        document.querySelectorAll('[data-filtro]').forEach(el => el.setAttribute('aria-pressed', String(el === b)));
+        renderizar();
+    }));
+    ['busca-tarefa', 'filtro-responsavel', 'ordenacao'].forEach(id => $(id).addEventListener('input', () => { limite = 30; renderizar(); }));
+    $('mais-tarefas').addEventListener('click', () => { limite += 30; renderizar(); });
+    $('atualizar-tarefas').addEventListener('click', atualizar);
+
+    // Eventos INSERT informam criação, edição, conclusão e exclusão de tarefas.
+    function conectarRealtime() {
+        canal = supabaseClient.channel('tarefas-' + casalId)
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'task_events', filter: 'couple_id=eq.' + casalId }, () => {
+                clearTimeout(timerRealtime); timerRealtime = setTimeout(atualizar, 300);
+            })
+            .subscribe(estado => {
+                conectado = estado === 'SUBSCRIBED'; estadoConexao();
+                if (conectado) void atualizar();
+            });
+    }
+    async function iniciar() {
+        if (carregando || ocupado) return;
+        carregando = true; controles();
+        try {
+            const { data: auth, error: erroAuth } = await supabaseClient.auth.getUser();
+            if (erroAuth || !auth.user) throw erroAuth || new Error('Sem sessão.');
+            usuarioId = auth.user.id;
+            const { data, error } = await supabaseClient.rpc('get_couple_members');
+            if (error) throw error;
+            membros = data; casalId = membros.find(m => m.user_id === usuarioId)?.couple_id || null;
+            opcoesMembros();
+            if (!casalId) {
+                $('status-tarefas').replaceChildren(document.createTextNode('Você precisa criar ou entrar em um casal. '));
+                const link = elemento('a', '', 'Abrir Meu casal'); link.href = 'config.html'; $('status-tarefas').append(link);
+                $('resumo').textContent = 'Conecte as duas contas em Configurações para compartilhar tarefas.';
+                return;
+            }
+        } catch (erro) {
+            $('status-tarefas').textContent = 'Não foi possível carregar seu casal. Confira a conexão e clique em Atualizar.';
+            return;
+        } finally { carregando = false; controles(); }
+        await atualizar();
+        if (!canal) conectarRealtime();
+    }
+    window.addEventListener('perfil-atualizado', async () => {
+        const { data, error } = await supabaseClient.rpc('get_couple_members');
+        if (!error && data) { membros = data; opcoesMembros(); renderizar(); }
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && casalId) void atualizar(); });
+    window.addEventListener('online', () => { void atualizar(); });
+    window.addEventListener('pagehide', () => {
+        encerrado = true; clearTimeout(timerRealtime);
+        if (canal) void supabaseClient.removeChannel(canal);
+        fotos.forEach(async promessa => { const url = await promessa; if (url) URL.revokeObjectURL(url); });
+    });
+    window.addEventListener('pageshow', e => { if (e.persisted) window.location.reload(); });
+    void iniciar();
 })();

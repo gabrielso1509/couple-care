@@ -16,14 +16,13 @@
             rel="stylesheet"
         />
         <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/tarefas-app.css" />
         <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
         <!-- Autenticação compartilhada: mantenha esta ordem. -->
         <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
         <script defer src="js/supabase-client.js"></script>
         <script defer src="js/sessao.js"></script>
         <script defer src="script.js"></script>
-        <script defer src="js/dados.js"></script>
-        <script defer src="js/utilidades.js"></script>
         <script defer src="js/tarefas.js"></script>
     </head>
     <body class="pagina-orbital">
@@ -209,88 +208,53 @@
                         >Feito para construir juntos</span
                     >
                 </header>
-                <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-                <main id="conteudo-pagina" class="conteudo" tabindex="-1">
-                    <p class="aviso-preview">
-                        Prévia sem conexão com a conta. Os registros ficam
-                        apenas na memória desta página e são perdidos ao
-                        atualizar ou navegar. Nada é enviado ao banco.
-                    </p>
-                    <div class="duas-colunas">
-                        <section class="painel">
-                            <h2>Uma coisa de cada vez</h2>
+                <main id="conteudo-pagina" class="conteudo tarefas-pagina" tabindex="-1">
+                    <div class="tarefas-indicadores" aria-label="Resumo das tarefas">
+                        <div><strong id="total-pendentes">—</strong><span>Pendentes</span></div>
+                        <div><strong id="total-hoje">—</strong><span>Para hoje</span></div>
+                        <div><strong id="total-atrasadas">—</strong><span>Atrasadas</span></div>
+                    </div>
+                    <p id="status-tarefas" class="texto-suave" role="status" aria-live="polite">Carregando suas tarefas…</p>
+                    <div class="tarefas-grade">
+                        <section class="painel tarefas-editor" aria-labelledby="titulo-editor">
+                            <h2 id="titulo-editor">Uma coisa de cada vez</h2>
                             <form id="form-tarefa" class="form-app">
-                                <div class="campo-app">
-                                    <label for="titulo">Título</label
-                                    ><input
-                                        id="titulo"
-                                        type="text"
-                                        required
-                                        maxlength="150"
-                                    />
-                                </div>
-                                <div class="campo-app">
-                                    <label for="prazo">Prazo (opcional)</label
-                                    ><input id="prazo" type="date" />
-                                </div>
-                                <div class="campo-app">
-                                    <label for="prioridade">Prioridade</label
-                                    ><select id="prioridade">
-                                        <option value="normal">Normal</option>
-                                        <option value="low">Baixa</option>
-                                        <option value="high">Alta</option>
-                                    </select>
-                                </div>
-                                <button class="botao-primario" type="submit">
-                                    Adicionar à prévia
-                                </button>
-                                <p
-                                    class="feedback-app"
-                                    id="feedback"
-                                    role="status"
-                                    aria-live="polite"
-                                ></p>
+                                <fieldset id="campos-tarefa" disabled>
+                                    <div class="campo-app"><label for="titulo">Título</label><input id="titulo" type="text" required maxlength="150" placeholder="O que vocês vão cuidar hoje?"></div>
+                                    <div class="campo-app"><label for="descricao">Descrição (opcional)</label><textarea id="descricao" maxlength="3000" rows="3" placeholder="Detalhes que ajudam a realizar a tarefa"></textarea></div>
+                                    <div class="tarefas-linha">
+                                        <div class="campo-app"><label for="prazo">Prazo (opcional)</label><input id="prazo" type="date"></div>
+                                        <div class="campo-app"><label for="prioridade">Prioridade</label><select id="prioridade"><option value="normal">Normal</option><option value="low">Baixa</option><option value="high">Alta</option></select></div>
+                                    </div>
+                                    <div class="tarefas-linha">
+                                        <div class="campo-app"><label for="categoria">Categoria</label><select id="categoria"><option value="house">Casa</option><option value="shopping">Compras</option><option value="bills">Contas</option><option value="care">Cuidados</option><option value="leisure">Lazer</option><option value="other">Outros</option></select></div>
+                                        <div class="campo-app"><label for="responsavel">Responsável</label><select id="responsavel"><option value="">Sem responsável</option></select></div>
+                                    </div>
+                                    <div class="campo-app"><label for="repeticao">Repetir</label><select id="repeticao" aria-describedby="ajuda-repeticao"><option value="none">Não repetir</option><option value="daily">Todo dia</option><option value="weekly">Toda semana</option><option value="monthly">Todo mês</option></select><small id="ajuda-repeticao">Ao concluir, cria a próxima tarefa a partir do prazo. Reabrir e concluir de novo não duplica a próxima.</small></div>
+                                    <div class="campo-app"><label for="checklist-texto">Checklist (opcional)</label><textarea id="checklist-texto" rows="3" aria-describedby="ajuda-checklist" placeholder="Separar roupas&#10;Colocar para lavar&#10;Estender"></textarea><small id="ajuda-checklist">Um item por linha. Até 30 itens, com 200 caracteres cada.</small></div>
+                                    <div class="acoes-app"><button class="botao-primario" type="submit" id="salvar-tarefa">Criar tarefa</button><button type="button" id="cancelar-edicao" hidden>Cancelar edição</button></div>
+                                </fieldset>
+                                <p id="feedback" class="feedback-app" role="status" aria-live="polite"></p>
                             </form>
                         </section>
-                        <section class="painel">
-                            <h2>Tarefas desta prévia</h2>
-                            <div
-                                class="acoes-app"
-                                role="group"
-                                aria-label="Filtros"
-                            >
-                                <button
-                                    type="button"
-                                    data-filtro="all"
-                                    aria-pressed="true"
-                                >
-                                    Todas</button
-                                ><button
-                                    type="button"
-                                    data-filtro="pending"
-                                    aria-pressed="false"
-                                >
-                                    Pendentes</button
-                                ><button
-                                    type="button"
-                                    data-filtro="completed"
-                                    aria-pressed="false"
-                                >
-                                    Concluídas
-                                </button>
+                        <section class="painel tarefas-painel-lista" aria-labelledby="titulo-lista">
+                            <div class="tarefas-cabecalho"><h2 id="titulo-lista">Tarefas do casal</h2><button type="button" id="atualizar-tarefas">Atualizar</button></div>
+                            <div class="acoes-app tarefas-filtros" role="group" aria-label="Filtrar tarefas">
+                                <button type="button" data-filtro="all" aria-pressed="true">Todas</button><button type="button" data-filtro="pending" aria-pressed="false">Pendentes</button><button type="button" data-filtro="completed" aria-pressed="false">Concluídas</button><button type="button" data-filtro="today" aria-pressed="false">Hoje</button><button type="button" data-filtro="upcoming" aria-pressed="false">Próximas</button><button type="button" data-filtro="overdue" aria-pressed="false">Atrasadas</button>
                             </div>
-                            <p id="resumo" class="texto-suave"></p>
-                            <div id="lista" class="lista-app"></div>
+                            <div class="tarefas-ferramentas">
+                                <div class="campo-app"><label for="busca-tarefa">Buscar tarefa</label><input id="busca-tarefa" type="search" placeholder="Título ou descrição"></div>
+                                <div class="campo-app"><label for="filtro-responsavel">Responsável</label><select id="filtro-responsavel"><option value="all">Todos</option><option value="unassigned">Sem responsável</option></select></div>
+                                <div class="campo-app"><label for="ordenacao">Ordenar por</label><select id="ordenacao"><option value="due">Prazo mais próximo</option><option value="priority">Maior prioridade</option><option value="newest">Mais recentes</option></select></div>
+                            </div>
+                            <p id="resumo" class="texto-suave" role="status" aria-live="polite"></p>
+                            <div id="lista" class="lista-app tarefas-lista"></div>
+                            <button type="button" id="mais-tarefas" hidden>Mostrar mais tarefas</button>
                         </section>
                     </div>
-                    <noscript
-                        ><p>
-                            Ative o JavaScript para usar os controles.
-                        </p></noscript
-                    >
-                    <footer class="rodape-tarefas">
-                        CoupleCare <span>Seu espaço para o que importa.</span>
-                    </footer>
+                    <section class="painel tarefas-historico" aria-labelledby="titulo-historico"><h2 id="titulo-historico">O que vocês fizeram juntos</h2><p class="texto-suave">Últimas 30 atividades. O histórico começa com esta atualização.</p><ol id="historico-tarefas"></ol></section>
+                    <noscript><p>Ative o JavaScript para usar as tarefas.</p></noscript>
+                    <footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer>
                 </main>
             </div>
         </div>
