@@ -1,193 +1,129 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-site-verification" content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI">
-  <meta name="theme-color" content="#101c33">
-  <title>Entrar | CoupleCare</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="src/css/login.css">
-  <script defer src="/src/js/analytics.js"></script>
-  
-  <!-- Biblioteca do Supabase. -->
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Configuração e criação do cliente. -->
-  <script defer src="src/js/supabase-client.js"></script>
-  <script defer src="src/js/login.js"></script>
-
-  <!-- Comportamento do formulário de cadastro. -->
-  <script defer src="src/js/cadastro.js"></script>
-</head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI" name="google-site-verification"/>
+<meta content="#101c33" name="theme-color"/>
+<title>Entrar | CoupleCare</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="src/css/login.css" rel="stylesheet"/>
+<script defer="" src="/src/js/analytics.js"></script>
+<!-- Biblioteca do Supabase. -->
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Configuração e criação do cliente. -->
+<script defer="" src="src/js/supabase-client.js"></script>
+<script defer="" src="src/js/login.js"></script>
+<!-- Comportamento do formulário de cadastro. -->
+<script defer="" src="src/js/cadastro.js"></script>
+<link href="/src/css/figma-theme.css" rel="stylesheet"/><script>document.documentElement.classList.add("cc-figma");</script><script defer="" src="/src/js/figma-theme.js"></script></head>
 <body>
-  <!-- 1. Navegação compacta -->
-  <header class="topbar">
-    <a class="marca" href="index.html" aria-label="CoupleCare, início">
-      <span class="marca-icone" aria-hidden="true">♡</span><span>Couple<span class="laranja">Care</span></span>
-    </a>
-    <span class="topbar-tag">Seu espaço a dois <span aria-hidden="true">✦</span></span>
-  </header>
-
-  <main class="layout">
-    <!-- 2. Área de login: visual, ainda sem autenticação -->
-    <section class="entrada" aria-labelledby="titulo-login">
-      <div class="entrada-conteudo">
-        <div class="etiqueta"><span class="ponto"></span> ORGANIZE O QUE IMPORTA</div>
-        <h1 id="titulo-login">A vida fica melhor <em>juntos.</em></h1>
-        <p class="subtitulo">Sua rotina, seus planos e os pequenos momentos — tudo no mesmo lugar.</p>
-        <form class="formulario" id="formulario-login">
-          <div class="campo"><label for="email">E-mail</label><input id="email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required></div>
-          <div class="campo"><div class="campo-cabecalho"><label for="senha">Senha</label><span class="futuro">Recuperação em breve</span></div><input id="senha" name="senha" type="password" placeholder="Sua senha" autocomplete="current-password" required></div>
-          <button class="botao-entrar" type="submit">Entrar na minha conta <span aria-hidden="true">↗</span></button>
-          <p class="feedback" id="feedback-login" role="status" aria-live="polite"></p>
-        </form>
-        <p class="cadastro">
+<!-- 1. Navegação compacta -->
+<header class="topbar">
+<a aria-label="CoupleCare, início" class="marca" href="index.html">
+<span aria-hidden="true" class="marca-icone">♡</span><span>Couple<span class="laranja">Care</span></span>
+</a>
+<span class="topbar-tag">Seu espaço a dois <span aria-hidden="true">✦</span></span>
+</header>
+<main class="layout">
+<!-- 2. Área de login: autenticação com Supabase -->
+<section aria-labelledby="titulo-login" class="entrada">
+<div class="entrada-conteudo">
+<div class="etiqueta"><span class="ponto"></span> ORGANIZE O QUE IMPORTA</div>
+<h1 id="titulo-login">A vida fica melhor <em>juntos.</em></h1>
+<p class="subtitulo">Sua rotina, seus planos e os pequenos momentos — tudo no mesmo lugar.</p>
+<form class="formulario" id="formulario-login">
+<div class="campo"><label for="email">E-mail</label><input autocomplete="email" id="email" name="email" placeholder="voce@exemplo.com" required="" type="email"/></div>
+<div class="campo"><div class="campo-cabecalho"><label for="senha">Senha</label><span class="futuro">Recuperação em breve</span></div><input autocomplete="current-password" id="senha" name="senha" placeholder="Sua senha" required="" type="password"/></div>
+<button class="botao-entrar" type="submit">Entrar na minha conta <span aria-hidden="true">↗</span></button>
+<p aria-live="polite" class="feedback" id="feedback-login" role="status"></p>
+</form>
+<p class="cadastro">
             Ainda não tem uma conta?
             <button class="link-cadastro" id="abrir-cadastro" type="button">
                 Criar conta
             </button>
-        </p>
-      </div>
-      <div class="rodape">© 2026 CoupleCare <span>Feito para construir juntos.</span></div>
-    </section>
-
-    <!-- 3. Ilustração de produto: órbitas e logo animados apenas com CSS -->
-    <section class="universo" aria-label="Ilustração das funcionalidades do CoupleCare">
-      <div class="universo-fundo"></div>
-      <div class="orbitas" aria-hidden="true"><div class="orbita orbita-um"></div><div class="orbita orbita-dois"></div><div class="orbita orbita-tres"></div><div class="centro-brilho"></div>
-        <!-- Dois traços de coração representam duas pessoas conectadas -->
-        <div class="coracao"><svg viewBox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M90 136C65 114 28 88 28 55C28 36 41 23 59 23C73 23 83 30 90 42" stroke="#F28C45" stroke-width="14" stroke-linecap="round"/><path d="M90 136C115 114 152 88 152 55C152 36 139 23 121 23C107 23 97 30 90 42" stroke="#B6A3FF" stroke-width="14" stroke-linecap="round"/><path d="M90 42C83 30 73 23 59 23" stroke="#FFB17C" stroke-width="4" stroke-linecap="round"/></svg><span>couple<span>care</span></span></div>
-        <span class="estrela estrela-a">✦</span><span class="estrela estrela-b">✧</span><span class="estrela estrela-c">✦</span>
-      </div>
-      <div class="cartao-flutuante cartao-tarefas"><span class="cartao-icone lilas">✓</span><span><strong>Tarefas</strong><small>Rotina em sintonia</small></span></div>
-      <div class="cartao-flutuante cartao-calendario"><span class="cartao-icone laranja-fundo">▦</span><span><strong>Calendário</strong><small>Momentos especiais</small></span></div>
-      <div class="cartao-flutuante cartao-financas"><span class="cartao-icone lilas">◈</span><span><strong>Finanças</strong><small>Planos compartilhados</small></span></div>
-      <div class="universo-legenda"><span class="linha"></span> UM LUGAR PARA O QUE É DE VOCÊS</div>
-    </section>
-  </main>
-  <!-- Cadastro sobre a página de login. -->
-<dialog
-    class="modal-cadastro"
-    id="modal-cadastro"
-    aria-labelledby="titulo-cadastro"
-    aria-describedby="descricao-cadastro"
->
-    <div class="modal-conteudo">
-        <button
-            class="modal-fechar"
-            id="fechar-cadastro"
-            type="button"
-            aria-label="Fechar cadastro"
-        >
-            <span aria-hidden="true">×</span>
-        </button>
-
-        <header class="modal-cabecalho">
-            <span class="modal-simbolo" aria-hidden="true">♡</span>
-            <p class="modal-etiqueta">SEU ESPAÇO A DOIS</p>
-
-            <h2 id="titulo-cadastro">
+</p>
+</div>
+<div class="rodape">© 2026 CoupleCare <span>Feito para construir juntos.</span></div>
+</section>
+<!-- 3. Ilustração de produto: órbitas e logo animados apenas com CSS -->
+<section aria-label="Ilustração das funcionalidades do CoupleCare" class="universo">
+<div class="universo-fundo"></div>
+<div aria-hidden="true" class="orbitas"><div class="orbita orbita-um"></div><div class="orbita orbita-dois"></div><div class="orbita orbita-tres"></div><div class="centro-brilho"></div>
+<!-- Dois traços de coração representam duas pessoas conectadas -->
+<div class="coracao"><svg fill="none" viewbox="0 0 180 160" xmlns="http://www.w3.org/2000/svg"><path d="M90 136C65 114 28 88 28 55C28 36 41 23 59 23C73 23 83 30 90 42" stroke="#F28C45" stroke-linecap="round" stroke-width="14"></path><path d="M90 136C115 114 152 88 152 55C152 36 139 23 121 23C107 23 97 30 90 42" stroke="#B6A3FF" stroke-linecap="round" stroke-width="14"></path><path d="M90 42C83 30 73 23 59 23" stroke="#FFB17C" stroke-linecap="round" stroke-width="4"></path></svg><span>couple<span>care</span></span></div>
+<span class="estrela estrela-a">✦</span><span class="estrela estrela-b">✧</span><span class="estrela estrela-c">✦</span>
+</div>
+<div class="cartao-flutuante cartao-tarefas"><span class="cartao-icone lilas">✓</span><span><strong>Tarefas</strong><small>Rotina em sintonia</small></span></div>
+<div class="cartao-flutuante cartao-calendario"><span class="cartao-icone laranja-fundo">▦</span><span><strong>Calendário</strong><small>Momentos especiais</small></span></div>
+<div class="cartao-flutuante cartao-financas"><span class="cartao-icone lilas">◈</span><span><strong>Finanças</strong><small>Planos compartilhados</small></span></div>
+<div class="universo-legenda"><span class="linha"></span> UM LUGAR PARA O QUE É DE VOCÊS</div>
+</section>
+</main>
+<!-- Cadastro sobre a página de login. -->
+<dialog aria-describedby="descricao-cadastro" aria-labelledby="titulo-cadastro" class="modal-cadastro" id="modal-cadastro">
+<div class="modal-conteudo">
+<button aria-label="Fechar cadastro" class="modal-fechar" id="fechar-cadastro" type="button">
+<span aria-hidden="true">×</span>
+</button>
+<header class="modal-cabecalho">
+<span aria-hidden="true" class="modal-simbolo">♡</span>
+<p class="modal-etiqueta">SEU ESPAÇO A DOIS</p>
+<h2 id="titulo-cadastro">
                 Tudo começa <span>com você.</span>
-            </h2>
-
-            <p id="descricao-cadastro">
+</h2>
+<p id="descricao-cadastro">
                 Crie sua conta para começar a organizar sua vida a dois.
             </p>
-        </header>
-
-        <!-- Ainda sem envio ao Supabase. -->
-        <form class="formulario formulario-cadastro" id="formulario-cadastro">
-            <div class="campo">
-                <label for="cadastro-nome">Nome de exibição</label>
-                <input
-                    id="cadastro-nome"
-                    name="display_name"
-                    type="text"
-                    placeholder="Como podemos te chamar?"
-                    autocomplete="nickname"
-                    required
-                    autofocus
-                >
-            </div>
-
-            <div class="campo">
-                <label for="cadastro-genero">Gênero</label>
-                <select id="cadastro-genero" name="gender" required>
-                    <option value="" disabled selected>Selecione seu gênero</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="feminino">Feminino</option>
-                </select>
-            </div>
-
-            <div class="campo">
-                <label for="cadastro-email">E-mail</label>
-                <input
-                    id="cadastro-email"
-                    name="email"
-                    type="email"
-                    placeholder="voce@exemplo.com"
-                    autocomplete="email"
-                    required
-                >
-            </div>
-
-            <div class="cadastro-senhas">
-                <div class="campo">
-                    <label for="cadastro-senha">Senha</label>
-                    <input
-                        id="cadastro-senha"
-                        name="password"
-                        type="password"
-                        placeholder="No mínimo 8 caracteres"
-                        autocomplete="new-password"
-                        minlength="8"
-                        aria-describedby="cadastro-ajuda-senha"
-                        required
-                    >
-                </div>
-
-                <div class="campo">
-                    <label for="cadastro-confirmacao">Confirme a senha</label>
-                    <input
-                        id="cadastro-confirmacao"
-                        name="password_confirmation"
-                        type="password"
-                        placeholder="Repita sua senha"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required
-                    >
-                </div>
-            </div>
-
-            <p class="cadastro-ajuda" id="cadastro-ajuda-senha">
+</header>
+<!-- Cadastro enviado ao Supabase Auth. -->
+<form class="formulario formulario-cadastro" id="formulario-cadastro">
+<div class="campo">
+<label for="cadastro-nome">Nome de exibição</label>
+<input autocomplete="nickname" autofocus="" id="cadastro-nome" name="display_name" placeholder="Como podemos te chamar?" required="" type="text"/>
+</div>
+<div class="campo">
+<label for="cadastro-genero">Gênero</label>
+<select id="cadastro-genero" name="gender" required="">
+<option disabled="" selected="" value="">Selecione seu gênero</option>
+<option value="masculino">Masculino</option>
+<option value="feminino">Feminino</option>
+</select>
+</div>
+<div class="campo">
+<label for="cadastro-email">E-mail</label>
+<input autocomplete="email" id="cadastro-email" name="email" placeholder="voce@exemplo.com" required="" type="email"/>
+</div>
+<div class="cadastro-senhas">
+<div class="campo">
+<label for="cadastro-senha">Senha</label>
+<input aria-describedby="cadastro-ajuda-senha" autocomplete="new-password" id="cadastro-senha" minlength="8" name="password" placeholder="No mínimo 8 caracteres" required="" type="password"/>
+</div>
+<div class="campo">
+<label for="cadastro-confirmacao">Confirme a senha</label>
+<input autocomplete="new-password" id="cadastro-confirmacao" minlength="8" name="password_confirmation" placeholder="Repita sua senha" required="" type="password"/>
+</div>
+</div>
+<p class="cadastro-ajuda" id="cadastro-ajuda-senha">
                 Use pelo menos 8 caracteres na sua senha.
             </p>
-
-            <button class="botao-entrar" type="submit">
+<button class="botao-entrar" type="submit">
                 Criar minha conta
                 <span aria-hidden="true">↗</span>
-            </button>
-
-            <p
-                class="feedback"
-                id="feedback-cadastro"
-                role="status"
-                aria-live="polite"
-            ></p>
-        </form>
-
-        <p class="modal-rodape">
+</button>
+<p aria-live="polite" class="feedback" id="feedback-cadastro" role="status"></p>
+</form>
+<p class="modal-rodape">
             Já tem uma conta?
             <button class="link-cadastro" id="voltar-login" type="button">
                 Entrar
             </button>
-        </p>
-    </div>
+</p>
+</div>
 </dialog>
-
 </body>
 </html>

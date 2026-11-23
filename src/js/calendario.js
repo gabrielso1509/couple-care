@@ -552,7 +552,7 @@
         grade.replaceChildren();
 
         // Segunda-feira é a primeira coluna.
-        const espacos = (new Date(ano, mes, 1).getDay() + 6) % 7;
+        const espacos = new Date(ano, mes, 1).getDay();
 
         for (let i = 0; i < espacos; i++) {
             const vazio = elemento('span', 'dia-vazio');
@@ -594,14 +594,14 @@
             if (eventos.some(function (evento) {
                 return evento.event_date === data;
             })) {
-                marcadores.append(elemento('span', '', '📅'));
+                marcadores.append(elemento('span', 'marker-event', ''));
                 textos.push('com compromisso');
             }
 
             if (tarefas.some(function (tarefa) {
                 return tarefa.due_date === data;
             })) {
-                marcadores.append(elemento('span', '', '✅'));
+                marcadores.append(elemento('span', 'marker-task', ''));
                 textos.push('com prazo de tarefa');
             }
 

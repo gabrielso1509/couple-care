@@ -1,560 +1,269 @@
-<!doctype html>
-<html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html>
 
-        <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
-        <base href="/src/" />
-        
-        <title>Calendário | CoupleCare</title>
-        <!-- 1. Fontes e estilos compartilhados. O login tem seu CSS separado. -->
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="css/style.css" />
-        <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
-        <!-- Autenticação compartilhada: mantenha esta ordem. -->
-        <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <script defer src="js/supabase-client.js"></script>
-        <script defer src="js/sessao.js"></script>
-        <script defer src="script.js"></script>
-        <script defer src="js/calendario.js"></script>
-    </head>
-    <body class="pagina-orbital">
-        <!-- Conteúdo oculto até validar a sessão e carregar o perfil. -->
-        <p id="status-sessao" role="status" aria-live="polite">
+<html lang="pt-BR">
+<head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
+<base href="/src/"/>
+<title>Calendário | CoupleCare</title>
+<!-- 1. Fontes e estilos compartilhados. O login tem seu CSS separado. -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
+<!-- Autenticação: mantenha esta ordem. -->
+<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js"></script><script defer="" src="js/app-core.js"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/calendario.js"></script><script defer="" src="js/calendar-extra.js"></script><script>document.documentElement.classList.add('cc-figma');</script></head>
+<body class="pagina-orbital">
+<!-- Mensagem exibida enquanto verificamos a conta. -->
+<p aria-live="polite" id="status-sessao" role="status">
             Verificando sua sessão…
         </p>
-        <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
-        <div class="aplicacao" hidden>
-            <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
-            <aside class="menu-lateral">
-                <div class="menu-lateral-cabecalho">
-                    <a
-                        class="marca-tarefas"
-                        href="../index.html"
-                        aria-label="CoupleCare, página inicial"
-                        ><span class="marca-tarefas-icone" aria-hidden="true"
-                            >♡</span
-                        ><span class="marca-tarefas-nome"
-                            >Couple<span>Care</span></span
-                        ></a
-                    >
-
-                    <!-- Botão controlado pelo script compartilhado do menu -->
-                    <button
-                        type="button"
-                        class="botao-menu"
-                        id="botao-menu"
-                        aria-label="Recolher menu"
-                        aria-expanded="true"
-                        aria-controls="navegacao-tarefas"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- LINKS DE NAVEGAÇÃO -->
-                <nav
-                    id="navegacao-tarefas"
-                    class="navegacao"
-                    aria-label="Navegação principal"
-                >
-                    <a
-                        href="index.html"
-                        class="item-menu"
-                        aria-label="Dashboard"
-                        title="Dashboard"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"
-                            />
-                        </svg>
-                        <span>Dashboard</span>
-                    </a>
-
-                    <a
-                        href="tarefas.html"
-                        class="item-menu"
-                        aria-label="Tarefas"
-                        title="Tarefas"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="4" y="3" width="16" height="18" rx="2" />
-                            <path d="m8 12 2.5 2.5L16 9" />
-                        </svg>
-                        <span>Tarefas</span>
-                    </a>
-
-                    <a
-                        href="calendario.html"
-                        class="item-menu ativo"
-                        aria-current="page"
-                        aria-label="Calendário"
-                        title="Calendário"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="3" y="5" width="18" height="16" rx="2" />
-                            <path d="M16 3v4M8 3v4M3 10h18" />
-                        </svg>
-                        <span>Calendário</span>
-                    </a>
-
-                    <a
-                        href="menstruacao.html"
-                        class="item-menu"
-                        aria-label="Menstruação"
-                        title="Menstruação"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path
-                                d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"
-                            />
-                        </svg>
-                        <span>Menstruação</span>
-                    </a>
-
-                    <a
-                        href="financas.html"
-                        class="item-menu"
-                        aria-label="Finanças"
-                        title="Finanças"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="3" y="6" width="18" height="14" rx="2" />
-                            <path d="M3 11h18M7 16h3" />
-                        </svg>
-                        <span>Finanças</span>
-                    </a>
-
-                    <a
-                        href="config.html"
-                        class="item-menu"
-                        aria-label="Configurações"
-                        title="Configurações"
-                    >
-                        <svg
-                            class="icone-item-menu"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <circle cx="12" cy="12" r="3" />
-                            <path
-                                d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z"
-                                transform="translate(-1 -1) scale(1.08)"
-                            />
-                        </svg>
-                        <span>Configurações</span>
-                    </a>
-                </nav>
-
-            <!-- Conta do usuário autenticado. -->
-            <div class="conta-menu">
-                <span class="conta-avatar" id="avatar-usuario" aria-hidden="true">…</span>
-                <span class="conta-nome" id="nome-usuario">Carregando…</span>
-                <button
-                    type="button"
-                    class="conta-sair"
-                    id="botao-sair"
-                    aria-label="Sair da conta"
-                    title="Sair da conta"
-                >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M9 5H5v14h4M9 12h12M17 8l4 4-4 4" />
-                    </svg>
-                </button>
-            </div>
-            </aside>
-            <div class="conteudo-principal">
-                <header class="cabecalho">
-                    <div>
-                        <span class="texto-destaque">SEU ESPAÇO A DOIS</span>
-                        <h1>Calendário</h1>
-                        <p>Um espaço para os próximos momentos.</p>
-                    </div>
-                    <span class="selo-tarefas"
-                        >Feito para construir juntos</span
-                    >
-                </header>
-                <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-                <!-- Calendário e registros compartilhados. -->
-                <main
-                    id="conteudo-pagina"
-                    class="conteudo calendario-real"
-                    tabindex="-1"
-                >
-                    <div class="calendario-barra">
-                        <p id="status-calendario" role="status" aria-live="polite">
-                            Carregando seu calendário…
-                        </p>
-
-                        <button
-                            id="atualizar-calendario"
-                            class="botao-secundario"
-                            type="button"
-                        >
-                            Atualizar
-                        </button>
-                    </div>
-
-                    <!-- Calendário mensal e agenda do dia selecionado. -->
-                    <div class="layout-calendario-app">
-                        <section class="painel" aria-label="Calendário mensal">
-                            <div class="controle-mes">
-                                <button
-                                    type="button"
-                                    id="anterior"
-                                    aria-label="Mês anterior"
-                                >
+<a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
+<div class="aplicacao" hidden="">
+<!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
+<aside class="menu-lateral">
+<div class="menu-lateral-cabecalho">
+<a aria-label="CoupleCare, página inicial" class="marca-tarefas" href="../index.html"><span aria-hidden="true" class="marca-tarefas-icone">♡</span><span class="marca-tarefas-nome">Couple<span>Care</span></span></a>
+<!-- Botão controlado pelo script compartilhado do menu -->
+<button aria-controls="navegacao-tarefas" aria-expanded="true" aria-label="Recolher menu" class="botao-menu" id="botao-menu" type="button">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<path d="M4 6h16M4 12h16M4 18h16"></path>
+</svg>
+</button>
+</div>
+<!-- LINKS DE NAVEGAÇÃO -->
+<nav aria-label="Navegação principal" class="navegacao" id="navegacao-tarefas">
+<a aria-label="Dashboard" class="item-menu" href="index.html" title="Dashboard">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path>
+</svg>
+<span>Dashboard</span>
+</a>
+<a aria-label="Tarefas" class="item-menu" href="tarefas.html" title="Tarefas">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<rect height="18" rx="2" width="16" x="4" y="3"></rect>
+<path d="m8 12 2.5 2.5L16 9"></path>
+</svg>
+<span>Tarefas</span>
+</a>
+<a aria-current="page" aria-label="Calendário" class="item-menu ativo" href="calendario.html" title="Calendário">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<rect height="16" rx="2" width="18" x="3" y="5"></rect>
+<path d="M16 3v4M8 3v4M3 10h18"></path>
+</svg>
+<span>Calendário</span>
+</a>
+<a aria-label="Menstruação" class="item-menu" href="menstruacao.html" title="Menstruação">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"></path>
+</svg>
+<span>Menstruação</span>
+</a>
+<a aria-label="Finanças" class="item-menu" href="financas.html" title="Finanças">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="18" x="3" y="6"></rect>
+<path d="M3 11h18M7 16h3"></path>
+</svg>
+<span>Finanças</span>
+</a>
+<a aria-label="Configurações" class="item-menu" href="config.html" title="Configurações">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z" transform="translate(-1 -1) scale(1.08)"></path>
+</svg>
+<span>Configurações</span>
+</a>
+</nav>
+<!-- Conta do usuário autenticado. -->
+<div class="conta-menu">
+<span aria-hidden="true" class="conta-avatar" id="avatar-usuario">…</span>
+<span class="conta-nome" id="nome-usuario">
+           Carregando…
+        </span>
+<button aria-label="Sair da conta" class="conta-sair" id="botao-sair" title="Sair da conta" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M9 5H5v14h4M9 12h12M17 8l4 4-4 4"></path>
+</svg>
+</button>
+</div>
+</aside>
+<div class="conteudo-principal">
+<header class="cabecalho">
+<div>
+<span class="texto-destaque">SEU ESPAÇO A DOIS</span>
+<h1>Calendário</h1>
+<p>Um lugar para os momentos de vocês.</p>
+</div>
+<span class="selo-tarefas">Feito para construir juntos</span>
+</header>
+<!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
+<main class="conteudo calendario-real" id="conteudo-pagina" tabindex="-1"><div class="calendario-barra"><p id="status-calendario" role="status">Carregando calendário…</p><button class="soft-button" id="atualizar-calendario" type="button">Atualizar</button></div><div class="calendar-layout"><section aria-label="Calendário mensal" class="card month-card">
+<div class="controle-mes">
+<button aria-label="Mês anterior" id="anterior" type="button">
                                     ←
                                 </button>
-
-                                <h2 id="mes" aria-live="polite"></h2>
-
-                                <button
-                                    type="button"
-                                    id="seguinte"
-                                    aria-label="Próximo mês"
-                                >
+<h2 aria-live="polite" class="section-label" id="mes"></h2><h2>Nosso calendário</h2>
+<button aria-label="Próximo mês" id="seguinte" type="button">
                                     →
                                 </button>
-                            </div>
-
-                            <button type="button" id="hoje" class="botao-secundario">
+</div>
+<button class="botao-secundario" id="hoje" type="button">
                                 Hoje
                             </button>
-
-                            <div class="semana-app" aria-hidden="true">
-                                <span>Seg</span>
-                                <span>Ter</span>
-                                <span>Qua</span>
-                                <span>Qui</span>
-                                <span>Sex</span>
-                                <span>Sáb</span>
-                                <span>Dom</span>
-                            </div>
-
-                            <!-- O JavaScript cria os botões dos dias aqui. -->
-                            <div
-                                id="dias"
-                                class="dias-app"
-                                role="group"
-                                aria-label="Escolha um dia"
-                            ></div>
-
-                            <ul class="calendario-legenda" aria-label="Legenda">
-                                <li>📅 Compromisso</li>
-                                <li>✅ Prazo de tarefa</li>
-                                <li>🩸 Menstruação registrada</li>
-                                <li>💭 Sentimentos</li>
-                            </ul>
-
-                            <p class="texto-suave calendario-ajuda">
+<div aria-hidden="true" class="semana-app"><span>DOM</span><span>SEG</span><span>TER</span><span>QUA</span><span>QUI</span><span>SEX</span><span>SÁB</span></div>
+<!-- O JavaScript cria os botões dos dias aqui. -->
+<div aria-label="Escolha um dia" class="dias-app" id="dias" role="group"></div>
+<ul aria-label="Legenda" class="calendario-legenda">
+<li>📅 Compromisso</li>
+<li>✅ Prazo de tarefa</li>
+<li>🩸 Menstruação registrada</li>
+<li>💭 Sentimentos</li>
+</ul>
+<p class="texto-suave calendario-ajuda">
                                 Borda laranja: hoje. Fundo lilás: dia selecionado.
                                 Selecione um dia para ver os detalhes.
                             </p>
-                        </section>
-
-                        <section class="painel" aria-labelledby="titulo-agenda">
-                            <h2 id="titulo-agenda">Agenda do dia</h2>
-                            <h3 id="selecionado"></h3>
-
-                            <!-- Eventos, tarefas e registros autorizados aparecem aqui. -->
-                            <div id="lista" class="lista-app"></div>
-                        </section>
-                    </div>
-
-                    <div class="calendario-formularios">
-                        <!-- Compromissos: as duas pessoas do casal podem editar. -->
-                        <section class="painel" aria-labelledby="titulo-form-evento">
-                            <h2 id="titulo-form-evento">Novo compromisso</h2>
-
-                            <p id="aviso-casal" class="texto-suave" hidden>
+</section><aside class="agenda-column"><section aria-labelledby="titulo-agenda" class="card agenda-card"><button aria-label="Adicionar compromisso" class="round-add cc-agenda-add" data-open="dialogo-evento" type="button">+</button>
+<h2 id="titulo-agenda">Agenda do dia</h2>
+<h3 id="selecionado"></h3>
+<!-- Eventos, tarefas e registros autorizados aparecem aqui. -->
+<div class="lista-app" id="lista"></div>
+</section><section class="card reminder-card"><span class="stat-icon purple">✧</span><div><span class="section-label">LEMBRETE CARINHOSO</span><h3 id="cc-anniversary-title">Uma data de vocês</h3><p id="cc-anniversary-text">Carregando…</p><a class="text-button" href="config.html#data-casal">Configurar data →</a></div></section></aside></div><dialog aria-labelledby="titulo-form-evento" class="cc-modal" id="dialogo-evento"><button aria-label="Fechar" data-close="" type="button">×</button><section aria-labelledby="titulo-form-evento" class="card">
+<h2 id="titulo-form-evento">Novo compromisso</h2>
+<p class="texto-suave" hidden="" id="aviso-casal">
                                 Crie ou entre em um casal nas
                                 <a href="config.html">Configurações</a>
                                 para compartilhar compromissos e tarefas.
                             </p>
-
-                            <form id="form-evento" class="form-app">
-                                <!-- Liberado pelo JavaScript após carregar os dados. -->
-                                <fieldset id="campos-evento" disabled>
-                                    <div class="campo-app">
-                                        <label for="titulo">Compromisso</label>
-                                        <input
-                                            id="titulo"
-                                            type="text"
-                                            required
-                                            maxlength="150"
-                                        >
-                                    </div>
-
-                                    <div class="campo-app">
-                                        <label for="descricao-evento">
+<form class="form-app" id="form-evento">
+<!-- Liberado pelo JavaScript após carregar os dados. -->
+<fieldset disabled="" id="campos-evento">
+<div class="campo-app">
+<label for="titulo">Compromisso</label>
+<input id="titulo" maxlength="150" required="" type="text"/>
+</div>
+<div class="campo-app">
+<label for="descricao-evento">
                                             Descrição (opcional)
                                         </label>
-                                        <textarea
-                                            id="descricao-evento"
-                                            rows="3"
-                                            maxlength="3000"
-                                        ></textarea>
-                                    </div>
-
-                                    <div class="campo-app">
-                                        <label for="data">Data</label>
-                                        <input
-                                            id="data"
-                                            type="date"
-                                            required
-                                            min="1900-01-01"
-                                            max="2100-12-31"
-                                        >
-                                    </div>
-
-                                    <div class="calendario-linha">
-                                        <div class="campo-app">
-                                            <label for="hora">Início (opcional)</label>
-                                            <input id="hora" type="time">
-                                        </div>
-
-                                        <div class="campo-app">
-                                            <label for="hora-fim">Fim (opcional)</label>
-                                            <input
-                                                id="hora-fim"
-                                                type="time"
-                                                aria-describedby="ajuda-horarios"
-                                            >
-                                        </div>
-                                    </div>
-
-                                    <small id="ajuda-horarios">
+<textarea id="descricao-evento" maxlength="3000" rows="3"></textarea>
+</div>
+<div class="campo-app">
+<label for="data">Data</label>
+<input id="data" max="2100-12-31" min="1900-01-01" required="" type="date"/>
+</div>
+<div class="calendario-linha">
+<div class="campo-app">
+<label for="hora">Início (opcional)</label>
+<input id="hora" type="time"/>
+</div>
+<div class="campo-app">
+<label for="hora-fim">Fim (opcional)</label>
+<input aria-describedby="ajuda-horarios" id="hora-fim" type="time"/>
+</div>
+</div>
+<small id="ajuda-horarios">
                                         Sem início, o compromisso é de dia inteiro.
                                         O fim deve ser depois do início, no mesmo dia.
                                         Use os horários locais combinados pelo casal.
                                     </small>
-
-                                    <div class="acoes-app">
-                                        <button
-                                            class="botao-primario"
-                                            type="submit"
-                                            id="salvar-evento"
-                                        >
+<div class="acoes-app">
+<button class="botao-primario" id="salvar-evento" type="submit">
                                             Criar compromisso
                                         </button>
-
-                                        <button
-                                            type="button"
-                                            id="cancelar-evento"
-                                            hidden
-                                        >
+<button hidden="" id="cancelar-evento" type="button">
                                             Cancelar edição
                                         </button>
-                                    </div>
-                                </fieldset>
-
-                                <p
-                                    id="feedback-evento"
-                                    class="feedback-app"
-                                    role="status"
-                                    aria-live="polite"
-                                ></p>
-                            </form>
-                        </section>
-
-                        <!-- O JavaScript mostra estes controles na conta feminina. -->
-                        <section
-                            class="painel"
-                            id="painel-pessoal"
-                            aria-labelledby="titulo-pessoal"
-                            hidden
-                        >
-                            <h2 id="titulo-pessoal">Meu registro do dia</h2>
-                            <p id="dia-registro" class="texto-suave"></p>
-
-                            <!-- Sentimentos: emojis e observação opcionais. -->
-                            <details open>
-                                <summary>💭 Como estou me sentindo?</summary>
-
-                                <form id="form-sentimentos" class="form-app">
-                                    <fieldset id="campos-sentimentos" disabled>
-                                        <p class="calendario-ajuda">
+</div>
+</fieldset>
+<p aria-live="polite" class="feedback-app" id="feedback-evento" role="status"></p>
+</form>
+</section></dialog><details class="cc-advanced"><summary>Sentimentos e registros pessoais do dia</summary><div class="calendario-formularios cc-calendar-forms">
+<!-- Compromissos: as duas pessoas do casal podem editar. -->
+<!-- O JavaScript mostra estes controles na conta feminina. -->
+<section aria-labelledby="titulo-pessoal" class="painel" hidden="" id="painel-pessoal">
+<h2 id="titulo-pessoal">Meu registro do dia</h2>
+<p class="texto-suave" id="dia-registro"></p>
+<!-- Sentimentos: emojis e observação opcionais. -->
+<details open="">
+<summary>💭 Como estou me sentindo?</summary>
+<form class="form-app" id="form-sentimentos">
+<fieldset disabled="" id="campos-sentimentos">
+<p class="calendario-ajuda">
                                             Escolha quantos quiser. Os sentimentos são
                                             informados por você, com ou sem TPM.
                                         </p>
-
-                                        <!-- O JavaScript cria as opções de emojis. -->
-                                        <div
-                                            id="opcoes-sentimentos"
-                                            class="opcoes-sentimentos"
-                                            role="group"
-                                            aria-label="Como estou me sentindo"
-                                        ></div>
-
-                                        <div class="campo-app">
-                                            <label for="nota-sentimentos">
+<!-- O JavaScript cria as opções de emojis. -->
+<div aria-label="Como estou me sentindo" class="opcoes-sentimentos" id="opcoes-sentimentos" role="group"></div>
+<div class="campo-app">
+<label for="nota-sentimentos">
                                                 Quero dizer também… (opcional)
                                             </label>
-
-                                            <textarea
-                                                id="nota-sentimentos"
-                                                rows="3"
-                                                maxlength="1000"
-                                            ></textarea>
-                                        </div>
-
-                                        <label class="calendario-compartilhar">
-                                            <input
-                                                id="compartilhar-sentimentos"
-                                                type="checkbox"
-                                            >
-                                            <span>
+<textarea id="nota-sentimentos" maxlength="1000" rows="3"></textarea>
+</div>
+<label class="calendario-compartilhar">
+<input id="compartilhar-sentimentos" type="checkbox"/>
+<span>
                                                 Compartilhar os emojis e esta observação
                                                 com meu parceiro atual
                                             </span>
-                                        </label>
-
-                                        <p
-                                            id="estado-sentimentos"
-                                            class="calendario-ajuda"
-                                        ></p>
-
-                                        <div class="acoes-app">
-                                            <button
-                                                class="botao-primario"
-                                                type="submit"
-                                            >
+</label>
+<p class="calendario-ajuda" id="estado-sentimentos"></p>
+<div class="acoes-app">
+<button class="botao-primario" type="submit">
                                                 Salvar sentimentos
                                             </button>
-
-                                            <button
-                                                type="button"
-                                                id="excluir-sentimentos"
-                                                hidden
-                                            >
+<button hidden="" id="excluir-sentimentos" type="button">
                                                 Apagar registro
                                             </button>
-                                        </div>
-                                    </fieldset>
-
-                                    <p
-                                        id="feedback-sentimentos"
-                                        class="feedback-app"
-                                        role="status"
-                                        aria-live="polite"
-                                    ></p>
-                                </form>
-                            </details>
-
-                            <!-- Menstruação: o parceiro recebe somente as datas autorizadas. -->
-                            <details>
-                                <summary>🩸 Registrar menstruação</summary>
-
-                                <form id="form-ciclo" class="form-app">
-                                    <fieldset id="campos-ciclo" disabled>
-                                        <p class="calendario-ajuda">
+</div>
+</fieldset>
+<p aria-live="polite" class="feedback-app" id="feedback-sentimentos" role="status"></p>
+</form>
+</details>
+<!-- Menstruação: o parceiro recebe somente as datas autorizadas. -->
+<details>
+<summary>🩸 Registrar menstruação</summary>
+<form class="form-app" id="form-ciclo">
+<fieldset disabled="" id="campos-ciclo">
+<p class="calendario-ajuda">
                                             Salvar marca o dia selecionado como um dia
                                             de menstruação informado por você.
                                         </p>
-
-                                        <div class="campo-app">
-                                            <label for="fluxo">
+<div class="campo-app">
+<label for="fluxo">
                                                 Fluxo (opcional, só você vê)
                                             </label>
-
-                                            <select id="fluxo">
-                                                <option value="">Não informar</option>
-                                                <option value="light">Leve</option>
-                                                <option value="moderate">Moderado</option>
-                                                <option value="heavy">Intenso</option>
-                                            </select>
-                                        </div>
-
-                                        <label class="calendario-compartilhar">
-                                            <input
-                                                id="compartilhar-ciclo"
-                                                type="checkbox"
-                                            >
-                                            <span>
+<select id="fluxo">
+<option value="">Não informar</option>
+<option value="light">Leve</option>
+<option value="moderate">Moderado</option>
+<option value="heavy">Intenso</option>
+</select>
+</div>
+<label class="calendario-compartilhar">
+<input id="compartilhar-ciclo" type="checkbox"/>
+<span>
                                                 Mostrar ao meu parceiro atual que
                                                 menstruei neste dia
                                             </span>
-                                        </label>
-
-                                        <p
-                                            id="estado-ciclo"
-                                            class="calendario-ajuda"
-                                        ></p>
-
-                                        <div class="acoes-app">
-                                            <button
-                                                class="botao-primario"
-                                                type="submit"
-                                            >
+</label>
+<p class="calendario-ajuda" id="estado-ciclo"></p>
+<div class="acoes-app">
+<button class="botao-primario" type="submit">
                                                 Salvar este dia
                                             </button>
-
-                                            <button
-                                                type="button"
-                                                id="excluir-ciclo"
-                                                hidden
-                                            >
+<button hidden="" id="excluir-ciclo" type="button">
                                                 Remover este dia
                                             </button>
-                                        </div>
-                                    </fieldset>
-
-                                    <p
-                                        id="feedback-ciclo"
-                                        class="feedback-app"
-                                        role="status"
-                                        aria-live="polite"
-                                    ></p>
-                                </form>
-                            </details>
-                        </section>
-                    </div>
-
-                    <noscript>
-                        <p>Ative o JavaScript para usar o calendário.</p>
-                    </noscript>
-
-                    <footer class="rodape-tarefas">
-                        CoupleCare
-                        <span>Seu espaço para o que importa.</span>
-                    </footer>
-                </main>
-            </div>
-        </div>
-    </body>
+</div>
+</fieldset>
+<p aria-live="polite" class="feedback-app" id="feedback-ciclo" role="status"></p>
+</form>
+</details>
+</section>
+</div></details><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+</div>
+</div>
+</body>
 </html>
-

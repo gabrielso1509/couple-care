@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
+<base href="/src/"/>
+<title>Nosso espaço | CoupleCare</title>
+<!-- 1. Fontes e estilos compartilhados. O login tem seu CSS separado. -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
+<!-- Autenticação: mantenha esta ordem. -->
+<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js"></script><script defer="" src="js/app-core.js"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/moments-real.js"></script><script>document.documentElement.classList.add('cc-figma');</script></head>
+<body class="pagina-orbital">
+<!-- Mensagem exibida enquanto verificamos a conta. -->
+<p aria-live="polite" id="status-sessao" role="status">
+            Verificando sua sessão…
+        </p>
+<a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
+<div class="aplicacao" hidden="">
+<!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
+<aside class="menu-lateral">
+<div class="menu-lateral-cabecalho">
+<a aria-label="CoupleCare, página inicial" class="marca-tarefas" href="../index.html"><span aria-hidden="true" class="marca-tarefas-icone">♡</span><span class="marca-tarefas-nome">Couple<span>Care</span></span></a>
+<!-- Botão controlado pelo script compartilhado do menu -->
+<button aria-controls="navegacao-tarefas" aria-expanded="true" aria-label="Recolher menu" class="botao-menu" id="botao-menu" type="button">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<path d="M4 6h16M4 12h16M4 18h16"></path>
+</svg>
+</button>
+</div>
+<!-- LINKS DE NAVEGAÇÃO -->
+<nav aria-label="Navegação principal" class="navegacao" id="navegacao-tarefas">
+<a aria-label="Dashboard" class="item-menu" href="index.html" title="Dashboard">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path>
+</svg>
+<span>Dashboard</span>
+</a>
+<a aria-label="Tarefas" class="item-menu" href="tarefas.html" title="Tarefas">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<rect height="18" rx="2" width="16" x="4" y="3"></rect>
+<path d="m8 12 2.5 2.5L16 9"></path>
+</svg>
+<span>Tarefas</span>
+</a>
+<a aria-label="Calendário" class="item-menu" href="calendario.html" title="Calendário">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<rect height="16" rx="2" width="18" x="3" y="5"></rect>
+<path d="M16 3v4M8 3v4M3 10h18"></path>
+</svg>
+<span>Calendário</span>
+</a>
+<a aria-label="Menstruação" class="item-menu" href="menstruacao.html" title="Menstruação">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8z"></path>
+</svg>
+<span>Menstruação</span>
+</a>
+<a aria-label="Finanças" class="item-menu" href="financas.html" title="Finanças">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="18" x="3" y="6"></rect>
+<path d="M3 11h18M7 16h3"></path>
+</svg>
+<span>Finanças</span>
+</a>
+<a aria-label="Configurações" class="item-menu" href="config.html" title="Configurações">
+<svg aria-hidden="true" class="icone-item-menu" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="m19.4 15 .1.1 1.4 1.1-1.5 2.6-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-3l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.5-2.6 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.5-2.6 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h3l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.5 2.6-1.4 1.1a7 7 0 0 1 0 1.7z" transform="translate(-1 -1) scale(1.08)"></path>
+</svg>
+<span>Configurações</span>
+</a>
+</nav>
+<!-- Conta do usuário autenticado. -->
+<div class="conta-menu">
+<span aria-hidden="true" class="conta-avatar" id="avatar-usuario">…</span>
+<span class="conta-nome" id="nome-usuario">
+           Carregando…
+        </span>
+<button aria-label="Sair da conta" class="conta-sair" id="botao-sair" title="Sair da conta" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24">
+<path d="M9 5H5v14h4M9 12h12M17 8l4 4-4 4"></path>
+</svg>
+</button>
+</div>
+</aside>
+<div class="conteudo-principal">
+<header class="cabecalho">
+<div>
+<span class="texto-destaque">SEU ESPAÇO A DOIS</span>
+<h1>Nosso espaço</h1>
+<p>Um lugar para guardar a história de vocês.</p>
+</div>
+<span class="selo-tarefas">Feito para construir juntos</span>
+</header>
+<!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
+<main class="conteudo" id="conteudo-pagina" tabindex="-1"><p class="cc-status" id="moments-status" role="status">Carregando o espaço de vocês…</p><section class="moments-hero"><div><span class="section-label">NOSSO ESPAÇO</span><h2>A história de vocês,<br/><em>guardada com carinho.</em></h2><p>Memórias, planos e ideias para continuar escolhendo um ao outro.</p><button class="primary-button" id="new-memory" type="button">+ Guardar novo momento</button></div><div aria-label="Memórias do casal" class="photo-stack"><div class="photo photo-one"><img alt="Memória do casal" hidden="" id="memory-stack-one"/><span id="memory-stack-title-one">Seus momentos</span></div><div class="photo photo-two"><img alt="Memória do casal" hidden="" id="memory-stack-two"/><span id="memory-stack-title-two">A história de vocês</span></div></div></section><section class="moments-grid"><article class="card idea-card"><span class="section-label">IDEIA PARA VOCÊS · SUGESTÃO</span><div class="idea-icon">☾</div><h3>Noite de memórias</h3><p>Escolham fotos antigas e contem o que lembram daquele dia.</p><div><span>Em casa</span><span>No ritmo de vocês</span><span>Sem custo</span></div><button class="soft-button" id="save-idea" type="button">Guardar ideia</button><p id="idea-status" role="status"></p></article><article class="card bucket-card"><div class="card-title"><div><span>LISTA DE SONHOS</span><h3>Ainda vamos…</h3></div><button aria-label="Adicionar sonho" class="round-add" id="new-dream" type="button">+</button></div><div id="dream-list"></div><p id="dream-status" role="status"></p></article></section><section class="card transactions-card"><div class="card-title"><div><span>LEMBRANÇAS DE VOCÊS</span><h3>Memórias guardadas</h3></div><button class="text-button" id="reload-moments" type="button">Atualizar ↻</button></div><div class="memory-gallery" id="memory-list"></div><button class="soft-button" hidden="" id="more-memories" type="button">Mostrar mais</button></section><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+</div>
+</div>
+</body>
+</html>

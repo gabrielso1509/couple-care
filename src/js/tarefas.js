@@ -14,6 +14,8 @@
     let filtro = 'all', limite = 30, canal = null, timerRealtime = null;
     let conectado = false, encerrado = false;
     const fotos = new Map();
+    let historicoLimite = 50, temMaisHistorico = false;
+    const periodosHistoricoAbertos = new Set();
 
     // Datas sem horário são comparadas no calendário local do usuário.
     function hoje() {
@@ -34,6 +36,7 @@
         const bloqueado = ocupado || carregando || !pronto;
         $('campos-tarefa').disabled = bloqueado;
         $('atualizar-tarefas').disabled = ocupado || carregando;
+        $('mais-atividades').disabled = ocupado || carregando;
         $('form-tarefa').setAttribute('aria-busy', String(ocupado));
         document.querySelectorAll('#lista button, #lista input').forEach(el => { el.disabled = bloqueado; });
     }
@@ -85,6 +88,7 @@
         const pendentes = tarefas.filter(t => t.status === 'pending');
         $('total-pendentes').textContent = pendentes.length;
         $('total-hoje').textContent = pendentes.filter(t => t.due_date === dia).length;
+        $('total-concluidas').textContent = tarefas.filter(t => t.status === 'completed').length;
         $('total-atrasadas').textContent = pendentes.filter(t => t.due_date && t.due_date < dia).length;
         const busca = $('busca-tarefa').value.trim().toLocaleLowerCase('pt-BR');
         const pessoa = $('filtro-responsavel').value;
@@ -116,14 +120,17 @@
             const concluida = t.status === 'completed';
             const atrasada = !concluida && t.due_date && t.due_date < dia;
             const card = elemento('article', 'tarefa-cartao' + (concluida ? ' concluida' : atrasada ? ' atrasada' : t.due_date === dia ? ' para-hoje' : ''));
-            card.append(elemento('h3', '', t.title));
+            const toggle = botao(concluida ? '✓' : '○', 'status', t); toggle.className = 'cc-task-toggle'; toggle.setAttribute('aria-label', (concluida ? 'Reabrir: ' : 'Concluir: ') + t.title);
+            const header = elemento('div'); header.append(elemento('h3', '', t.title), elemento('p', 'tarefa-meta', dataCurta(t.due_date) + ' · ' + categorias[t.category]));
+            card.append(toggle, header);
+            const details = elemento('details', 'tarefa-details'); details.append(elemento('summary', '', 'Detalhes e ações')); 
             const tags = elemento('div', 'tarefa-etiquetas');
             tags.append(elemento('span', 'tarefa-etiqueta', categorias[t.category]), elemento('span', 'tarefa-etiqueta' + (t.priority === 'high' ? ' alta' : ''), 'Prioridade ' + prioridades[t.priority].toLowerCase()));
             tags.append(elemento('span', 'tarefa-etiqueta' + (atrasada ? ' atraso' : ''), (atrasada ? 'Atrasada · ' : !concluida && t.due_date === dia ? 'Hoje · ' : '') + dataCurta(t.due_date)));
             if (concluida) tags.append(elemento('span', 'tarefa-etiqueta', 'Concluída'));
             if (t.recurrence !== 'none') tags.append(elemento('span', 'tarefa-etiqueta', 'Repetição ' + repeticoes[t.recurrence].toLowerCase()));
-            card.append(tags);
-            if (t.description) card.append(elemento('p', 'tarefa-descricao', t.description));
+            details.append(tags);
+            if (t.description) details.append(elemento('p', 'tarefa-descricao', t.description));
             const responsavel = membros.find(m => m.user_id === t.assigned_to);
             const pessoaEl = elemento('div', 'tarefa-pessoa');
             if (responsavel) {
@@ -135,7 +142,7 @@
             } else { pessoaEl.textContent = 'Sem responsável'; card.append(pessoaEl); }
             if (t.checklist.length) {
                 const feitos = t.checklist.filter(i => i.done).length;
-                card.append(elemento('small', '', `Checklist: ${feitos}/${t.checklist.length}`));
+                details.append(elemento('small', '', `Checklist: ${feitos}/${t.checklist.length}`));
                 const ul = elemento('ul', 'tarefa-checklist');
                 t.checklist.forEach(item => {
                     const li = elemento('li'), label = elemento('label'), check = elemento('input');
@@ -143,23 +150,86 @@
                     check.dataset.tarefa = t.id; check.dataset.item = item.id;
                     label.append(check, elemento('span', '', item.text)); li.append(label); ul.append(li);
                 });
-                card.append(ul);
+                details.append(ul);
             }
             const buttons = elemento('div', 'tarefa-acoes');
             buttons.append(botao(concluida ? 'Reabrir' : 'Concluir', 'status', t), botao('Editar', 'editar', t), botao('Excluir', 'excluir', t));
-            card.append(buttons);
+            details.append(buttons);
             let autoria = 'Criada por ' + nome(t.created_by) + ' · ' + instante(t.created_at);
             if (concluida) autoria += ' | Concluída por ' + (t.completed_by ? nome(t.completed_by) : 'conta não registrada') + ' · ' + instante(t.completed_at);
-            card.append(elemento('p', 'tarefa-autoria', autoria)); lista.append(card);
+            details.append(elemento('p', 'tarefa-autoria', autoria)); card.append(details); lista.append(card);
         });
-        const historico = $('historico-tarefas'); historico.replaceChildren();
-        if (!eventos.length) historico.append(elemento('li', 'texto-suave', 'As próximas atividades aparecerão aqui.'));
-        eventos.forEach(e => {
-            const li = elemento('li', '', `${nome(e.actor_id)} ${acoes[e.action]} “${e.title}”.`);
-            const time = elemento('time', '', instante(e.created_at)); time.dateTime = e.created_at;
-            li.append(time); historico.append(li);
-        });
+        renderizarHistorico();
         controles();
+    }
+
+    /* Histórico: agrupa datas locais e mantém autoria/foto em cada atividade. */
+    function renderizarHistorico() {
+        const lista = $('historico-tarefas');
+        const rolagem = $('rolagem-historico');
+        const posicao = rolagem.scrollTop;
+        const foco = document.activeElement?.closest('.activity-period')?.dataset.periodo;
+        // Mantém os grupos abertos e a posição quando chegam novas atividades.
+        lista.querySelectorAll('.activity-period').forEach(function (periodo) {
+            if (periodo.open) periodosHistoricoAbertos.add(periodo.dataset.periodo);
+            else periodosHistoricoAbertos.delete(periodo.dataset.periodo);
+        });
+        lista.replaceChildren();
+        const modo = $('agrupar-atividades').value;
+        const grupos = new Map();
+        eventos.forEach(function (evento) {
+            const data = new Date(evento.created_at);
+            if (Number.isNaN(data.getTime())) return;
+            const base = new Date(data.getFullYear(), data.getMonth(), data.getDate());
+            let chaveGrupo, titulo;
+            if (modo === 'year') {
+                chaveGrupo = String(data.getFullYear()); titulo = 'Ano de ' + data.getFullYear();
+            } else if (modo === 'month') {
+                chaveGrupo = data.getFullYear() + '-' + data.getMonth();
+                titulo = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                titulo = titulo.charAt(0).toUpperCase() + titulo.slice(1);
+            } else {
+                base.setDate(base.getDate() - (base.getDay() + 6) % 7);
+                const fim = new Date(base); fim.setDate(fim.getDate() + 6);
+                chaveGrupo = base.getFullYear() + '-' + base.getMonth() + '-' + base.getDate();
+                titulo = 'Semana de ' + base.toLocaleDateString('pt-BR') + ' a ' + fim.toLocaleDateString('pt-BR');
+            }
+            if (!grupos.has(chaveGrupo)) grupos.set(chaveGrupo, { titulo: titulo, itens: [] });
+            grupos.get(chaveGrupo).itens.push(evento);
+        });
+        grupos.forEach(function (grupo, chave) {
+            const secao = elemento('li', 'activity-group');
+            const periodo = elemento('details', 'activity-period');
+            periodo.dataset.periodo = modo + '|' + chave;
+            periodo.open = periodosHistoricoAbertos.has(periodo.dataset.periodo);
+            const topo = elemento('summary', 'activity-group-heading');
+            topo.append(elemento('span', 'activity-period-title', grupo.titulo), elemento('span', 'activity-period-count', grupo.itens.length + ' atividade(s)'));
+            const itens = elemento('ol', 'activity-items');
+            grupo.itens.forEach(function (evento) {
+                const li = elemento('li', 'activity-item');
+                const foto = elemento('span', 'activity-avatar'); foto.setAttribute('aria-hidden', 'true');
+                const autor = membros.find(function (m) { return m.user_id === evento.actor_id; });
+                foto.textContent = autor ? autor.display_name.trim().charAt(0).toUpperCase() : '?';
+                const corpo = elemento('div', 'activity-body');
+                const frase = elemento('p', 'activity-description');
+                frase.append(elemento('strong', '', nome(evento.actor_id)), document.createTextNode(' ' + (acoes[evento.action] || 'alterou') + ' '), elemento('span', 'activity-task-title', '“' + evento.title + '”'));
+                const rodape = elemento('div', 'activity-meta');
+                const textos = { created: 'Criação', edited: 'Edição', completed: 'Conclusão', reopened: 'Reabertura', deleted: 'Exclusão' };
+                rodape.append(elemento('span', 'activity-badge ' + evento.action, textos[evento.action] || 'Alteração'));
+                const time = elemento('time', '', new Date(evento.created_at).toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' }));
+                time.dateTime = evento.created_at; rodape.append(time); corpo.append(frase, rodape); li.append(foto, corpo); itens.append(li);
+                if (autor) queueMicrotask(function () { avatar(foto, autor); });
+            });
+            periodo.append(topo, itens); secao.append(periodo); lista.append(secao);
+        });
+        if (!eventos.length) lista.append(elemento('li', 'empty-state', 'As atividades de vocês vão aparecer aqui.'));
+        $('resumo-atividades').textContent = eventos.length + ' atividade(s) carregada(s)' + (temMaisHistorico ? ' · Há registros anteriores disponíveis.' : ' · Histórico carregado.');
+        $('mais-atividades').hidden = !temMaisHistorico;
+        if (foco) {
+            const anterior = Array.from(lista.querySelectorAll('.activity-period')).find(function (p) { return p.dataset.periodo === foco; });
+            if (anterior) anterior.querySelector('summary').focus({ preventScroll: true });
+        }
+        rolagem.scrollTop = posicao;
     }
 
     // Busca todas as tarefas em páginas para não truncar no limite da API.
@@ -181,7 +251,7 @@
             const [novas, historico, participantes] = await Promise.all([
                 buscarTarefas(),
                 supabaseClient.from('task_events').select('id,actor_id,action,title,created_at')
-                    .eq('couple_id', casalId).order('created_at', { ascending: false }).order('id').limit(30),
+                    .eq('couple_id', casalId).order('created_at', { ascending: false }).order('id').limit(historicoLimite + 1),
                 supabaseClient.rpc('get_couple_members')
             ]);
             if (historico.error) throw historico.error;
@@ -193,7 +263,7 @@
             if ($('feedback').textContent.startsWith('Não foi possível carregar as tarefas.')) mensagem('');
             // Uma migration ausente precisa de uma mensagem útil, sem habilitar gravações.
             if (novas.some(t => !Array.isArray(t.checklist) || !t.version)) throw new Error('Estrutura de tarefas desatualizada.');
-            tarefas = novas; eventos = historico.data; pronto = true;
+            tarefas = novas; temMaisHistorico = historico.data.length > historicoLimite; eventos = historico.data.slice(0, historicoLimite); pronto = true;
             renderizar();
         } catch (erro) {
             pronto = false;
@@ -311,6 +381,14 @@
     ['busca-tarefa', 'filtro-responsavel', 'ordenacao'].forEach(id => $(id).addEventListener('input', () => { limite = 30; renderizar(); }));
     $('mais-tarefas').addEventListener('click', () => { limite += 30; renderizar(); });
     $('atualizar-tarefas').addEventListener('click', atualizar);
+    $('agrupar-atividades').addEventListener('change', function () {
+        $('rolagem-historico').scrollTop = 0;
+        renderizarHistorico();
+    });
+    $('mais-atividades').addEventListener('click', function () {
+        if (carregando || ocupado) return;
+        historicoLimite += 50; void atualizar();
+    });
 
     // Eventos INSERT informam criação, edição, conclusão e exclusão de tarefas.
     function conectarRealtime() {

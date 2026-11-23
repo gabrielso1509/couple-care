@@ -50,8 +50,7 @@
         'salvar-periodo',
         'cancelar-periodo',
         'feedback-periodo',
-        'lista-periodos',
-        'lista-compartilhada'
+        'lista-periodos'
     ];
 
     const faltando = obrigatorios.filter(function (id) {
@@ -85,7 +84,6 @@
     let casalId = null;
     let membros = [];
     let periodos = [];
-    let compartilhados = [];
 
     let configuracao = null;
     let resumo = null;
@@ -196,7 +194,7 @@
             ocupado || carregando || iniciando;
 
         buscar('filtro-mes').disabled =
-            ocupado || carregando || iniciando;
+            ocupado || carregando || iniciando || !buscar('filtro-mes').querySelector('option[value]:not([value=""])');
 
         buscar('encerrar-menstruacao').disabled = bloqueado;
 
@@ -418,7 +416,7 @@
     }
 
     /* ========================================
-       5. HISTÓRICO E DATAS COMPARTILHADAS
+       5. HISTÓRICO DOS PERÍODOS
     ======================================== */
 
     function limitesMes() {
@@ -438,10 +436,8 @@
 
     function renderizar() {
         const lista = buscar('lista-periodos');
-        const parceiro = buscar('lista-compartilhada');
 
         lista.replaceChildren();
-        parceiro.replaceChildren();
 
         if (feminino) {
             exibirResumo();
@@ -552,47 +548,6 @@
                     )
                 );
             }
-        } else {
-            // O parceiro não recebe configurações nem médias privadas.
-            compartilhados.forEach(function (registro) {
-                const autora = membros.find(function (membro) {
-                    return membro.user_id === registro.user_id;
-                });
-
-                const item = elemento('article', 'registro-app');
-
-                item.append(
-                    elemento(
-                        'h3',
-                        '',
-                        '🩸 ' + dataTexto(registro.entry_date)
-                    )
-                );
-
-                item.append(
-                    elemento(
-                        'p',
-                        'texto-suave',
-                        'Data compartilhada por ' +
-                            (autora
-                                ? autora.display_name
-                                : 'sua parceira') +
-                            '.'
-                    )
-                );
-
-                parceiro.append(item);
-            });
-
-            if (!compartilhados.length) {
-                parceiro.append(
-                    elemento(
-                        'p',
-                        'texto-suave',
-                        'Nenhuma data compartilhada neste mês.'
-                    )
-                );
-            }
         }
 
         controles();
@@ -600,12 +555,10 @@
 
     function ocultarDados() {
         periodos = [];
-        compartilhados = [];
         resumo = null;
         pronto = false;
 
         buscar('lista-periodos').replaceChildren();
-        buscar('lista-compartilhada').replaceChildren();
         buscar('periodo-andamento').hidden = true;
 
         [
@@ -653,6 +606,7 @@
     }
 
     async function carregar() {
+        if (!feminino) return;
         if (!identidadePronta) {
             return iniciar();
         }
@@ -701,6 +655,21 @@
                 ? 'Seu parceiro recebe somente as datas autorizadas deste período.'
                 : 'Sem vínculo com um casal, seus períodos ficam privados.';
 
+            // Lista apenas meses com dados autorizados; o usuário não precisa adivinhar datas.
+            const mesesResposta = await supabaseClient.rpc('available_cycle_months');
+            if (mesesResposta.error) throw mesesResposta.error;
+            const meses = mesesResposta.data.map(function (r) { return r.month; });
+            const escolha = buscar('filtro-mes'); escolha.replaceChildren();
+            if (!meses.length) {
+                const vazio = document.createElement('option'); vazio.value = ''; vazio.textContent = 'Nenhum mês registrado ainda'; escolha.append(vazio);
+            } else {
+                if (!meses.includes(mesAtual)) mesAtual = meses[0];
+                meses.forEach(function (mes) {
+                    const opcao = document.createElement('option'); opcao.value = mes;
+                    opcao.textContent = new Date(mes + '-01T12:00:00').toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }); escolha.append(opcao);
+                });
+                escolha.value = mesAtual;
+            }
             if (feminino) {
                 const respostas = await Promise.all([
                     buscarPeriodos(),
@@ -734,22 +703,7 @@
                 periodos = respostas[0];
                 configuracao = respostas[1].data;
                 resumo = respostas[2].data[0];
-            } else {
-                const limites = limitesMes();
-
-                const resposta = await supabaseClient.rpc(
-                    'get_shared_cycle_days',
-                    {
-                        p_start_date: limites.inicio,
-                        p_end_date: limites.fim
-                    }
-                );
-
-                if (resposta.error) {
-                    throw resposta.error;
-                }
-
-                compartilhados = resposta.data;
+                window.dispatchEvent(new CustomEvent('cycle-summary-updated', { detail: resumo }));
             }
 
             pronto = true;

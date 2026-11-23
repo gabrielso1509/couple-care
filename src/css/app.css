@@ -1,0 +1,604 @@
+/* Ajustes de produção sobre a demo: componentes funcionais, estados e formulários. */
+.cc-figma .conteudo { line-height: 1.6; }
+.cc-figma .conteudo :is(p,h2,h3) { overflow-wrap: anywhere; }
+.cc-figma .conteudo h2 { font-family: 'Outfit',sans-serif; }
+.cc-figma .card { min-width: 0; }
+.cc-figma .cc-status { color: #a9b7ce; font-size: 12px; margin: 0; }
+.cc-figma .empty-state { padding: 24px 0; color: #a9b7ce; font-size: 13px; line-height: 1.8; }
+.cc-figma :is(.cc-field,.campo-app) { display: grid; gap: 8px; color: #dfe5ef; font-size: 12px; font-weight: 600; min-width: 0; }
+.cc-figma :is(.cc-field,.campo-app) :is(input,select,textarea) { width: 100%; min-height: 48px; padding: 12px 15px; border: 1px solid #ffffff19; border-radius: 13px; background: #ffffff09; color: #f5f7fb; font-size: 14px; font-weight: 400; min-width: 0; }
+.cc-figma :is(.cc-field,.campo-app) textarea { min-height: 85px; resize: vertical; }
+.cc-figma .cc-field input:focus { border-color: #ad9aff; }
+.cc-figma option { background: #14233d; }
+.cc-figma fieldset { min-width: 0; border: 0; padding: 0; margin: 0; display: grid; gap: 16px; }
+.cc-figma .primary-button, .cc-figma .soft-button { padding: 12px 18px; text-decoration: none; }
+.cc-figma .soft-button { width: auto; }
+.cc-figma .form-app .botao-primario { width: 100%; }
+.cc-figma .form-app > button { justify-self: start; }
+.cc-figma .acoes-app { display: flex; gap: 8px; flex-wrap: wrap; }
+.cc-figma .duas-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.cc-figma .cc-advanced { min-width: 0; color: #a9b7ce; font-size: 12px; }
+.cc-figma .cc-advanced > summary { min-height: 44px; padding: 12px 0; color: #c4b6ff; cursor: pointer; }
+.cc-figma .cc-advanced-fields { display: grid; gap: 16px; padding-block: 12px; }
+.cc-figma .cc-toolbar { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.cc-figma .check-row { display: flex; gap: 10px; align-items: center; color: #b9c7da; font-size: 12px; font-weight: 400; }
+.cc-figma input[type="checkbox"] { accent-color: #ff914d; width: 18px; height: 18px; min-height: 18px; flex-shrink: 0; }
+.cc-figma [role="status"] { font-size: 12px; color: #b9c7da; }
+.cc-figma .feedback-app:empty { display: none; }
+.cc-figma .pular-conteudo { position: fixed; top: -100px; left: 16px; z-index: 300; padding: 12px; background: #fff; color: #14233d; border-radius: 8px; }
+.cc-figma .pular-conteudo:focus { top: 12px; }
+
+/* Tarefas: itens compactos; detalhes e controles avançados continuam disponíveis. */
+.cc-figma .two-column { grid-template-columns: minmax(290px,.67fr) minmax(0,1.33fr); }
+.cc-figma .stats-row { margin: 0; }
+.cc-figma .stats-row strong { font-size: 25px; }
+.cc-figma .stats-row small { font-size: 11px; color: #a9b7ce; }
+.cc-figma .add-task-card > h2 { margin: 7px 0; font: 600 24px 'Outfit',sans-serif; }
+.cc-figma .add-task-card > p { margin-bottom: 25px; }
+.cc-figma .tarefas-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cc-figma .tarefas-filtros { margin: 24px 0 15px; }
+.cc-figma .tarefas-filtros button { min-height: 36px; padding: 8px 12px; font-size: 10px; }
+.cc-figma .tarefas-cabecalho { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.cc-figma .tarefas-cabecalho h2 { margin: 5px 0 0; font: 600 23px 'Outfit',sans-serif; }
+.cc-figma .tarefas-cabecalho .campo-app label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.cc-figma #busca-tarefa { min-height: 36px; max-width: 200px; font-size: 11px; }
+.cc-figma .tarefas-ferramentas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cc-figma .tarefas-ferramentas > :first-child { grid-column: auto; }
+.cc-figma .tarefa-cartao { display: grid; grid-template-columns: 25px minmax(0,1fr) auto; align-items: start; gap: 14px; border: 0; border-bottom: 1px solid #ffffff10; border-radius: 0; background: transparent; padding: 20px 0; }
+.cc-figma .tarefa-cartao .cc-task-toggle { width: 25px; min-height: 25px; border: 1px solid #ffffff30; border-radius: 8px; background: transparent; color: transparent; padding: 0; }
+.cc-figma .tarefa-cartao.concluida .cc-task-toggle { color: #73d5bd; border-color: #73d5bd55; background: #73d5bd12; }
+.cc-figma .tarefa-cartao h3 { font-size: 13px; margin: 0 0 4px; }
+.cc-figma .tarefa-cartao.concluida h3 { text-decoration: line-through; color: #a9b7ce; }
+.cc-figma .tarefa-meta { font-size: 10px; color: #a9b7ce; }
+.cc-figma .tarefa-cartao .tarefa-pessoa { margin: 0; font-size: 0; }
+.cc-figma .tarefa-avatar { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; overflow: hidden; background: #503696; font-size: 11px; }
+.cc-figma .tarefa-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cc-figma .tarefa-details { grid-column: 2 / -1; }
+.cc-figma .tarefa-details summary { cursor: pointer; font-size: 10px; color: #ad9aff; min-height: 28px; }
+.cc-figma .tarefa-etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.cc-figma .tarefa-etiqueta { font-size: 10px; padding: 4px 8px; background: #ad9aff12; color: #cbbfff; border-radius: 6px; }
+.cc-figma .tarefa-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+.cc-figma .tarefa-acoes button { min-height: 34px; border: 1px solid #ffffff18; background: transparent; color: #cbbfff; border-radius: 8px; padding: 6px 10px; font-size: 11px; }
+.cc-figma .tarefa-checklist { list-style: none; padding: 0; display: grid; gap: 8px; font-size: 12px; }
+.cc-figma .tarefa-checklist label { display: flex; align-items: center; gap: 8px; }
+.cc-figma .tarefa-autoria { font-size: 10px; color: #a9b7ce; margin-top: 10px; }
+.cc-figma .cc-history { padding: 24px; }
+.cc-figma .cc-history ol { list-style: none; padding: 0; font-size: 12px; }
+.cc-figma .cc-history time { display: block; color: #a9b7ce; font-size: 10px; margin-bottom: 12px; }
+
+/* Calendário: sete colunas, agenda em linha do tempo e formulários em modal. */
+.cc-figma .calendar-layout { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(300px,.8fr); gap: 20px; align-items: stretch; }
+.cc-figma .month-card { padding: 28px; }
+.cc-figma .controle-mes { display: grid; grid-template-columns: 1fr auto auto; column-gap: 6px; align-items: center; }
+.cc-figma .controle-mes #mes { grid-column: 1; grid-row: 1; font-size: 9px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; margin: 0; }
+.cc-figma .controle-mes h2 { grid-column: 1; grid-row: 2; font: 600 24px 'Outfit',sans-serif; margin: 6px 0 0; }
+.cc-figma .controle-mes button { width: 36px; height: 36px; background: transparent; color: #d7e2f3; border: 1px solid #ffffff20; border-radius: 11px; }
+.cc-figma #anterior { grid-column: 2; grid-row: 1 / 3; }
+.cc-figma #seguinte { grid-column: 3; grid-row: 1 / 3; }
+.cc-figma #hoje { margin-top: 18px; min-height: 34px; padding: 6px 12px; font-size: 11px; }
+.cc-figma .semana-app,.cc-figma .dias-app { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 0; }
+.cc-figma .semana-app { margin: 24px 0 12px; text-align: center; color: #a9b7ce; font-size: 9px; letter-spacing: .1em; }
+.cc-figma .calendario-real .dia-app { border: 1px solid #ffffff08; border-radius: 0; background: transparent; min-width: 0; min-height: 95px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font-size: 12px; color: #e4ecfa; }
+.cc-figma .calendario-real .dia-app[aria-pressed="true"] { background: #ff914d; color: #142037; border-radius: 15px; }
+.cc-figma .calendario-marcadores { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; min-height: 10px; font-size: 11px; }
+.cc-figma .marker-event,.cc-figma .marker-task { width: 4px; height: 4px; border-radius: 50%; background: #ad9aff; }
+.cc-figma .marker-task { background: #73d5bd; }
+.cc-figma .calendario-legenda { display: flex; flex-wrap: wrap; list-style: none; gap: 12px; padding: 0; color: #a9b7ce; font-size: 10px; }
+.cc-figma .calendario-ajuda { font-size: 11px; color: #a9b7ce; }
+.cc-figma .calendario-barra { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+.cc-figma .calendario-barra button { min-height: 34px; font-size: 11px; }
+.cc-figma .agenda-card { position: relative; padding: 26px; min-height: 350px; }
+.cc-figma .agenda-card h2 { margin: 5px 0 0; font: 600 23px 'Outfit',sans-serif; }
+.cc-figma .agenda-card #selecionado { font-size: 9px; color: #ad9aff; text-transform: uppercase; margin: 12px 0 24px; }
+.cc-figma .cc-agenda-add { position: absolute; right: 26px; top: 26px; }
+.cc-figma .agenda-card .registro-app { position: relative; padding: 5px 0 5px 16px; margin: 0 0 24px 45px; border: 0; border-left: 3px solid #ad9aff; background: transparent; border-radius: 0; }
+.cc-figma .agenda-card .registro-app:nth-child(3n+2) { border-color: #ff914d; }
+.cc-figma .agenda-card .registro-app:nth-child(3n+3) { border-color: #73d5bd; }
+.cc-figma .agenda-card .registro-app h3 { font-size: 12px; margin: 0 0 5px; }
+.cc-figma .agenda-card .registro-app p { color: #a9b7ce; font-size: 10px; margin: 0; }
+.cc-figma .agenda-card .acoes-app { margin-top: 10px; }
+.cc-figma .agenda-card .acoes-app button { min-height: 28px; padding: 5px 8px; font-size: 9px; }
+.cc-figma .agenda-card a { color: #ad9aff; font-size: 11px; }
+.cc-figma .reminder-card { padding: 26px; }
+.cc-figma .reminder-card p { font-size: 12px; color: #a9b7ce; }
+.cc-figma .cc-calendar-forms { display: grid; gap: 20px; }
+.cc-figma .calendario-compartilhar { display: flex; gap: 10px; align-items: center; font-size: 12px; color: #a9b7ce; }
+.cc-figma .sentimentos-opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+/* Bem-estar: resumo real, sem números fixos ou previsão de fertilidade. */
+.cc-figma .wellness-hero { padding: 36px; }
+.cc-figma .wellness-hero p { font-size: 13px; }
+.cc-figma .hero-hearts { display: flex; align-items: center; color: #ce779a; font: 120px/1 'Outfit',sans-serif; min-width: 180px; }
+.cc-figma .hero-hearts span { color: #ff914d; margin-left: -50px; margin-top: 35px; }
+.cc-figma #individual { display: grid; gap: 20px; }
+.cc-figma .wellness-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.cc-figma .cycle-card,.cc-figma .checkin-card { padding: 28px; }
+.cc-figma .cycle-visual { background: conic-gradient(#ce779a var(--cycle-progress,0deg),#ffffff0c 0); }
+.cc-figma .cycle-visual > div { background: #14223b; }
+.cc-figma .feeling-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cc-figma .feeling-grid button { min-height: 44px; font-size: 11px; padding: 10px; border: 1px solid #ffffff18; border-radius: 11px; color: #b9c7da; background: #0c1a2e40; text-align: left; }
+.cc-figma .feeling-grid button[aria-pressed="true"] { border-color: #ad9aff70; background: #ad9aff15; color: #f5f7fb; }
+.cc-figma .checkin-card form,.cc-figma .checkin-card fieldset { display: grid; gap: 12px; }
+.cc-figma .resumo-ciclo { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.cc-figma .indicador-ciclo { padding: 16px; border: 1px solid #ffffff14; border-radius: 13px; display: grid; gap: 6px; }
+.cc-figma .indicador-ciclo span { color: #a9b7ce; font-size: 11px; }
+.cc-figma .indicador-ciclo strong { font-size: 18px; }
+.cc-figma .compartilhar-registro { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.cc-figma #lista-periodos > article { padding: 18px 0; border-bottom: 1px solid #ffffff15; }
+.cc-figma .support-card ul { color: #a9b7ce; font-size: 12px; }
+
+/* Finanças e memórias. Os gráficos mostram só o que está registrado. */
+.cc-figma .finance-summary { margin: 0; }
+.cc-figma .balance-card,.cc-figma .metric-card { padding: 28px; }
+.cc-figma .balance-card strong { font-size: 34px; }
+.cc-figma .balance-art { font-size: 48px; }
+.cc-figma .metric-card strong { font-size: 30px; }
+.cc-figma .finance-grid { gap: 20px; }
+.cc-figma .spending-card,.cc-figma .goal-card,.cc-figma .transactions-card { padding: 28px; }
+.cc-figma .bar-chart { gap: 18px; align-items: end; }
+.cc-figma .bar-chart > div { min-width: 0; flex: 1; }
+.cc-figma .bar-chart span { overflow-wrap: anywhere; }
+.cc-figma .bar-chart .empty-state { align-self: center; height: auto; width: 100%; }
+.cc-figma .transaction { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; padding: 18px 0; border-bottom: 1px solid #ffffff0f; }
+.cc-figma .transaction p { margin: 0; }
+.cc-figma .transaction b { display: block; font-size: 12px; }
+.cc-figma .transaction small { display: block; color: #a9b7ce; font-size: 10px; }
+.cc-figma .transaction strong { font-size: 12px; white-space: nowrap; }
+.cc-figma .transaction .cc-row-actions { grid-column: 1/-1; }
+.cc-figma .cc-row-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+.cc-figma .cc-row-actions button { font-size: 11px; }
+.cc-figma .cc-goal { padding: 20px 0; border-bottom: 1px solid #ffffff0f; }
+.cc-figma .cc-goal h4 { margin: 0 0 12px; font: 600 22px 'Outfit',sans-serif; }
+.cc-figma .cc-goal strong { display: block; margin: 0 0 14px; font-size: 24px; }
+.cc-figma .cc-goal small { font-size: 11px; color: #a9b7ce; }
+.cc-figma .photo-stack img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; }
+.cc-figma .photo-stack .photo { overflow: hidden; }
+.cc-figma .photo-stack .photo span { position: absolute; bottom: 9px; left: 12px; right: 12px; text-align: center; color: #17253b; }
+.cc-figma .moments-hero { padding: 36px; }
+.cc-figma .memory-gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; margin-top: 24px; }
+.cc-figma .memory-item { min-width: 0; border: 1px solid #ffffff12; border-radius: 16px; overflow: hidden; }
+.cc-figma .memory-item > div { padding: 16px; }
+.cc-figma .memory-item img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.cc-figma .memory-item h4 { margin: 0; font: 600 20px 'Outfit',sans-serif; }
+.cc-figma .memory-item p { color: #a9b7ce; font-size: 12px; white-space: pre-wrap; }
+.cc-figma .memory-gallery small { color: #a9b7ce; font-size: 10px; }
+.cc-figma .bucket-item { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; align-items: center; gap: 12px; }
+.cc-figma .bucket-item p { font-size: 12px; }
+.cc-figma .bucket-item button { min-width: 30px; min-height: 34px; border: 1px solid #ffffff18; border-radius: 10px; background: transparent; color: #ad9aff; }
+.cc-figma .bucket-item.completed p { text-decoration: line-through; color: #a9b7ce; }
+.cc-figma .memory-view-photos { display: grid; gap: 12px; }
+.cc-figma .memory-view-photos img { max-width: 100%; max-height: 65dvh; margin: auto; border-radius: 14px; }
+
+/* Perfil, central de avisos e modais. */
+.cc-figma .settings-layout { grid-template-columns: minmax(230px,.6fr) minmax(0,2fr); align-items: start; }
+.cc-figma .profile-card { padding: 0 0 24px; }
+.cc-figma .cc-profile-summary { padding: 0 20px; text-align: center; }
+.cc-figma .cc-profile-summary .large-avatar { position: relative; margin: -36px auto 16px; display: grid; place-items: center; overflow: hidden; width: 76px; height: 76px; border: 5px solid #13213a; }
+.cc-figma .large-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cc-figma .profile-card .cc-advanced { padding: 0 20px; }
+.cc-figma .foto-perfil { display: grid; place-items: center; gap: 10px; }
+.cc-figma #foto-perfil-imagem { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; }
+.cc-figma #arquivo-avatar { max-width: 100%; font-size: 11px; }
+.cc-figma #settings-own-email { font-size: 11px; color: #a9b7ce; overflow-wrap: anywhere; }
+.cc-figma .settings-card { padding: 26px; }
+.cc-figma .settings-card h3 { margin: 0 0 8px; }
+.cc-figma .settings-card form { margin-top: 18px; }
+.cc-figma .settings-card p { font-size: 12px; color: #a9b7ce; }
+.cc-figma .lista-casal { list-style: none; padding: 0; display: grid; gap: 12px; }
+.cc-figma .lista-casal li { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.cc-figma .toggle-row p b { font-size: 12px; }
+.cc-figma .toggle-row p span { font-size: 10px; }
+.cc-figma .toggle { min-width: 40px; min-height: 24px; border: 0; }
+.cc-figma .cc-couple-avatars { display: flex; gap: 0; }
+.cc-figma .cc-couple-avatars a { display: grid; place-items: center; overflow: hidden; width: 34px; height: 34px; border: 2px solid #0a1426; border-radius: 50%; background: #503696; color: #fff; font-size: 11px; }
+.cc-figma .cc-couple-avatars a + a { margin-left: -8px; background: #a54f69; }
+.cc-figma .cc-couple-avatars img { width: 100%; height: 100%; object-fit: cover; }
+.cc-figma .cc-notification-button { position: relative; }
+.cc-figma .cc-notification-count { position: absolute; right: -4px; top: -5px; min-width: 17px; height: 17px; padding: 0 3px; border-radius: 9px; background: #ff914d; color: #14233d; font-size: 9px; }
+.cc-figma .cc-notification { display: block; padding: 15px 0; border-bottom: 1px solid #ffffff15; color: #f5f7fb; }
+.cc-figma .cc-notification.read { color: #a9b7ce; }
+.cc-figma .cc-notification small { display: block; font-size: 10px; color: #a9b7ce; }
+.cc-figma .cc-modal { width: min(620px,calc(100% - 24px)); max-height: calc(100dvh - 32px); margin: auto; padding: 30px; border: 1px solid #ffffff25; border-radius: 24px; background: #122039; color: #f5f7fb; overflow: auto; }
+.cc-figma .cc-modal::backdrop { background: #020817bb; backdrop-filter: blur(4px); }
+.cc-figma .cc-modal header { display: flex; align-items: start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+.cc-figma .cc-modal h2 { margin: 0; font: 600 25px 'Outfit',sans-serif; }
+.cc-figma .cc-modal [data-close] { width: 36px; min-height: 36px; flex-shrink: 0; border: 1px solid #ffffff20; border-radius: 10px; background: transparent; color: #cbbfff; font-size: 22px; }
+.cc-figma .cc-modal > [data-close] { float: right; position: relative; z-index: 2; }
+.cc-figma .cc-modal .card { border: 0; box-shadow: none; padding: 0; background: transparent; }
+.cc-figma .cc-modal form { display: grid; gap: 16px; }
+.cc-figma .cc-modal :is(.form-row,.tarefas-linha) { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cc-figma .cc-modal .primary-button { width: 100%; }
+.cc-figma .cc-modal .status-pill { font-size: 11px; }
+@media(max-width:1180px) {
+    .cc-figma .two-column,.cc-figma .calendar-layout { grid-template-columns: 1fr; }
+    .cc-figma .agenda-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cc-figma .agenda-card { min-height: 250px; }
+    .cc-figma .wellness-grid { grid-template-columns: 1fr; }
+    .cc-figma .settings-layout { grid-template-columns: 1fr; }
+    .cc-figma .profile-card { max-width: 480px; width: 100%; }
+}
+@media(max-width:900px) {
+    .cc-figma .hero-hearts { display: none; }
+    .cc-figma .wellness-hero { padding: 26px; }
+    .cc-figma .finance-summary { grid-template-columns: 1fr 1fr; }
+    .cc-figma .balance-card { grid-column: 1/-1; }
+    .cc-figma .finance-grid { grid-template-columns: 1fr; }
+    .cc-figma .transactions-card { grid-column: auto; }
+}
+@media(max-width:600px) {
+    .cc-figma .agenda-column,.cc-figma .duas-colunas,.cc-figma .memory-gallery { grid-template-columns: 1fr; }
+    .cc-figma .calendar-layout .month-card { padding: 18px 12px; }
+    .cc-figma .calendario-real .dia-app { min-height: 62px; font-size: 11px; gap: 8px; }
+    .cc-figma .semana-app { font-size: 8px; }
+    .cc-figma .calendario-legenda { font-size: 9px; }
+    .cc-figma .finance-summary { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cc-figma .metric-card { padding: 18px; }
+    .cc-figma .metric-card strong { font-size: 22px; }
+    .cc-figma .metric-card small { font-size: 9px; }
+    .cc-figma .balance-card strong { font-size: 29px; }
+    .cc-figma .bar-chart { gap: 10px; }
+    .cc-figma .bar-chart span { font-size: 9px; }
+    .cc-figma .stats-row { gap: 8px; }
+    .cc-figma .stats-row > div { padding: 14px 10px; gap: 8px; }
+    .cc-figma .stats-row .stat-icon { display: none; }
+    .cc-figma .stats-row small { font-size: 10px; }
+    .cc-figma .cc-modal { padding: 22px; }
+    .cc-figma .cc-modal :is(.form-row,.tarefas-linha) { grid-template-columns: 1fr; }
+    .cc-figma .cc-toolbar > * { flex: 1 1 140px; }
+    .cc-figma .moments-hero { padding: 26px; }
+    .cc-figma .moments-hero h2 { font-size: 32px; }
+    .cc-figma .resumo-ciclo { grid-template-columns: 1fr; }
+    .cc-figma .cc-header-actions { display: flex; }
+    .cc-figma .cc-header-actions .cc-search-open,.cc-figma .cc-couple-avatars { display: none; }
+    .cc-figma .cc-advanced-fields .tarefas-linha { grid-template-columns: 1fr; }
+    .cc-figma .tarefa-cartao { gap: 10px; }
+}
+/* A estrutura nova é independente do antigo estrutura.css. */
+.cc-figma .aplicacao .conteudo-principal { flex-direction: column; }
+.cc-figma .conteudo :is(button.botao-secundario,#atualizar-tarefas,#mais-tarefas) { min-height: 36px; border: 1px solid #ffffff1a; border-radius: 10px; background: transparent; color: #cbbfff; padding: 8px 12px; font-size: 11px; }
+.cc-figma .menstruacao-real .acoes-app button:not(.botao-primario) { min-height: 36px; border: 1px solid #ffffff1a; border-radius: 10px; background: transparent; color: #cbbfff; padding: 8px 12px; }
+.cc-figma .agenda-card .registro-app h4 { font: 600 13px 'Outfit',sans-serif; margin: 0 0 6px; }
+/* Navegação independente das folhas antigas de menu. */
+.cc-figma .menu-lateral .item-menu { display: flex; align-items: center; text-decoration: none; }
+.cc-figma .conta-menu { display: flex; align-items: center; }
+.cc-figma .conta-avatar { display: grid; place-items: center; flex-shrink: 0; border-radius: 50%; }
+.cc-figma .conta-nome { min-width: 0; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cc-figma .conta-sair { display: grid; place-items: center; flex-shrink: 0; padding: 8px; border-radius: 10px; color: #a9b7ce; }
+.cc-figma .conta-sair svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.cc-figma .bar-chart > div { max-width: 90px; }
+.cc-figma .cc-category-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+.cc-figma .cc-category-pills button { min-height: 36px; padding: 8px 12px; border: 1px solid #ffffff18; border-radius: 10px; background: transparent; color: #b9c7da; font-size: 10px; }
+.cc-figma .cc-category-pills button[aria-pressed="true"] { border-color: #ff914d66; color: #ffb47c; background: #ff914d12; }
+.cc-figma .rodape-tarefas { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+/* Evita colunas implícitas criadas por cartões com span interno da demo. */
+.cc-figma .aplicacao .conteudo-principal > .conteudo { grid-template-columns: minmax(0,1fr); }
+.cc-figma .aplicacao .conteudo-principal > .conteudo > * { grid-column: 1 / -1; }
+.cc-figma .tarefa-cartao .tarefa-meta { margin: 4px 0 0; }
+.cc-figma .add-task-card .campo-app:has(#categoria) { grid-column: 1 / -1; }
+.cc-figma .cc-category-pills button { flex: 0 0 auto; }
+.cc-figma .photo-stack .photo > img { display: block; }
+.cc-figma #individual { grid-template-columns: minmax(0,1fr); }
+.cc-figma #individual > * { grid-column: 1 / -1; }
+.cc-figma .wellness-grid > * { min-width: 0; }
+.cc-figma .cc-profile-summary { position: relative; }
+.cc-figma .cc-photo-edit { position: absolute; left: calc(50% + 18px); top: 16px; width: 26px; height: 26px; display: grid; place-items: center; padding: 5px; border: 0; border-radius: 50%; background: #ff914d; color: #142037; }
+.cc-figma .cc-photo-edit svg { width: 16px; height: 16px; }
+
+/* ==================================================
+   V2 — BEM-ESTAR, HISTÓRICO E LEITURA FINANCEIRA
+================================================== */
+/* A primeira visão acompanha a composição da referência; os registros ficam em detalhes. */
+.cc-figma .wellness-grid { align-items: stretch; }
+.cc-figma .wellness-grid .cycle-card,
+.cc-figma .wellness-grid .checkin-card { padding: 28px; min-height: 390px; }
+.cc-figma .wellness-grid .cycle-card { display: flex; flex-direction: column; }
+.cc-figma .cycle-card .card-title h3 { font-size: 24px; line-height: 1.3; }
+.cc-figma .cycle-card .status-pill { max-width: 140px; text-align: center; padding: 6px 10px; font-size: 11px; }
+.cc-figma .cycle-card .cycle-visual { width: 170px; height: 170px; margin: 25px auto 20px; flex-shrink: 0; }
+.cc-figma .cycle-visual strong { font-size: 38px; }
+.cc-figma .cycle-info { display: grid; justify-items: center; gap: 6px; margin: 0 0 20px; text-align: center; }
+.cc-figma .cycle-info > span { font-size: 13px; color: #d5c4da; }
+.cc-figma .cycle-info .cc-cycle-basis { margin: 0; font-size: 12px; color: #aebcd0; }
+.cc-figma .cycle-card > .soft-button { margin-top: auto; width: 100%; }
+.cc-figma .checkin-card > h3 { font-size: 25px; }
+.cc-figma .checkin-card > p { font-size: 13px; color: #aebcd0; }
+.cc-figma .checkin-card .feeling-grid button { min-height: 46px; font-size: 13px; padding: 12px; }
+.cc-figma .checkin-card .checkin-date-panel { font-size: 12px; color: #aebcd0; }
+.cc-figma .checkin-date-panel > summary { cursor: pointer; min-height: 32px; padding: 4px 0; }
+.cc-figma .checkin-date-field { margin: 8px 0; }
+.cc-figma .checkin-note-field { display: block; font-size: 0; }
+.cc-figma .checkin-note-field textarea { margin: 0; min-height: 68px; font-size: 14px; }
+.cc-figma .checkin-card .check-row { font-size: 12px; }
+.cc-figma .support-card { gap: 28px; }
+.cc-figma .support-card h3 { font-size: 24px; }
+.cc-figma .support-card ul { font-size: 13px; line-height: 1.7; }
+.cc-figma .cc-cycle-history { border: 1px solid #ad9aff30; border-radius: 18px; padding: 0 22px; background: #ad9aff08; scroll-margin-top: 24px; }
+.cc-figma .cc-cycle-history > summary { display: list-item; min-height: 72px; padding: 18px 0; color: #d6ccff; cursor: pointer; font-size: 16px; font-weight: 600; }
+.cc-figma .cc-cycle-history > summary small { display: block; color: #aebcd0; font-size: 12px; font-weight: 400; margin-top: 4px; }
+.cc-figma .cc-cycle-history-content { display: grid; grid-template-columns: minmax(0,1fr); gap: 20px; padding-bottom: 22px; }
+.cc-figma .cc-cycle-history-content > * { min-width: 0; grid-column: 1/-1; }
+.cc-figma .cc-partner-wellness { display: grid; grid-template-columns: minmax(0,1fr); gap: 20px; }
+.cc-figma .cc-partner-wellness > * { grid-column: 1/-1; }
+.cc-figma .partner-feelings-card,
+.cc-figma .partner-care-card { padding: 30px; min-width: 0; }
+.cc-figma .partner-profile { display: flex; gap: 15px; align-items: center; margin: 24px 0; }
+.cc-figma .partner-profile .conta-avatar { width: 54px; height: 54px; font-size: 22px; }
+.cc-figma .partner-profile h2 { margin: 0 0 6px; font: 600 24px/1.25 'Outfit',sans-serif; }
+.cc-figma .partner-profile p { margin: 0; font-size: 13px; color: #aebcd0; }
+.cc-figma .partner-feelings { display: flex; flex-wrap: wrap; gap: 10px; }
+.cc-figma .partner-feeling { padding: 12px 16px; border: 1px solid #ad9aff40; border-radius: 13px; background: #ad9aff12; color: #e4dcff; font-size: 15px; }
+.cc-figma #partner-feelings-note { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; color: #e2e8f1; line-height: 1.8; }
+.cc-figma .partner-care-card { background: radial-gradient(circle at 85% 30%,#ff914d15,transparent 50%),#122039; }
+.cc-figma .partner-care-art { color: #ff914d; font-size: 95px; line-height: 1.2; margin: 8px 0; }
+.cc-figma .partner-care-card h2 { font: 600 27px 'Outfit',sans-serif; }
+.cc-figma .partner-care-card p { font-size: 15px; color: #aebcd0; margin-bottom: 24px; }
+
+/* Atividades: cabeçalhos por data, foto e separação entre ações. */
+.cc-figma .cc-history { padding: 28px; }
+.cc-figma .cc-history > h2 { margin: 0 0 8px; font: 600 25px 'Outfit',sans-serif; }
+.cc-figma .cc-history > p { color: #aebcd0; font-size: 14px; }
+.cc-figma .activity-toolbar { display: flex; align-items: end; gap: 24px; flex-wrap: wrap; margin: 24px 0; padding-bottom: 22px; border-bottom: 1px solid #ffffff14; }
+.cc-figma .activity-toolbar .cc-field { min-width: 170px; font-size: 13px; }
+.cc-figma .activity-toolbar p { font-size: 13px; margin: 0 0 12px; color: #aebcd0; }
+.cc-figma .cc-history #historico-tarefas,
+.cc-figma .cc-history .activity-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
+.cc-figma .cc-history #historico-tarefas { gap: 34px; }
+.cc-figma .activity-group-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; padding: 12px 16px; border-radius: 12px; background: #ad9aff0d; border: 1px solid #ad9aff1f; }
+.cc-figma .activity-group-heading h3 { margin: 0; color: #d5caff; font: 600 17px/1.4 'Outfit',sans-serif; text-transform: none; }
+.cc-figma .activity-group-heading > span { font-size: 12px; color: #aebcd0; white-space: nowrap; }
+.cc-figma .activity-item { display: flex; align-items: start; gap: 15px; padding: 20px; border: 1px solid #ffffff12; border-radius: 14px; background: #0a142640; }
+.cc-figma .activity-avatar { width: 42px; height: 42px; display: grid; place-items: center; flex-shrink: 0; overflow: hidden; border-radius: 50%; background: #503696; color: white; font-size: 16px; font-weight: 700; }
+.cc-figma .activity-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cc-figma .activity-body { min-width: 0; }
+.cc-figma .activity-description { margin: 0 0 10px; font-size: 15px; line-height: 1.7; color: #c1cde0; }
+.cc-figma .activity-description strong { color: #f5f7fb; }
+.cc-figma .activity-task-title { color: #e6eaf2; }
+.cc-figma .activity-meta { display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; }
+.cc-figma .cc-history .activity-meta time { display: inline; margin: 0; color: #aebcd0; font-size: 12px; }
+.cc-figma .activity-badge { padding: 4px 9px; font-size: 11px; color: #cfc3ff; border-radius: 7px; background: #ad9aff14; }
+.cc-figma .activity-badge.completed { color: #92e4c9; background: #73d5bd12; }
+.cc-figma .activity-badge.created { color: #ffc091; background: #ff914d12; }
+.cc-figma .activity-badge.deleted { color: #ffc0ca; background: #e990a112; }
+.cc-figma #mais-atividades { margin-top: 24px; }
+
+/* Gráfico com eixos, escala monetária, valores e tabela para leitores de tela. */
+.cc-figma .category-chart { display: block; height: auto; min-height: 320px; margin-top: 25px; }
+.cc-figma .chart-axis-title { font-size: 12px; color: #aebcd0; margin: 0 0 8px; }
+.cc-figma .chart-frame { display: grid; grid-template-columns: 86px minmax(0,1fr); gap: 12px; }
+.cc-figma .chart-y-axis { position: relative; height: 220px; margin-top: 28px; border-right: 1px solid #b6c5df44; }
+.cc-figma .chart-y-axis > span { position: absolute; right: 10px; font-size: 11px; white-space: nowrap; color: #b8c5d9; transform: translateY(-50%); }
+.cc-figma .chart-scroll { overflow-x: auto; min-width: 0; padding-bottom: 6px; scrollbar-color: #5c5081 #0a1426; }
+.cc-figma .chart-plot { padding-top: 28px; }
+.cc-figma .chart-bars { position: relative; display: flex; align-items: end; justify-content: space-around; gap: 8px; height: 220px; border-bottom: 1px solid #b6c5df55; }
+.cc-figma .chart-grid { position: absolute; inset: 0; pointer-events: none; }
+.cc-figma .chart-grid > span { position: absolute; left: 0; right: 0; border-top: 1px dashed #b6c5df1a; }
+.cc-figma .chart-bar-slot { display: flex; justify-content: center; align-items: end; position: relative; height: 100%; flex: 1; min-width: 0; }
+.cc-figma .chart-bar { position: relative; width: min(65%,72px); border-radius: 9px 9px 0 0; background: linear-gradient(#b19aff,#a38af529); }
+.cc-figma .chart-bar-slot:nth-of-type(2n) .chart-bar { background: linear-gradient(#ffa460,#ff914d22); }
+.cc-figma .chart-bar-value { position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); white-space: nowrap; color: #e4eaf5; font-size: 12px; font-weight: 600; }
+.cc-figma .chart-x-axis { display: flex; gap: 8px; margin-top: 14px; min-height: 40px; }
+.cc-figma .chart-x-axis > span { flex: 1; min-width: 0; padding: 0 4px; text-align: center; color: #c1cde0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.cc-figma .chart-axis-caption { margin: 4px 0 0 98px; text-align: center; color: #aebcd0; font-size: 12px; }
+
+/* Semântica financeira: despesas não tornam o saldo positivo um alerta vermelho. */
+.cc-figma .finance-summary .balance-card,
+.cc-figma .finance-summary .metric-card { padding: 30px; position: relative; min-height: 180px; }
+.cc-figma .finance-summary :is(.balance-card,.metric-card) > span:first-child { font-size: 12px; letter-spacing: .13em; color: #c0cbdd; }
+.cc-figma .finance-summary .balance-card > strong,
+.cc-figma .finance-summary .metric-card > strong { display: block; margin: 20px 0 12px; font: 650 clamp(28px,3vw,42px)/1.15 'Outfit',sans-serif; letter-spacing: -.7px; }
+.cc-figma .finance-summary :is(.balance-card,.metric-card) > small { color: #b8c5d9; font-size: 13px; font-weight: 400; line-height: 1.7; }
+.cc-figma .finance-summary .balance-card.is-positive { background: radial-gradient(circle at 92% 0,#73d5bd18,transparent 60%),linear-gradient(120deg,#18322f,#14243b); border-color: #73d5bd3d; }
+.cc-figma .finance-summary .balance-card.is-positive > strong { color: #99e6ce; }
+.cc-figma .finance-summary .balance-card.is-negative { background: radial-gradient(circle at 92% 0,#e992a515,transparent 60%),linear-gradient(120deg,#30202d,#14243b); border-color: #e992a54d; }
+.cc-figma .finance-summary .balance-card.is-negative > strong { color: #ffb9c5; }
+.cc-figma .finance-summary .balance-card.is-neutral { background: linear-gradient(120deg,#1a2944,#14243b); border-color: #b0c0df22; }
+.cc-figma .finance-summary .balance-card.is-neutral > strong { color: #eef2fa; }
+.cc-figma .finance-summary .income-card { border-top: 2px solid #73d5bd55; }
+.cc-figma .finance-summary .income-card > strong { color: #99e6ce; }
+.cc-figma .finance-summary .expense-card { border-top: 2px solid #ffac6c55; }
+.cc-figma .finance-summary .expense-card > strong { color: #f1eee8; }
+.cc-figma .balance-state { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 4px 9px; border: 1px solid #ffffff22; border-radius: 20px; color: #cbd5e5; font-size: 11px; }
+.cc-figma .balance-card.is-positive .balance-state { color: #99e6ce; border-color: #73d5bd33; }
+.cc-figma .balance-card.is-negative .balance-state { color: #ffb9c5; border-color: #e992a533; }
+.cc-figma #finance-status { color: #aebcd0; font-size: 14px; }
+.cc-figma #finance-status.is-error { color: #ffc2cb; }
+.cc-figma .finance-grid .card-title h3 { font-size: 25px; }
+.cc-figma .cc-dashboard .week-stats strong { font-size: 18px; }
+.cc-figma .cc-dashboard .week-stats small { font-size: 13px; }
+.cc-figma .cc-dashboard .card h3 { font-size: 24px; }
+.cc-figma .cc-dashboard .money-value { font-size: 30px; }
+.cc-figma .cc-modal .cc-field { font-size: 14px; }
+.cc-figma .cc-modal :is(input,select,textarea) { font-size: 16px; }
+.cc-figma .inline-category-tools { display: flex; justify-content: end; margin-top: -6px; }
+.cc-figma .inline-category-tools button { min-height: 36px; font-size: 13px; }
+.cc-figma .inline-category-editor { padding: 16px; border: 1px solid #ad9aff35; border-radius: 14px; background: #ad9aff09; }
+.cc-figma .inline-category-editor .cc-row-actions { margin-top: 12px; }
+.cc-figma .inline-category-editor p { margin: 8px 0 0; color: #c7baff; font-size: 12px; }
+@media(min-width:1181px) {
+    .cc-figma .menstruacao-real .wellness-grid { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+}
+@media(max-width:600px) {
+    .cc-figma .wellness-grid .cycle-card,.cc-figma .wellness-grid .checkin-card { padding: 22px; min-height: 0; }
+    .cc-figma .cycle-card .card-title { flex-wrap: wrap; }
+    .cc-figma .partner-profile { align-items: start; }
+    .cc-figma .partner-profile h2 { font-size: 22px; }
+    .cc-figma .cc-history { padding: 20px; }
+    .cc-figma .activity-toolbar { gap: 12px; }
+    .cc-figma .activity-group-heading { flex-wrap: wrap; }
+    .cc-figma .activity-group-heading h3 { font-size: 15px; }
+    .cc-figma .activity-item { padding: 16px 12px; gap: 12px; }
+    .cc-figma .activity-avatar { width: 36px; height: 36px; }
+    .cc-figma .activity-description { font-size: 14px; }
+    .cc-figma .activity-meta { gap: 8px; }
+    .cc-figma .chart-frame { grid-template-columns: 72px minmax(0,1fr); gap: 8px; }
+    .cc-figma .chart-y-axis > span { font-size: 10px; right: 6px; }
+    .cc-figma .chart-axis-caption { margin-left: 80px; }
+    .cc-figma .finance-summary { grid-template-columns: 1fr; }
+    .cc-figma .finance-summary :is(.balance-card,.metric-card) { min-height: 0; padding: 24px; }
+    .cc-figma .finance-summary :is(.balance-card,.metric-card) > strong { font-size: 34px; margin: 14px 0 10px; }
+    .cc-figma .finance-summary :is(.balance-card,.metric-card) > small { font-size: 13px; }
+    .cc-figma .cc-cycle-history { padding-inline: 16px; }
+}
+
+/* Histórico compacto: fechado por padrão, com rolagem apenas dentro da caixa. */
+.cc-figma .cc-history.activity-history {
+    padding: 0;
+    border: 1px solid #ffffff15;
+    border-radius: 17px;
+    background: #13203999;
+    box-shadow: none;
+    overflow: clip;
+}
+.cc-figma .activity-history-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 18px 22px;
+    list-style: none;
+    color: #e3dcfa;
+    cursor: pointer;
+    font: 600 17px/1.4 'Outfit',sans-serif;
+}
+.cc-figma .activity-history-toggle::-webkit-details-marker,
+.cc-figma .activity-period > summary::-webkit-details-marker { display: none; }
+.cc-figma .activity-history-toggle::before,
+.cc-figma .activity-period > summary::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-right: 1.6px solid #ad9aff;
+    border-bottom: 1.6px solid #ad9aff;
+    transform: rotate(-45deg);
+    transition: transform .18s ease;
+}
+.cc-figma .activity-history[open] > .activity-history-toggle::before,
+.cc-figma .activity-period[open] > summary::before { transform: rotate(45deg); }
+.cc-figma .activity-history-toggle:hover { background: #ad9aff08; }
+.cc-figma .activity-history[open] > .activity-history-toggle { border-bottom: 1px solid #ffffff10; }
+.cc-figma .activity-history-scroll {
+    max-height: min(520px,65dvh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #8876b060 transparent;
+    scrollbar-gutter: stable;
+    padding: 0 20px 20px;
+    scroll-padding-top: 94px;
+}
+.cc-figma .activity-history-scroll::-webkit-scrollbar { width: 6px; }
+.cc-figma .activity-history-scroll::-webkit-scrollbar-track { background: transparent; }
+.cc-figma .activity-history-scroll::-webkit-scrollbar-thumb { background: #8876b060; border-radius: 10px; }
+.cc-figma .activity-history-scroll:hover { scrollbar-color: #a48dd390 transparent; }
+.cc-figma .activity-history-scroll .activity-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: 0 0 14px;
+    padding: 16px 0 14px;
+    gap: 16px;
+    align-items: center;
+    background: #122039;
+    border-bottom: 1px solid #ffffff0d;
+}
+.cc-figma .activity-history-scroll .activity-toolbar .cc-field { min-width: 132px; font-size: 11px; gap: 5px; }
+.cc-figma .activity-history-scroll .activity-toolbar select { min-height: 38px; padding: 8px 12px; font-size: 12px; }
+.cc-figma .activity-history-scroll .activity-toolbar p { margin: 16px 0 0; font-size: 11px; }
+.cc-figma .activity-history #historico-tarefas { gap: 10px; }
+.cc-figma .activity-period > summary {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 14px 15px;
+    border: 1px solid #ffffff12;
+    border-radius: 11px;
+    background: #ad9aff06;
+}
+.cc-figma .activity-period-title { flex: 1; min-width: 0; font: 500 14px/1.5 'Outfit',sans-serif; color: #d3c9ed; }
+.cc-figma .activity-period-count { color: #9eacc2; font-size: 11px; white-space: nowrap; }
+.cc-figma .activity-period[open] > summary { margin-bottom: 12px; background: #ad9aff0b; }
+.cc-figma .activity-history .activity-items { gap: 12px; padding: 0 2px 8px; }
+.cc-figma .activity-history .activity-item { padding: 15px; border-radius: 11px; }
+.cc-figma .activity-history .activity-description { font-size: 14px; }
+.cc-figma .activity-history .activity-avatar { width: 36px; height: 36px; font-size: 13px; }
+.cc-figma .activity-history .activity-meta time { font-size: 11px; }
+.cc-figma .activity-history #mais-atividades { margin-top: 18px; min-height: 38px; font-size: 12px; }
+@media(max-width:600px) {
+    .cc-figma .activity-history-toggle { min-height: 58px; padding: 16px; font-size: 16px; }
+    .cc-figma .activity-history-scroll { max-height: 60dvh; padding-inline: 12px; }
+    .cc-figma .activity-history-scroll .activity-toolbar { gap: 8px; }
+    .cc-figma .activity-history-scroll .activity-toolbar p { margin: 0; }
+    .cc-figma .activity-period > summary { flex-wrap: wrap; gap: 8px; padding: 12px; }
+    .cc-figma .activity-period-count { margin-left: 19px; }
+    .cc-figma .activity-history .activity-item { padding: 12px; gap: 10px; }
+}
+@media(prefers-reduced-motion:reduce) {
+    .cc-figma .activity-history-toggle::before,
+    .cc-figma .activity-period > summary::before { transition: none; }
+}
+.cc-figma .activity-period > summary .activity-period-title { flex: 1; white-space: normal; color: #d3c9ed; font: 500 14px/1.5 'Outfit',sans-serif; }
+.cc-figma .activity-period > summary .activity-period-count { color: #9eacc2; font-size: 11px; white-space: nowrap; }
+.cc-figma .activity-history-toggle:focus-visible,
+.cc-figma .activity-history-scroll:focus-visible { outline-offset: -4px; }
+
+/* Avisos rápidos: saem do fluxo, sem criar espaços entre os cards. */
+.cc-figma .cc-feedback-silent,
+.cc-figma :is(.feedback-app, form [role="status"]):empty { display: none !important; }
+.cc-figma .cc-feedback-error { color: #ffbdc0; font-size: 13px; margin: 8px 0 0; }
+.cc-figma .aplicacao .conteudo-principal > .conteudo { gap: 16px; }
+.cc-figma :is(.wellness-grid,.moments-grid,.finance-grid,.two-column,.duas-colunas) { gap: 16px; }
+.cc-figma .wellness-hero { margin-bottom: 0; }
+.cc-figma .cc-toast-host {
+    position: fixed; inset: 20px 20px auto auto; margin: 0; padding: 0;
+    width: min(400px,calc(100vw - 32px)); max-height: calc(100dvh - 40px);
+    overflow: auto; border: 0; background: transparent; color: #edf8f4;
+    font-family: 'DM Sans',sans-serif; z-index: 2147483000;
+    pointer-events: none;
+}
+.cc-figma .cc-toast-host::backdrop { background: transparent; pointer-events: none; }
+.cc-figma .cc-toast-host > div { display: grid; gap: 10px; }
+.cc-figma .cc-toast-host:not(:popover-open) { display: none; }
+.cc-figma .cc-toast {
+    display: flex; align-items: flex-start; gap: 12px; padding: 16px;
+    border: 1px solid #398b71; border-radius: 16px; background: #102d29;
+    box-shadow: 0 14px 38px #0005; pointer-events: auto;
+    animation: cc-toast-enter .18s ease-out; margin-bottom: 10px;
+}
+.cc-figma .cc-toast-icon { display: grid; place-items: center; flex: 0 0 28px; height: 28px; border-radius: 50%; background: #73d6b422; color: #8ee3c6; font-size: 18px; font-weight: 700; }
+.cc-figma .cc-toast-body { flex: 1; min-width: 0; }
+.cc-figma .cc-toast-body strong { font-size: 14px; line-height: 1.5; color: #b6f1da; }
+.cc-figma .cc-toast-body p { margin: 3px 0 0; font-size: 13px; line-height: 1.6; color: #e2f2ec; overflow-wrap: anywhere; }
+.cc-figma .cc-toast-close { flex: 0 0 36px; width: 36px; height: 36px; min-height: 36px; margin: -4px -5px 0 0; padding: 0; border: 0; border-radius: 9px; font-size: 24px; line-height: 1; background: transparent; color: #c5e7da; cursor: pointer; }
+.cc-figma .cc-toast-close:hover { background: #ffffff12; }
+.cc-figma .cc-toast--error { background: #35212b; border-color: #a6596b; }
+.cc-figma .cc-toast--error :is(.cc-toast-icon,.cc-toast-body strong) { color: #ffc2cc; }
+.cc-figma .cc-toast--error .cc-toast-icon { background: #e47a9420; }
+.cc-figma .cc-toast--info { background: #202b42; border-color: #7272a8; }
+.cc-figma .cc-toast--info :is(.cc-toast-icon,.cc-toast-body strong) { color: #d6ccff; }
+.cc-figma :is(.cc-toast-close,.dream-action):focus-visible { outline: 2px solid #cbbcff; outline-offset: 3px; }
+/* Área de clique confortável e ícones vetoriais legíveis. */
+.cc-figma .bucket-item { padding-block: 14px; min-height: 74px; gap: 12px; }
+.cc-figma .bucket-item p { font-size: 14px; line-height: 1.5; margin: 0; }
+.cc-figma .bucket-item .cc-row-actions { display: flex; align-items: center; gap: 8px; }
+.cc-figma .bucket-item .dream-action { display: inline-flex; justify-content: center; align-items: center; flex: 0 0 44px; width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 10px; border-radius: 12px; border: 1px solid #ad9aff44; background: #ad9aff0b; color: #c9baff; cursor: pointer; }
+.cc-figma .dream-action svg { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cc-figma .bucket-item .dream-action-check:hover { background: #73d6b41f; color: #8ee3c6; border-color: #73d6b477; }
+.cc-figma .bucket-item .dream-action-remove { color: #d5b7bf; border-color: #dc97a52c; }
+.cc-figma .bucket-item .dream-action-remove:hover { color: #ffb8c6; background: #e7819c20; border-color: #e7819c77; }
+.cc-figma .bucket-item.completed .dream-action-check,
+.cc-figma #cc-checkin .primary-button.is-saved { background: #245f4d; color: #d0f8e7; border: 1px solid #68c69f; box-shadow: none; }
+.cc-figma #cc-checkin .primary-button.is-saved:hover { background: #2a705a; }
+.cc-figma .bucket-item button:disabled { opacity: .5; cursor: wait; }
+@keyframes cc-toast-enter { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
+@media(max-width: 600px) {
+    .cc-figma .cc-toast-host { inset: 12px 16px auto; width: auto; max-height: calc(100dvh - 100px); }
+    .cc-figma .cc-toast { padding: 13px; gap: 9px; }
+    .cc-figma .bucket-item { grid-template-columns: 20px minmax(0,1fr); gap: 8px; }
+    .cc-figma .bucket-item .cc-row-actions { grid-column: 2; justify-content: flex-end; }
+}
+@media(prefers-reduced-motion: reduce) { .cc-figma .cc-toast { animation: none; } }
