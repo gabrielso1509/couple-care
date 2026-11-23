@@ -180,7 +180,7 @@
 
         const inferior = elemento('nav', 'cc-bottom-nav');
         inferior.setAttribute('aria-label', 'Navegação rápida');
-        paginas.slice(0, 3).forEach(function (item, indice) {
+        paginas.slice(0, 4).forEach(function (item, indice) {
             const link = elemento('a', item.arquivo === arquivoAtual ? 'ativo' : '');
             link.href = '/src/' + item.arquivo;
             if (item.arquivo === arquivoAtual) link.setAttribute('aria-current', 'page');
@@ -192,7 +192,7 @@
         mais.append(elemento('span', '', 'Mais'));
         mais.setAttribute('aria-controls', lateral.id);
         mais.setAttribute('aria-expanded', 'false');
-        if (paginas.slice(3).some(function (item) { return item.arquivo === arquivoAtual; })) mais.classList.add('ativo');
+        if (paginas.slice(4).some(function (item) { return item.arquivo === arquivoAtual; })) mais.classList.add('ativo');
         inferior.append(mais);
         app.append(inferior);
 

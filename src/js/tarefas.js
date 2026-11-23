@@ -68,14 +68,14 @@
     function opcoesMembros() {
         const selecionado = $('responsavel').value;
         const filtrado = $('filtro-responsavel').value;
-        $('responsavel').replaceChildren(new Option('Sem responsável', ''));
-        $('filtro-responsavel').replaceChildren(new Option('Todos', 'all'), new Option('Sem responsável', 'unassigned'));
+        $('responsavel').replaceChildren(new Option('Sem responsável', ''), new Option('Nós dois', 'both'));
+        $('filtro-responsavel').replaceChildren(new Option('Todos', 'all'), new Option('Nós dois', 'both'), new Option('Sem responsável', 'unassigned'));
         membros.forEach(m => {
             $('responsavel').add(new Option(m.display_name, m.user_id));
             $('filtro-responsavel').add(new Option(m.display_name, m.user_id));
         });
-        $('responsavel').value = membros.some(m => m.user_id === selecionado) ? selecionado : '';
-        $('filtro-responsavel').value = ['all', 'unassigned', ...membros.map(m => m.user_id)].includes(filtrado) ? filtrado : 'all';
+        $('responsavel').value = (selecionado === 'both' || membros.some(m => m.user_id === selecionado)) ? selecionado : '';
+        $('filtro-responsavel').value = ['all', 'unassigned', 'both', ...membros.map(m => m.user_id)].includes(filtrado) ? filtrado : 'all';
     }
     function botao(texto, acao, tarefa) {
         const b = elemento('button', '', texto); b.type = 'button';
@@ -101,8 +101,9 @@
                 if (filtro === 'upcoming' && t.due_date <= dia) return false;
                 if (filtro === 'overdue' && t.due_date >= dia) return false;
             }
-            if (pessoa === 'unassigned' && t.assigned_to) return false;
-            if (pessoa !== 'all' && pessoa !== 'unassigned' && t.assigned_to !== pessoa) return false;
+            if (pessoa === 'both' && !t.assigned_to_both) return false;
+            if (pessoa === 'unassigned' && (t.assigned_to || t.assigned_to_both)) return false;
+            if (pessoa !== 'all' && pessoa !== 'unassigned' && pessoa !== 'both' && !t.assigned_to_both && t.assigned_to !== pessoa) return false;
             return (t.title + ' ' + t.description).toLocaleLowerCase('pt-BR').includes(busca);
         });
         const peso = { high: 0, normal: 1, low: 2 };
@@ -133,7 +134,11 @@
             if (t.description) details.append(elemento('p', 'tarefa-descricao', t.description));
             const responsavel = membros.find(m => m.user_id === t.assigned_to);
             const pessoaEl = elemento('div', 'tarefa-pessoa');
-            if (responsavel) {
+            if (t.assigned_to_both) {
+                pessoaEl.append(elemento('span', '', 'Nós dois'));
+                membros.forEach(function (membro) { const foto = elemento('span', 'tarefa-avatar'); foto.setAttribute('aria-hidden', 'true'); pessoaEl.append(foto); queueMicrotask(function () { avatar(foto, membro); }); });
+                card.append(pessoaEl);
+            } else if (responsavel) {
                 const foto = elemento('span', 'tarefa-avatar'); foto.setAttribute('aria-hidden', 'true');
                 pessoaEl.append(foto, elemento('span', '', responsavel.display_name));
                 card.append(pessoaEl);
@@ -285,7 +290,7 @@
         ['titulo', 'prazo', 'checklist-texto'].forEach(id => $(id).setCustomValidity(''));
         $('titulo').value = t.title; $('descricao').value = t.description;
         $('prazo').value = t.due_date || ''; $('prioridade').value = t.priority;
-        $('categoria').value = t.category; $('responsavel').value = t.assigned_to || '';
+        $('categoria').value = t.category; $('responsavel').value = t.assigned_to_both ? 'both' : t.assigned_to || '';
         $('repeticao').value = t.recurrence; $('checklist-texto').value = t.checklist.map(i => i.text).join('\n');
         $('titulo-editor').textContent = 'Editar tarefa'; $('salvar-tarefa').textContent = 'Salvar alterações';
         $('cancelar-edicao').hidden = false; mensagem('Editando “' + t.title + '”.');
@@ -340,7 +345,7 @@
         const valores = {
             title: $('titulo').value.trim(), description: $('descricao').value.trim(),
             due_date: $('prazo').value || null, priority: $('prioridade').value,
-            category: $('categoria').value, assigned_to: $('responsavel').value || null,
+            category: $('categoria').value, assigned_to: $('responsavel').value === 'both' ? null : $('responsavel').value || null, assigned_to_both: $('responsavel').value === 'both',
             recurrence: $('repeticao').value, checklist
         };
         const atual = edicao;

@@ -823,3 +823,5 @@ svg { width: 21px; height: 21px; }
 
 .cc-figma .cc-dashboard .mood-card p { font-size: 12px; line-height: 1.7; }
 .cc-figma .cc-stage-grid .status-pill { display: inline-block; padding: 5px 10px; border: 1px solid #ad9aff30; border-radius: 20px; color: #cbbfff; font-size: 11px; }
+
+@media(max-width:900px) { .cc-figma .cc-bottom-nav { grid-template-columns:repeat(5,minmax(0,1fr)); } .cc-figma .cc-mobile-open { display:none !important; } .cc-figma .cc-bottom-nav span { font-size:10px; } }

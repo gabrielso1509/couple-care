@@ -53,7 +53,8 @@
     });
     C.form($('email-form'), async function () {
         const email = $('settings-email').value.trim();
-        const r = await supabaseClient.auth.updateUser({ email: email }); C.result(r);
+        if (email.toLowerCase() === C.context.user.email?.toLowerCase()) throw new Error('Informe um endereço diferente do e-mail atual.');
+        const r = await supabaseClient.auth.updateUser({ email: email }, { emailRedirectTo: location.origin + '/src/conta-confirmada.html' }); C.result(r);
         $('email-status').textContent = 'Solicitação enviada. Confira os e-mails de confirmação antes de usar o novo endereço.';
     });
     C.form($('password-form'), async function () {

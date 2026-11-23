@@ -49,7 +49,7 @@
         const dialog = C.dialog('notifications-dialog', 'Notificações', '<button type="button" id="read-all-notifications" class="soft-button">Marcar todas como lidas</button><div id="notifications-list"></div><p id="notifications-status" role="status"></p>');
         let running = false;
         async function refresh(sync) {
-            if (running) return; running = true;
+            if (running) return; running = true; $('notifications-status').textContent = 'Buscando seus avisos…';
             try {
                 if (sync) C.result(await supabaseClient.rpc('refresh_my_notifications', { p_today: C.today() }));
                 const res = await Promise.all([
@@ -61,17 +61,23 @@
                 const box = $('notifications-list'); box.replaceChildren();
                 if (!rows.length) box.append(C.el('p', 'empty-state', 'Tudo tranquilo por aqui. Os próximos avisos aparecerão neste espaço.'));
                 rows.forEach(function (n) {
-                    const a = C.el('a', 'cc-notification' + (n.read_at ? ' read' : ''), n.title);
+                    const a = C.el('a', 'cc-notification' + (n.read_at ? ' read' : ''));
+                    const icon = C.el('span', 'notification-symbol', /tarefa/i.test(n.title) ? '✓' : /memória|sonho|momento/i.test(n.title) ? '♡' : '◷');
+                    icon.setAttribute('aria-hidden','true');
+                    const content = C.el('div', 'notification-content');
+                    content.append(C.el('strong','',n.title));
+                    content.append(C.el('span','notification-state',n.read_at ? 'Lida' : 'Nova · não lida'));
+                    a.append(icon,content);
                     // Somente rotas locais conhecidas são aceitas, mesmo se o banco mudar.
                     a.href = /^\/src\/(tarefas|calendario|espaco|index|config)\.html$/.test(n.link) ? n.link : '/src/index.html';
-                    a.append(C.el('small', '', new Date(n.created_at).toLocaleString('pt-BR')));
+                    const date = C.el('time', '', new Date(n.created_at).toLocaleString('pt-BR', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})); date.dateTime = n.created_at; content.append(date);
                     a.addEventListener('click', async function (e) {
                         e.preventDefault();
                         try { C.result(await supabaseClient.from('app_notifications').update({ read_at: new Date().toISOString() }).eq('id', n.id).select('id').single()); location.assign(a.href); }
                         catch (error) { $('notifications-status').textContent = C.error(error); }
                     }); box.append(a);
                 });
-                $('notifications-status').textContent = 'Avisos internos. Atualizados enquanto o aplicativo está aberto.';
+                $('notifications-status').textContent = rows.length ? rows.length + ' avisos recentes · ' + res[1].count + ' não lidos' : 'Você está em dia.';
             } catch (e) { $('notifications-status').textContent = C.error(e); }
             finally { running = false; }
         }

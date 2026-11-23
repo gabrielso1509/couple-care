@@ -412,7 +412,8 @@
                     prioridades[tarefa.priority].toLowerCase()
             );
 
-            if (tarefa.assigned_to) {
+            if (tarefa.assigned_to_both) { const info = document.createElement('p'); info.textContent = 'Responsáveis: Nós dois'; item.append(info); }
+            else if (tarefa.assigned_to) {
                 item.append(
                     elemento(
                         'p',
@@ -792,7 +793,7 @@
                         return supabaseClient
                             .from('tasks')
                             .select(
-                                'id,title,due_date,status,priority,assigned_to'
+                                'id,title,due_date,status,priority,assigned_to,assigned_to_both'
                             )
                             .eq('couple_id', casalId)
                             .gte('due_date', inicio)

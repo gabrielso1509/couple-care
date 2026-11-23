@@ -1,109 +1,29 @@
 {
-  "passed": true,
-  "backend": "API simulada; nenhuma alteração de banco.",
-  "checks": [
-    "check-in verde e volta ao estado de edição",
-    "sucesso após confirmação do banco",
-    "conflito não mostra sucesso e mantém rascunho",
-    "avisos em todas as páginas internas",
-    "feedback transitório não ocupa espaço",
-    "atualizar manual avisa; carga inicial silenciosa",
-    "SVGs 22px em controles 44px",
-    "concluir, remover e criar sonho",
-    "aviso visível sobre modal sem bloquear campos",
-    "conteúdo de aviso tratado como texto"
-  ],
-  "layouts": [
-    {
-      "page": "espaco",
-      "width": 1440,
-      "overflow": 0
-    },
-    {
-      "page": "espaco",
-      "width": 390,
-      "overflow": 0
-    },
-    {
-      "page": "espaco",
-      "width": 320,
-      "overflow": 0
-    },
-    {
-      "page": "menstruacao",
-      "width": 1440,
-      "overflow": 0
-    },
-    {
-      "page": "menstruacao",
-      "width": 390,
-      "overflow": 0
-    },
-    {
-      "page": "menstruacao",
-      "width": 320,
-      "overflow": 0
-    },
-    {
-      "page": "tarefas",
-      "width": 1440,
-      "overflow": 0
-    },
-    {
-      "page": "tarefas",
-      "width": 390,
-      "overflow": 0
-    },
-    {
-      "page": "tarefas",
-      "width": 320,
-      "overflow": 0
-    },
-    {
-      "page": "calendario",
-      "width": 1440,
-      "overflow": 0
-    },
-    {
-      "page": "calendario",
-      "width": 390,
-      "overflow": 0
-    },
-    {
-      "page": "calendario",
-      "width": 320,
-      "overflow": 0
-    },
-    {
-      "page": "financas",
-      "width": 1440,
-      "overflow": 0
-    },
-    {
-      "page": "financas",
-      "width": 390,
-      "overflow": 0
-    },
-    {
-      "page": "financas",
-      "width": 320,
-      "overflow": 0
-    },
-    {
-      "page": "config",
-      "width": 1440,
-      "overflow": 0
-    },
-    {
-      "page": "config",
-      "width": 390,
-      "overflow": 0
-    },
-    {
-      "page": "config",
-      "width": 320,
-      "overflow": 0
-    }
-  ],
-  "pageErrors": []
+  "banco": {
+    "passed": true,
+    "checks": [
+      "ambos salvo",
+      "recorrência mantém ambos",
+      "parceiro consulta",
+      "atribuição contraditória bloqueada",
+      "outra conta isolada por RLS"
+    ],
+    "backend": "Postgres local PGlite"
+  },
+  "interface": {
+    "passed": true,
+    "checks": [
+      "criar tarefa Nós dois e persistir após recarga",
+      "filtro Ambos",
+      "menu inferior em 320 e 390 px",
+      "Mais continua abrindo menu",
+      "recuperação solicita link",
+      "link recovery habilita formulário",
+      "senha atualizada via Auth",
+      "URL limpa"
+    ],
+    "backend": "API simulada; entrega requer configurações de Auth indicadas no guia"
+  },
+  "email_real_testado": false,
+  "producao_alterada": false
 }
