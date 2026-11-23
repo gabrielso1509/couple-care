@@ -1,29 +1,19 @@
 {
-  "banco": {
+  "ui": {
     "passed": true,
     "checks": [
-      "ambos salvo",
-      "recorrência mantém ambos",
-      "parceiro consulta",
-      "atribuição contraditória bloqueada",
-      "outra conta isolada por RLS"
+      "botão abre widget",
+      "conexão registrada",
+      "contas e saldo visíveis",
+      "extrato carregado",
+      "privado e separado de totais manuais",
+      "sem overflow em 320,390,1440"
     ],
-    "backend": "Postgres local PGlite"
+    "api": "simulada",
+    "bancoRealTestado": false
   },
-  "interface": {
-    "passed": true,
-    "checks": [
-      "criar tarefa Nós dois e persistir após recarga",
-      "filtro Ambos",
-      "menu inferior em 320 e 390 px",
-      "Mais continua abrindo menu",
-      "recuperação solicita link",
-      "link recovery habilita formulário",
-      "senha atualizada via Auth",
-      "URL limpa"
-    ],
-    "backend": "API simulada; entrega requer configurações de Auth indicadas no guia"
-  },
-  "email_real_testado": false,
-  "producao_alterada": false
+  "serverTestsPassed": true,
+  "rlsTestsPassed": true,
+  "realBankTested": false,
+  "productionChanged": false
 }
