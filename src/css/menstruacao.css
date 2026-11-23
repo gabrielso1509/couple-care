@@ -46,3 +46,93 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+/* Mantém as áreas ocultas até o JavaScript verificar o perfil. */
+.menstruacao-real [hidden] {
+    display: none !important;
+}
+
+.menstruacao-real fieldset {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.compartilhar-registro {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.pagina-orbital .compartilhar-registro input {
+    width: 18px;
+    height: 18px;
+    min-height: 18px;
+    flex-shrink: 0;
+    margin: 3px 0 0;
+    padding: 0;
+    accent-color: #f28c45;
+}
+
+.pagina-orbital .menstruacao-real .botao-primario {
+    background: linear-gradient(110deg, #f28c45, #ffab67);
+    color: #14243b;
+    border-color: transparent;
+}
+
+/* Resumo individual do ciclo. */
+.resumo-ciclo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+}
+
+.indicador-ciclo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    padding: 18px;
+    border: 1px solid var(--orbital-borda);
+    border-radius: 14px;
+    background: rgba(13, 23, 43, 0.35);
+}
+
+.indicador-ciclo span {
+    color: var(--orbital-suave);
+    font-size: 12px;
+}
+
+.indicador-ciclo strong {
+    color: var(--orbital-texto);
+    font-family: var(--fonte-titulo);
+    font-size: 20px;
+    overflow-wrap: anywhere;
+}
+
+.menstruacao-real .registro-app {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.menstruacao-real small {
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.menstruacao-real a {
+    color: #c7baff;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+    .resumo-ciclo {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -103,6 +103,8 @@
     let humores = [];
     let ciclos = [];
     let compartilhados = [];
+    // Dias pertencentes aos períodos completos da própria conta.
+    let diasPeriodos = [];
 
     let pronto = false;
     let carregando = false;
@@ -487,6 +489,31 @@
             );
         });
 
+        // Um período pode existir sem registro diário de fluxo.
+        const temPeriodo = pronto && diasPeriodos.some(function (registro) {
+            return (
+                registro.entry_date === selecionada &&
+                registro.user_id === usuarioId
+            );
+        });
+
+        const temDiario = ciclos.some(function (registro) {
+            return registro.entry_date === selecionada;
+        });
+
+        // Evita repetir o cartão quando já existe um diário neste dia.
+        if (temPeriodo && !temDiario) {
+            const item = cartao(
+                '🩸 Seu período de menstruação',
+                'Período registrado na página Menstruação.'
+            );
+
+            const link = elemento('a', '', 'Ver meus períodos');
+            link.href = 'menstruacao.html';
+
+            item.append(link);
+            lista.append(item);
+        }
         if (!lista.children.length) {
             lista.append(
                 elemento(
@@ -578,9 +605,16 @@
                 textos.push('com prazo de tarefa');
             }
 
-            if (ciclos.concat(compartilhados).some(function (registro) {
-                return registro.entry_date === data;
-            })) {
+            // Inclui os períodos completos nos marcadores do calendário.
+            // Durante uma falha ou troca de mês, ignora resultados antigos.
+            if (
+                ciclos.concat(
+                    compartilhados,
+                    pronto ? diasPeriodos : []
+                ).some(function (registro) {
+                    return registro.entry_date === data;
+                })
+            ) {
                 marcadores.append(elemento('span', '', '🩸'));
                 textos.push('com registro de menstruação');
             }
@@ -786,18 +820,30 @@
                 supabaseClient.rpc('get_shared_cycle_days', {
                     p_start_date: inicio,
                     p_end_date: fim
+                }),
+
+                // Consulta os próprios períodos completos.
+                supabaseClient.rpc('get_my_period_days', {
+                    p_start_date: inicio,
+                    p_end_date: fim,
+                    p_today: chave(new Date())
                 })
-            ]);
+                ]);
 
-            if (resultados[4].error) {
-                throw resultados[4].error;
-            }
+                if (resultados[4].error) {
+                    throw resultados[4].error;
+                }
 
-            eventos = resultados[0];
-            tarefas = resultados[1];
-            humores = resultados[2];
-            ciclos = resultados[3];
-            compartilhados = resultados[4].data;
+                if (resultados[5].error) {
+                    throw resultados[5].error;
+                }
+
+                eventos = resultados[0];
+                tarefas = resultados[1];
+                humores = resultados[2];
+                ciclos = resultados[3];
+                compartilhados = resultados[4].data;
+                diasPeriodos = resultados[5].data;
 
             pronto = true;
             renderizar();
