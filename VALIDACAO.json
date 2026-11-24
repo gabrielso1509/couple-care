@@ -1,19 +1,12 @@
 {
-  "ui": {
-    "passed": true,
-    "checks": [
-      "botão abre widget",
-      "conexão registrada",
-      "contas e saldo visíveis",
-      "extrato carregado",
-      "privado e separado de totais manuais",
-      "sem overflow em 320,390,1440"
-    ],
-    "api": "simulada",
-    "bancoRealTestado": false
-  },
-  "serverTestsPassed": true,
-  "rlsTestsPassed": true,
-  "realBankTested": false,
-  "productionChanged": false
+  "signatureTestsPassed": true,
+  "databaseTestsPassed": true,
+  "testedWithRealPluggy": false,
+  "productionChanged": false,
+  "storesOnly": [
+    "event_hash",
+    "event_type",
+    "item_id",
+    "received_at"
+  ]
 }
