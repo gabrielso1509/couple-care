@@ -9,11 +9,14 @@ module.exports=P.handler(async function(s,body){
  }
  if(body.action==='transactions'){
   P.id(body.accountId);const account=await P.api('/accounts/'+body.accountId,key);if(account.itemId!==item.id)P.fail(403,'Conta não pertence à conexão.');
-  if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(body.month||''))P.fail(400,'Escolha um mês válido.');
-  const [year,month]=body.month.split('-').map(Number);if(year<1900||year>2100)P.fail(400,'Ano inválido.');const last=new Date(Date.UTC(year,month,0)).getUTCDate();
-  let path='/v2/transactions?'+new URLSearchParams({accountId:body.accountId,dateFrom:body.month+'-01',dateTo:body.month+'-'+last});
+  const datePattern=/^\d{4}-\d{2}-\d{2}$/;
+  if(!datePattern.test(body.dateFrom||'')||!datePattern.test(body.dateTo||'')||body.dateTo<body.dateFrom)P.fail(400,'Escolha um intervalo de datas válido.');
+  const from=new Date(body.dateFrom+'T00:00:00Z'),to=new Date(body.dateTo+'T00:00:00Z');
+  if(Number.isNaN(from.getTime())||Number.isNaN(to.getTime())||from.toISOString().slice(0,10)!==body.dateFrom||to.toISOString().slice(0,10)!==body.dateTo||to-from>366*86400000)P.fail(400,'O intervalo pode ter até 366 dias.');
+  let path='/v2/transactions?'+new URLSearchParams({accountId:body.accountId,dateFrom:body.dateFrom,dateTo:body.dateTo});
   if(body.cursor){if(typeof body.cursor!=='string'||body.cursor.length>8192)P.fail(400,'Página inválida.');const cursor=new URLSearchParams(body.cursor.replace(/^\?/,''));const after=cursor.get('after');if(!after)P.fail(400,'Página inválida.');path+='&'+new URLSearchParams({after});}
   const data=await P.api(path,key);return {next:data.next||null,transactions:(data.results||[]).map(t=>({id:t.id,description:t.description,date:t.date,amount:t.amount,type:t.type,status:t.status,currency:t.currencyCode||account.currencyCode||'BRL',category:t.category}))};
  }
  P.fail(400,'Ação inválida.');
 });
+
