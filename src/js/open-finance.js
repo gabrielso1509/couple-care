@@ -116,10 +116,32 @@
             currency_code: account.currency || 'BRL',
             balance_updated_at: new Date().toISOString()
         };
-        const result = await supabaseClient.from('finance_accounts')
-            .upsert(payload, { onConflict: 'couple_id,provider,external_account_id' })
-            .select('id').single();
-        return C.result(result).id;
+        const findExisting = async function () {
+            return C.result(await supabaseClient.from('finance_accounts').select('id')
+                .eq('couple_id', coupleId).eq('provider', bank).eq('external_account_id', account.id).maybeSingle());
+        };
+        const values = {
+            name: payload.name, account_type: payload.account_type, source: payload.source,
+            provider: payload.provider, external_account_id: payload.external_account_id,
+            balance_cents: payload.balance_cents, currency_code: payload.currency_code,
+            balance_updated_at: payload.balance_updated_at
+        };
+        const updateExisting = async function (row) {
+            const result = await supabaseClient.from('finance_accounts').update(values)
+                .eq('id', row.id).eq('couple_id', coupleId).select('id').single();
+            return C.result(result).id;
+        };
+        let existing = await findExisting();
+        if (existing) return updateExisting(existing);
+        try {
+            return C.result(await supabaseClient.from('finance_accounts').insert(payload).select('id').single()).id;
+        } catch (error) {
+            // Outra aba pode ter cadastrado a mesma conta entre a busca e o INSERT.
+            if (error.code !== '23505') throw error;
+            existing = await findExisting();
+            if (!existing) throw error;
+            return updateExisting(existing);
+        }
     }
 
     async function load() {
@@ -202,8 +224,32 @@
         });
         for (let index = 0; index < payload.length; index += 100) {
             const chunk = payload.slice(index, index + 100);
-            C.result(await supabaseClient.from('finance_entries')
-                .upsert(chunk, { onConflict: 'external_provider,external_transaction_id' }).select('id'));
+            const externalIds = chunk.map(function (row) { return row.external_transaction_id; });
+            const existingRows = C.result(await supabaseClient.from('finance_entries')
+                .select('id,external_transaction_id,account_id,description,entry_type,amount_cents,category,entry_date')
+                .eq('couple_id', coupleId).eq('external_provider', 'pluggy').in('external_transaction_id', externalIds));
+            const existingById = new Map(existingRows.map(function (row) { return [row.external_transaction_id, row]; }));
+            const inserts = [];
+            for (const row of chunk) {
+                const existing = existingById.get(row.external_transaction_id);
+                if (!existing) { inserts.push(row); continue; }
+                const changed = existing.account_id !== row.account_id || existing.description !== row.description ||
+                    existing.entry_type !== row.entry_type || Number(existing.amount_cents) !== row.amount_cents ||
+                    existing.category !== row.category || existing.entry_date !== row.entry_date;
+                if (!changed) continue;
+                // Atualiza somente as colunas liberadas para o papel authenticated.
+                C.result(await supabaseClient.from('finance_entries').update({
+                    account_id: row.account_id, description: row.description, entry_type: row.entry_type,
+                    amount_cents: row.amount_cents, category: row.category, entry_date: row.entry_date
+                }).eq('id', existing.id).eq('couple_id', coupleId).select('id').single());
+            }
+            if (inserts.length) {
+                try { C.result(await supabaseClient.from('finance_entries').insert(inserts).select('id')); }
+                catch (error) {
+                    // Em sincronizações simultâneas, outra aba pode inserir um ID primeiro.
+                    if (error.code !== '23505') throw error;
+                }
+            }
         }
         return payload.length;
     }
