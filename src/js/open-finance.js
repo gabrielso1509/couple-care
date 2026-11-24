@@ -13,10 +13,6 @@
     $('bank-date-from').value = today.slice(0, 7) + '-01';
     $('bank-date-to').value = today;
 
-    const shortcut = C.el('a', 'soft-button', 'Contas bancárias ↓');
-    shortcut.href = '#bank-title';
-    document.querySelector('.cc-toolbar')?.append(shortcut);
-
     function notice(text, error) {
         $('bank-status').textContent = text;
         $('bank-status').classList.toggle('bank-error', !!error);
@@ -180,6 +176,29 @@
                     row.append(info, C.button('Ver e importar extrato', async function () {
                         active = { itemId: ref.item_id, accountId: account.id, financeAccountId: financeAccountId, name: data.bank + ' · ' + account.name };
                         await statement(false);
+                    }, 'soft-button'));
+                    row.append(C.button('Agendamentos', async function () {
+                        const end = new Date(today + 'T12:00:00Z');
+                        end.setUTCDate(end.getUTCDate() + 30);
+                        const detail = row.querySelector('.scheduled-list') || C.el('div', 'scheduled-list');
+                        row.append(detail); detail.textContent = 'Consultando próximos 30 dias…';
+                        try {
+                            const found = new Map(), seen = new Set();
+                            let page = null;
+                            do {
+                                if (seen.has(page)) throw new Error('Consulta incompleta. Tente novamente.');
+                                seen.add(page);
+                                const result = await api('connection', { action: 'transactions', itemId: ref.item_id,
+                                    accountId: account.id, dateFrom: today, dateTo: end.toISOString().slice(0,10), cursor: page });
+                                for (const t of result.transactions) {
+                                    if (t.status === 'PENDING' && t.type === 'DEBIT' && t.date.slice(0,10) > today) found.set(t.id,t);
+                                }
+                                page = result.next;
+                            } while (page);
+                            detail.replaceChildren();
+                            for (const t of found.values()) detail.append(C.el('p','',C.date(t.date)+' · '+t.description+' · '+money(t.amount,t.currency)));
+                            if (!found.size) detail.textContent = 'A instituição não informou débitos futuros para os próximos 30 dias.';
+                        } catch (error) { detail.textContent = error.message; }
                     }, 'soft-button'));
                     card.append(row);
                 }

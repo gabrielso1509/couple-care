@@ -43,3 +43,18 @@
 @media(max-width:600px){.cc-figma .finance-account-row{align-items:flex-start;flex-direction:column}.cc-figma .finance-period-controls{width:100%}.cc-figma .finance-period-controls .cc-field{width:100%}}
 @media(max-width:600px){.cc-figma .finance-bill-row{grid-template-columns:minmax(0,1fr)}.cc-figma .finance-bill-row>.cc-row-actions{grid-column:1}}
 
+
+.cc-figma .finance-bills-panel[hidden]{display:none}
+.cc-figma .finance-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.cc-figma .finance-summary>button{width:100%;text-align:left;white-space:normal}
+.finance-summary>button small{display:block;margin-top:8px;overflow-wrap:anywhere}
+.cc-figma .finance-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.cc-figma .finance-grid .transactions-card{grid-column:auto}
+.cc-figma .finance-grid>.soft-button{justify-self:end;grid-column:-2/-1}
+.compact-entries>.transaction:nth-child(n+5),.finance-grid #more-entries{display:none!important}
+.finance-sheet .compact-entries>.transaction:nth-child(n+5){display:flex!important}
+.finance-sheet{width:min(90vw,680px);max-height:82dvh;overflow:auto;color:#f5f4ff;background:#14243b;border:1px solid #ffffff28;border-radius:18px;padding:20px}
+.finance-sheet::backdrop{background:#080e1dcc}
+.finance-sheet>h2{display:inline-block;margin:0 12px 16px 0}
+.cc-figma .spending-card .finance-period-controls{margin:12px 0}
+@media(max-width:700px){.cc-figma .finance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cc-figma .finance-summary>*{grid-column:auto;min-width:0;padding:14px}.cc-figma .finance-grid{grid-template-columns:minmax(0,1fr)}.finance-sheet{box-sizing:border-box;width:100%;max-width:100%;margin:auto 0 0;border-radius:20px 20px 0 0}}
