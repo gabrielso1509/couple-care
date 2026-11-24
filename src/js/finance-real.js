@@ -231,6 +231,25 @@
         data.forEach(function (row) {
             const name = row.name || categories[row.category] || 'Categoria do casal';
             const slot = C.el('div', 'chart-bar-slot'), bar = C.el('div', 'chart-bar');
+            bar.tabIndex = 0; bar.setAttribute('role','button');
+            const label = name + ' · ' + C.money(row.amount);
+            bar.setAttribute('aria-label',label);
+            function showDetail() {
+                let detail = box.querySelector('.chart-detail');
+                if (!detail) { detail=C.el('p','chart-detail'); box.prepend(detail); }
+                detail.textContent=label;
+                const amounts = new Map();
+                let loaded = 0;
+                entries.filter(e => e.entry_type==='expense' && categoryName(e)===name).forEach(e => {
+                    const desc=e.description.toLowerCase();
+                    const method=/\bpix\b/.test(desc)?'Pix':/cartão de crédito/.test(desc)?'Crédito':/cartão de débito/.test(desc)?'Débito':'Não informado';
+                    loaded+=Number(e.amount_cents); amounts.set(method,(amounts.get(method)||0)+Number(e.amount_cents));
+                });
+                if(loaded===Number(row.amount)) for (const [method, cents] of amounts) detail.textContent+=' · '+method+' '+C.money(cents);
+                else detail.textContent+=' · Detalhamento parcial nas movimentações carregadas';
+            }
+            for(const event of ['focus','mouseenter','click']) bar.addEventListener(event,showDetail);
+            bar.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();showDetail();}};
             bar.style.height = Number(row.amount) / top * 100 + '%';
             const amount = C.el('span', 'chart-bar-value', C.money(row.amount)); bar.append(amount); slot.append(bar); bars.append(slot);
             x.append(C.el('span', '', name));
@@ -251,6 +270,8 @@
         if (!entries.length) box.append(C.el('p', 'empty-state', 'Nenhum lançamento neste período.'));
         entries.forEach(function (row) {
             const line = C.el('article', 'transaction'), text = C.el('p');
+            const icon = /restaurante|lanch|pizza/i.test(row.description)?'🍴':row.category==='market'?'🛒':/pix/i.test(row.description)?'◇':row.entry_type==='income'?'↙':'↗';
+            const mark=C.el('span','entry-icon',icon); mark.setAttribute('aria-hidden','true'); text.prepend(mark);
             text.append(C.el('b', '', row.description), C.el('small', '', C.date(row.entry_date) + ' · ' + categoryName(row)));
             line.append(text, C.el('strong', row.entry_type === 'income' ? 'positive' : '', (row.entry_type === 'income' ? '+ ' : '− ') + C.money(row.amount_cents)));
             if (row.source === 'pluggy') {
@@ -396,4 +417,5 @@
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });
     C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-entries','finance-goals','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });
 })();
+
 

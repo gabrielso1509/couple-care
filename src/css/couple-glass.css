@@ -1,0 +1,22 @@
+:root{--cc-ink:#101d30;--cc-edge:#ffffff21;--cc-apricot:#e4ae88;color-scheme:dark}
+body{background-color:var(--cc-ink)}
+.cc-figma .conteudo .card,.cc-figma .finance-summary>*,.finance-sheet,.entrada-conteudo,.pagina-confirmacao main,body[data-flow] main{background:linear-gradient(135deg,#273849ef,#172639f7 65%);border:1px solid var(--cc-edge);border-radius:19px;box-shadow:0 8px 24px #05101c24;color:#edf2f6}
+.cc-figma .conteudo .card:nth-of-type(3n+2){background:linear-gradient(135deg,#28363fee,#192637)}
+.cc-figma .conteudo .card:nth-of-type(3n){background:linear-gradient(135deg,#303440ee,#192637)}
+.cc-figma :is(.cc-toolbar,.bank-toolbar,.cc-row-actions){display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-block:10px 16px}
+.cc-figma .primary-button,.botao-entrar{background:var(--cc-apricot);color:#152333;border:0}
+.cc-figma .finance-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;gap:14px}
+.cc-figma .finance-summary>*{min-height:118px;padding:18px;box-sizing:border-box}
+.cc-figma .finance-summary .account-tile{display:grid;align-content:center;text-align:left;gap:8px;background:linear-gradient(130deg,#37363b,#202c3d);font-size:15px}
+.account-tile small{font-weight:500;color:#d7e1e8}.account-tile em{color:var(--cc-apricot);font-size:12px;font-style:normal}
+.cc-figma .finance-grid{align-items:stretch;grid-template-columns:minmax(0,1.13fr) minmax(0,1fr)}
+.cc-figma .finance-grid>.card{grid-row:1;align-self:stretch;margin:0}
+.cc-figma .transactions-card{display:flex;flex-direction:column}.transactions-card>.all-moves{align-self:flex-end;margin-top:auto}
+.cc-periods{display:flex;flex-wrap:wrap;gap:5px;padding:4px;border:1px solid var(--cc-edge);border-radius:14px;width:fit-content}
+.cc-periods button{background:transparent;color:#dbe5ef;border:0;border-radius:10px;padding:9px 13px;min-height:44px}.cc-periods button[aria-pressed=true]{background:var(--cc-apricot);color:#192536}
+.cc-figma .chart-bar{background:linear-gradient(#829aad,#455e72);cursor:pointer}.cc-figma .chart-bar:is(:focus,:hover){background:var(--cc-apricot)}
+.chart-detail{color:#f3e7da;background:#19283b;border:1px solid var(--cc-edge);border-radius:10px;padding:9px 12px;font-size:13px}
+.finance-sheet{padding:22px}.finance-sheet>button{margin:0 0 16px 12px}.finance-sheet .bank-account{flex-wrap:wrap;gap:10px}.bank-account>div:first-child{flex:1 1 180px}
+.finance-sheet .bank-connection{margin-block:16px}.finance-sheet .soft-button{min-height:44px}
+.cc-figma .cc-sr{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:740px){.cc-figma .finance-summary{grid-template-columns:1fr 1fr;gap:8px}.cc-figma .finance-summary>*{min-height:100px;padding:12px}.cc-figma .finance-grid{grid-template-columns:minmax(0,1fr)}.cc-figma .finance-grid>.card{grid-row:auto}.finance-sheet{padding:16px 16px max(18px,env(safe-area-inset-bottom));max-height:85dvh;overscroll-behavior:contain}.cc-figma .conteudo button{min-height:42px}.finance-sheet .bank-account>div:first-child{flex-basis:100%}}

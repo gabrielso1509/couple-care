@@ -306,6 +306,13 @@
                 const amount = C.el('strong', transaction.type === 'CREDIT' ? 'bank-credit' : '', money(transaction.amount, transaction.currency));
                 line.append(text, amount); box.append(line);
             });
+            const download=C.button('Baixar extrato exibido (CSV)', function(){
+                const escapeCell=value=>{let v=String(value??''); if (/^[=+@-]/.test(v)) v="'"+v; return '"'+v.replace(/"/g,'""')+'"';};
+                const lines=[['Data','Descrição','Tipo','Valor','Moeda'],...rows.map(t=>[t.date,t.description,t.type,t.amount,t.currency])];
+                const blob=new Blob(['\uFEFF'+lines.map(line=>line.map(escapeCell).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+                const url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download='extrato.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
+            },'soft-button');
+            if(rows.length) box.prepend(download);
             if (!rows.length) box.append(C.el('p', '', 'Nenhuma transação disponibilizada para estas datas.'));
             $('bank-more').hidden = !cursor;
             notice('Extrato atualizado. ' + imported + ' movimentações importadas para as finanças compartilhadas.');
@@ -365,3 +372,4 @@
         finally { controls(false); }
     }).catch(function () { notice('Entre novamente para carregar as conexões.', true); });
 })();
+

@@ -18,7 +18,7 @@
         if (e.target.closest('#connect-bank') || e.target.textContent === 'Reconectar') accounts.close();
     }, true);
     const tile = button('Contas e saldos', () => accounts.showModal());
-    const preview = document.createElement('small'); tile.append(preview); summary.append(tile);
+    const preview = document.createElement('small'); tile.append(preview); tile.classList.add('account-tile'); const hint=document.createElement('em'); hint.textContent='Ver contas ›'; tile.append(hint); summary.append(tile);
     const list = one('#finance-accounts-list');
     function balances() {
         const rows = Array.from(list.querySelectorAll('.finance-account-row'));
@@ -31,14 +31,24 @@
     one('.navegacao').append(tab);
     one('.finance-bills-panel').hidden = true;
     chart.querySelector('.card-title span').remove();
-    chart.querySelector('.card-title').after(one('.finance-period-controls'));
+    const controls = one('.finance-period-controls');
+    summary.before(controls);
+    const select = one('#finance-period'), group = document.createElement('div');
+    group.className = 'cc-periods';
+    controls.prepend(group);
+    for (const [value,label] of [['week','Semana'],['month','Mês'],['year','Ano'],['custom','Calendário']]) {
+        const b = button(label, () => { select.value=value; select.dispatchEvent(new Event('change')); });
+        function reflect(){ b.setAttribute('aria-pressed',String(select.value===value)); }
+        reflect(); select.addEventListener('change',reflect); group.append(b);
+    }
     one('#finance-month').closest('label').remove();
     const movements = one('.transactions-card');
     const more = button('Ver todas', () => history.showModal());
     const holder = document.createElement('div');
     const history = sheet('Movimentações do período',[holder]);
-    history.addEventListener('close', () => more.before(movements));
-    more.onclick = () => { holder.append(movements); history.showModal(); };
-    movements.after(more);
+    history.addEventListener('close', () => { anchor.after(movements); more.hidden=false; more.focus(); });
+    more.onclick = () => { more.hidden=true; holder.append(movements); history.showModal(); };
+    const anchor=document.createComment('movimentações'); movements.before(anchor); movements.append(more); more.classList.add('all-moves');
     one('#finance-entries').classList.add('compact-entries');
 })();
+
