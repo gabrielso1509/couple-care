@@ -66,45 +66,6 @@
 .cc-figma .cc-history ol { list-style: none; padding: 0; font-size: 12px; }
 .cc-figma .cc-history time { display: block; color: #a9b7ce; font-size: 10px; margin-bottom: 12px; }
 
-/* Calendário: sete colunas, agenda em linha do tempo e formulários em modal. */
-.cc-figma .calendar-layout { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(300px,.8fr); gap: 20px; align-items: stretch; }
-.cc-figma .month-card { padding: 28px; }
-.cc-figma .controle-mes { display: grid; grid-template-columns: 1fr auto auto; column-gap: 6px; align-items: center; }
-.cc-figma .controle-mes #mes { grid-column: 1; grid-row: 1; font-size: 9px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; margin: 0; }
-.cc-figma .controle-mes h2 { grid-column: 1; grid-row: 2; font: 600 24px 'Outfit',sans-serif; margin: 6px 0 0; }
-.cc-figma .controle-mes button { width: 36px; height: 36px; background: transparent; color: #d7e2f3; border: 1px solid #ffffff20; border-radius: 11px; }
-.cc-figma #anterior { grid-column: 2; grid-row: 1 / 3; }
-.cc-figma #seguinte { grid-column: 3; grid-row: 1 / 3; }
-.cc-figma #hoje { margin-top: 18px; min-height: 34px; padding: 6px 12px; font-size: 11px; }
-.cc-figma .semana-app,.cc-figma .dias-app { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 0; }
-.cc-figma .semana-app { margin: 24px 0 12px; text-align: center; color: #a9b7ce; font-size: 9px; letter-spacing: .1em; }
-.cc-figma .calendario-real .dia-app { border: 1px solid #ffffff08; border-radius: 0; background: transparent; min-width: 0; min-height: 95px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font-size: 12px; color: #e4ecfa; }
-.cc-figma .calendario-real .dia-app[aria-pressed="true"] { background: #ff914d; color: #142037; border-radius: 15px; }
-.cc-figma .calendario-marcadores { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; justify-content: center; min-height: 10px; font-size: 11px; }
-.cc-figma .marker-event,.cc-figma .marker-task { width: 4px; height: 4px; border-radius: 50%; background: #ad9aff; }
-.cc-figma .marker-task { background: #73d5bd; }
-.cc-figma .calendario-legenda { display: flex; flex-wrap: wrap; list-style: none; gap: 12px; padding: 0; color: #a9b7ce; font-size: 10px; }
-.cc-figma .calendario-ajuda { font-size: 11px; color: #a9b7ce; }
-.cc-figma .calendario-barra { display: flex; gap: 12px; align-items: center; justify-content: space-between; }
-.cc-figma .calendario-barra button { min-height: 34px; font-size: 11px; }
-.cc-figma .agenda-card { position: relative; padding: 26px; min-height: 350px; }
-.cc-figma .agenda-card h2 { margin: 5px 0 0; font: 600 23px 'Outfit',sans-serif; }
-.cc-figma .agenda-card #selecionado { font-size: 9px; color: #ad9aff; text-transform: uppercase; margin: 12px 0 24px; }
-.cc-figma .cc-agenda-add { position: absolute; right: 26px; top: 26px; }
-.cc-figma .agenda-card .registro-app { position: relative; padding: 5px 0 5px 16px; margin: 0 0 24px 45px; border: 0; border-left: 3px solid #ad9aff; background: transparent; border-radius: 0; }
-.cc-figma .agenda-card .registro-app:nth-child(3n+2) { border-color: #ff914d; }
-.cc-figma .agenda-card .registro-app:nth-child(3n+3) { border-color: #73d5bd; }
-.cc-figma .agenda-card .registro-app h3 { font-size: 12px; margin: 0 0 5px; }
-.cc-figma .agenda-card .registro-app p { color: #a9b7ce; font-size: 10px; margin: 0; }
-.cc-figma .agenda-card .acoes-app { margin-top: 10px; }
-.cc-figma .agenda-card .acoes-app button { min-height: 28px; padding: 5px 8px; font-size: 9px; }
-.cc-figma .agenda-card a { color: #ad9aff; font-size: 11px; }
-.cc-figma .reminder-card { padding: 26px; }
-.cc-figma .reminder-card p { font-size: 12px; color: #a9b7ce; }
-.cc-figma .cc-calendar-forms { display: grid; gap: 20px; }
-.cc-figma .calendario-compartilhar { display: flex; gap: 10px; align-items: center; font-size: 12px; color: #a9b7ce; }
-.cc-figma .sentimentos-opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
 /* Bem-estar: resumo real, sem números fixos ou previsão de fertilidade. */
 .cc-figma .wellness-hero { padding: 36px; }
 .cc-figma .wellness-hero p { font-size: 13px; }
@@ -210,9 +171,7 @@
 .cc-figma .cc-modal .primary-button { width: 100%; }
 .cc-figma .cc-modal .status-pill { font-size: 11px; }
 @media(max-width:1180px) {
-    .cc-figma .two-column,.cc-figma .calendar-layout { grid-template-columns: 1fr; }
-    .cc-figma .agenda-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .cc-figma .agenda-card { min-height: 250px; }
+    .cc-figma .two-column { grid-template-columns: 1fr; }
     .cc-figma .wellness-grid { grid-template-columns: 1fr; }
     .cc-figma .settings-layout { grid-template-columns: 1fr; }
     .cc-figma .profile-card { max-width: 480px; width: 100%; }
@@ -226,11 +185,7 @@
     .cc-figma .transactions-card { grid-column: auto; }
 }
 @media(max-width:600px) {
-    .cc-figma .agenda-column,.cc-figma .duas-colunas,.cc-figma .memory-gallery { grid-template-columns: 1fr; }
-    .cc-figma .calendar-layout .month-card { padding: 18px 12px; }
-    .cc-figma .calendario-real .dia-app { min-height: 62px; font-size: 11px; gap: 8px; }
-    .cc-figma .semana-app { font-size: 8px; }
-    .cc-figma .calendario-legenda { font-size: 9px; }
+    .cc-figma .duas-colunas,.cc-figma .memory-gallery { grid-template-columns: 1fr; }
     .cc-figma .finance-summary { grid-template-columns: 1fr 1fr; gap: 12px; }
     .cc-figma .metric-card { padding: 18px; }
     .cc-figma .metric-card strong { font-size: 22px; }
@@ -257,7 +212,6 @@
 .cc-figma .aplicacao .conteudo-principal { flex-direction: column; }
 .cc-figma .conteudo :is(button.botao-secundario,#atualizar-tarefas,#mais-tarefas) { min-height: 36px; border: 1px solid #ffffff1a; border-radius: 10px; background: transparent; color: #cbbfff; padding: 8px 12px; font-size: 11px; }
 .cc-figma .menstruacao-real .acoes-app button:not(.botao-primario) { min-height: 36px; border: 1px solid #ffffff1a; border-radius: 10px; background: transparent; color: #cbbfff; padding: 8px 12px; }
-.cc-figma .agenda-card .registro-app h4 { font: 600 13px 'Outfit',sans-serif; margin: 0 0 6px; }
 /* Navegação independente das folhas antigas de menu. */
 .cc-figma .menu-lateral .item-menu { display: flex; align-items: center; text-decoration: none; }
 .cc-figma .conta-menu { display: flex; align-items: center; }
