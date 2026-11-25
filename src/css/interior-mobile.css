@@ -259,7 +259,6 @@
     .cc-figma .tarefas-pagina > .stats-row > div { min-width: 0; padding: 9px 5px; justify-content: center; text-align: center; }
     .tarefas-pagina > .stats-row .stat-icon { display: none; }
     .cc-figma .tarefas-pagina > .stats-row small { font-size: 10px; }
-    .tarefas-pagina .two-column #editor-tarefa-mobile:not([data-task-open]) { display: none; }
     .cc-figma .tarefas-pagina :is(.task-list-card, .add-task-card) { padding: 14px; }
     .cc-figma .tarefas-pagina .tarefas-filtros { flex-wrap: nowrap; overflow-x: auto; padding: 3px; }
     .tarefas-pagina .tarefas-filtros button { flex-shrink: 0; }
@@ -528,6 +527,7 @@
     }
     .cc-figma .tarefas-pagina .tarefas-filtros button { border-radius: 999px; }
     .cc-figma .tarefas-pagina .tarefas-filtros button[aria-pressed="true"] { color: #18243a; background: var(--mobile-orange); }
+    .cc-figma .tarefas-pagina .tarefas-lista { display: grid; gap: 8px; }
     .cc-figma .tarefas-pagina .tarefa-cartao {
         grid-template-columns: 34px minmax(0, 1fr) auto;
         column-gap: 9px;
@@ -573,7 +573,17 @@
     .cc-figma .tarefas-pagina .tarefa-cartao-lado { grid-column: 3; grid-row: 1; justify-self: end; }
     .cc-figma .tarefas-pagina .tarefa-cartao-lado .tarefa-avatar { width: 19px; height: 19px; font-size: 9px; }
     .cc-figma .tarefas-pagina .tarefa-cartao-lado .tarefa-pessoa { margin: 0; }
-    .cc-figma .tarefas-pagina .tarefas-filtros { margin: 8px 0 10px; padding: 2px 0; }
+    .cc-figma .tarefas-pagina .tarefas-filtros { margin: 0; padding: 2px 1px; }
+    .cc-figma .tarefas-pagina .tarefas-filtros button { padding-inline: clamp(8px, 2.7vw, 13px); }
+    .cc-figma .tarefas-pagina .tarefa-cartao-lado {
+        align-self: start;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 3px;
+        padding-top: 3px;
+    }
+    .tarefas-pagina .tarefa-cartao-equipe { justify-content: flex-end; }
+    .cc-figma .tarefas-pagina .tarefa-pessoa-rotulo { font-size: 9px; }
     .cc-figma .tarefas-pagina #resumo { font-size: 11px; }
     .cc-figma .tarefas-pagina .tarefa-details { grid-column: 2 / -1; }
     .compromisso-periodo { width: 100%; }

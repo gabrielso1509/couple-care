@@ -48,9 +48,8 @@
         });
     });
 
-    const taskButton = document.querySelector('[data-task-editor]');
-    if (!taskButton) return;
     const progress = document.getElementById('mobile-task-progress-bar');
+    if (!progress) return;
     const progressLabel = document.getElementById('mobile-task-progress-count');
     const ring = document.getElementById('mobile-progress-ring');
 
@@ -75,16 +74,4 @@
     });
     updateProgress();
 
-    const editor = document.getElementById(taskButton.getAttribute('aria-controls'));
-    function setEditor(open) {
-        editor.toggleAttribute('data-task-open', open);
-        taskButton.setAttribute('aria-expanded', String(open));
-        taskButton.textContent = open ? 'Recolher formulário' : '+ Nova tarefa';
-    }
-    taskButton.addEventListener('click', function () {
-        const open = taskButton.getAttribute('aria-expanded') !== 'true';
-        setEditor(open);
-        if (open) editor.querySelector('input')?.focus();
-    });
-    editor.addEventListener('abrir-editor-tarefa', function () { setEditor(true); });
 })();

@@ -4,6 +4,56 @@
     const $ = (id) => document.getElementById(id);
     const form = $('form-tarefa');
     if (!form) return;
+    const editor = $('editor-tarefa-mobile');
+    const eventoForm = $('form-compromisso');
+    const tipos = $('tarefas-tipos');
+    const botaoNovo = $('novo-item');
+
+    function selecionarTipo(tipo, titulo) {
+        const tarefa = tipo === 'tarefa';
+        form.hidden = !tarefa;
+        eventoForm.hidden = tarefa;
+        tipos.hidden = Boolean(titulo);
+        $('titulo-editor').textContent = titulo || 'Novo item';
+        tipos.querySelectorAll('[data-tarefa-tipo]').forEach(function (botao) {
+            botao.setAttribute('aria-pressed', String(botao.dataset.tarefaTipo === tipo));
+        });
+    }
+
+    function editorOcupado() {
+        return ocupado || Boolean(editor.dataset.busy);
+    }
+
+    function abrirEditor(tipo, titulo) {
+        if (editorOcupado()) return;
+        selecionarTipo(tipo, titulo);
+        if (!editor.open) editor.showModal();
+        $(tipo === 'tarefa' ? 'titulo' : 'compromisso-titulo').focus({ preventScroll: true });
+    }
+
+    CC.tarefasEditor = { abrir: abrirEditor };
+    botaoNovo.addEventListener('click', function () {
+        limparEditor();
+        mensagem('');
+        abrirEditor('tarefa');
+    });
+    tipos.addEventListener('click', function (event) {
+        const choice = event.target.closest('[data-tarefa-tipo]');
+        if (choice && !editorOcupado()) selecionarTipo(choice.dataset.tarefaTipo);
+    });
+    $('fechar-editor-tarefas').addEventListener('click', function () {
+        if (!editorOcupado()) editor.close();
+    });
+    editor.addEventListener('cancel', function (event) {
+        if (editorOcupado()) event.preventDefault();
+    });
+    editor.addEventListener('close', function () {
+        limparEditor();
+        if (!document.activeElement?.closest('button, a, input, select, textarea')) {
+            botaoNovo.focus({ preventScroll: true });
+        }
+    });
+
     const categorias = { house: 'Casa', shopping: 'Compras', bills: 'Contas', care: 'Cuidados', leisure: 'Lazer', other: 'Outros' };
     const prioridades = { high: 'Alta', normal: 'Normal', low: 'Baixa' };
     const repeticoes = { daily: 'Diária', weekly: 'Semanal', monthly: 'Mensal' };
@@ -36,6 +86,7 @@
         const bloqueado = ocupado || carregando || !pronto;
         $('campos-tarefa').disabled = bloqueado;
         $('atualizar-tarefas').disabled = ocupado || carregando;
+        $('fechar-editor-tarefas').disabled = editorOcupado();
         $('mais-atividades').disabled = ocupado || carregando;
         $('form-tarefa').setAttribute('aria-busy', String(ocupado));
         document.querySelectorAll('#lista button, #lista input').forEach(el => { el.disabled = bloqueado; });
@@ -192,7 +243,10 @@
                     fotos.append(foto);
                     queueMicrotask(function () { avatar(foto, membro); });
                 });
-                lado.append(fotos);
+                const equipe = elemento('div', 'tarefa-cartao-equipe');
+                equipe.append(fotos);
+                if (t.assigned_to_both) equipe.append(elemento('span', 'tarefa-pessoa-rotulo', 'Nós dois'));
+                lado.append(equipe);
             }
             if (t.checklist.length) {
                 const feitos = t.checklist.filter(i => i.done).length;
@@ -343,8 +397,7 @@
         $('repeticao').value = t.recurrence; $('checklist-texto').value = t.checklist.map(i => i.text).join('\n');
         $('titulo-editor').textContent = 'Editar tarefa'; $('salvar-tarefa').textContent = 'Salvar alterações';
         $('cancelar-edicao').hidden = false; mensagem('Editando “' + t.title + '”.');
-        $('editor-tarefa-mobile').dispatchEvent(new Event('abrir-editor-tarefa'));
-        $('titulo').focus(); $('titulo-editor').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        abrirEditor('tarefa', 'Editar tarefa');
     }
     function checklistDoEditor() {
         const linhas = $('checklist-texto').value.split('\n').map(s => s.trim()).filter(Boolean);
@@ -401,9 +454,11 @@
         const atual = edicao;
         await gravar(() => atual ? atualizarTarefa(atual, valores)
             : supabaseClient.from('tasks').insert({ couple_id: casalId, ...valores }).select('id').single(),
-        atual ? 'Tarefa atualizada!' : 'Tarefa criada!', limparEditor);
+        atual ? 'Tarefa atualizada!' : 'Tarefa criada!', function () { editor.close(); });
     });
-    $('cancelar-edicao').addEventListener('click', () => { limparEditor(); mensagem('Edição cancelada.'); });
+    $('cancelar-edicao').addEventListener('click', function () {
+        if (!editorOcupado()) editor.close();
+    });
     $('lista').addEventListener('click', async evento => {
         const b = evento.target.closest('button[data-acao]');
         if (!b || ocupado || carregando || !pronto) return;

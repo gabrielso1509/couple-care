@@ -111,8 +111,17 @@
         <h2 id="mobile-task-progress-title">Um passo de cada vez</h2>
         <p id="mobile-task-progress-count">Carregando tarefas…</p>
     </div>
-</section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><div class="two-column"><button class="primary-button mobile-only" data-task-editor type="button" aria-expanded="false" aria-controls="editor-tarefa-mobile">+ Nova tarefa</button><section id="editor-tarefa-mobile" aria-labelledby="titulo-editor" class="card add-task-card"><span class="section-label">NOVA TAREFA</span>
-<h2 id="titulo-editor">Nova tarefa</h2>
+</section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><button class="primary-button tarefas-novo-item" id="novo-item" type="button"
+        aria-haspopup="dialog" aria-controls="editor-tarefa-mobile" disabled>＋ Novo item</button>
+<dialog id="editor-tarefa-mobile" class="cc-modal tarefas-editor" aria-labelledby="titulo-editor">
+    <header>
+        <h2 id="titulo-editor">Novo item</h2>
+        <button id="fechar-editor-tarefas" type="button" data-close aria-label="Fechar editor"></button>
+    </header>
+    <div class="tarefas-tipos" id="tarefas-tipos" role="group" aria-label="Tipo de item">
+        <button class="soft-button" type="button" data-tarefa-tipo="tarefa" aria-pressed="true">Tarefa</button>
+        <button class="soft-button" type="button" data-tarefa-tipo="compromisso" aria-pressed="false">Compromisso</button>
+    </div>
 <form class="form-app" id="form-tarefa">
 <fieldset disabled="" id="campos-tarefa">
 <div class="campo-app"><label for="titulo">O que precisa ser feito?</label><input id="titulo" maxlength="150" placeholder="O que vocês vão cuidar hoje?" required="" type="text"/></div><div class="tarefas-linha"><div class="campo-app"><label for="prazo">Prazo (opcional)</label><input id="prazo" type="date"/></div><div class="campo-app"><label for="responsavel">Responsável</label><select id="responsavel"><option value="">Sem responsável</option></select></div></div>
@@ -123,20 +132,36 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
 </fieldset>
 <p aria-live="polite" class="feedback-app" id="feedback" role="status"></p>
 </form>
-</section><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="section-label">PRÓXIMOS PASSOS</span>
+<form class="form-app" id="form-compromisso" hidden>
+            <label class="cc-field">Título<input id="compromisso-titulo" required maxlength="150"></label>
+            <label class="cc-field">Descrição (opcional)<textarea id="compromisso-descricao" maxlength="3000" rows="3"></textarea></label>
+            <label class="cc-field">Data<input id="compromisso-data" type="date" min="1900-01-01" max="2100-12-31" required></label>
+            <div class="form-row">
+                <label class="cc-field">Início (opcional)<input id="compromisso-inicio" type="time"></label>
+                <label class="cc-field">Fim (opcional)<input id="compromisso-fim" type="time"></label>
+            </div>
+            <p class="cc-status">Sem horário de início, o compromisso aparece como dia inteiro.</p>
+            <button class="primary-button" type="submit" id="salvar-compromisso">Salvar compromisso</button>
+            <p id="feedback-compromisso" role="status"></p>
+        </form>
+</dialog><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="section-label">PRÓXIMOS PASSOS</span>
 <div class="tarefas-cabecalho">
     <h2 id="titulo-lista">O que vem por aí</h2>
+
+</div>
+<div class="tarefas-barra-filtros">
+<div aria-label="Filtros rápidos" class="acoes-app tarefas-filtros" role="group">
+    <button aria-pressed="false" data-filtro="today" type="button">Hoje</button>
+    <button aria-pressed="false" data-filtro="upcoming" type="button">Próximas</button>
+    <button aria-pressed="false" data-filtro="completed" type="button">Concluídas</button>
+</div>
     <button class="soft-button tarefas-abrir-filtros" id="abrir-filtros-tarefas" type="button"
             aria-label="Filtros de tarefas" title="Filtros de tarefas" aria-haspopup="dialog" aria-controls="filtros-tarefas">
         <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
             <path d="M4 6h16M7 12h10m-7 6h4"/>
         </svg>
+        <span aria-hidden="true">Filtros</span>
     </button>
-</div>
-<div aria-label="Filtros rápidos" class="acoes-app tarefas-filtros" role="group">
-    <button aria-pressed="false" data-filtro="today" type="button">Hoje</button>
-    <button aria-pressed="false" data-filtro="upcoming" type="button">Próximas</button>
-    <button aria-pressed="false" data-filtro="completed" type="button">Concluídas</button>
 </div>
 <dialog id="filtros-tarefas" class="cc-modal filtros-tarefas" aria-labelledby="titulo-filtros-tarefas">
     <header>
@@ -172,10 +197,9 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
 <p aria-live="polite" class="texto-suave" id="resumo" role="status"></p>
 <div class="lista-app tarefas-lista" id="lista"></div>
 <button hidden="" id="mais-tarefas" type="button">Mostrar mais tarefas</button>
-</section></div><section id="compromissos-recorrentes" aria-label="Compromissos semanais do casal" hidden></section><section class="card tarefas-compromissos" id="compromissos" aria-labelledby="titulo-compromissos">
+</section><section id="compromissos-recorrentes" aria-label="Compromissos semanais do casal" hidden></section><section class="card tarefas-compromissos" id="compromissos" aria-labelledby="titulo-compromissos">
     <div class="tarefas-compromissos-cabecalho">
-        <h2 id="titulo-compromissos">Compromissos do casal</h2>
-        <button class="primary-button" type="button" id="novo-compromisso" aria-haspopup="dialog" disabled>Novo compromisso</button>
+        <h2 id="titulo-compromissos">Compromissos agendados</h2>
     </div>
     <div class="compromisso-periodo" role="group" aria-label="Mês dos compromissos">
         <button class="soft-button" id="compromisso-mes-anterior" type="button" aria-label="Mês anterior" disabled>‹</button>

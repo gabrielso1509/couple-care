@@ -5,24 +5,12 @@
     const month = $('mes-compromissos');
     const list = $('lista-compromissos');
     const status = $('status-compromissos');
-    const newEvent = $('novo-compromisso');
+    const newItem = $('novo-item');
     let context;
     let rows = [];
     let generation = 0;
 
-    const dialog = C.dialog('editor-compromisso', 'Compromisso', `
-        <form class="form-app" id="form-compromisso">
-            <label class="cc-field">Título<input id="compromisso-titulo" required maxlength="150"></label>
-            <label class="cc-field">Descrição (opcional)<textarea id="compromisso-descricao" maxlength="3000" rows="3"></textarea></label>
-            <label class="cc-field">Data<input id="compromisso-data" type="date" min="1900-01-01" max="2100-12-31" required></label>
-            <div class="form-row">
-                <label class="cc-field">Início (opcional)<input id="compromisso-inicio" type="time"></label>
-                <label class="cc-field">Fim (opcional)<input id="compromisso-fim" type="time"></label>
-            </div>
-            <p class="cc-status">Sem horário de início, o compromisso aparece como dia inteiro.</p>
-            <button class="primary-button" type="submit" id="salvar-compromisso">Salvar compromisso</button>
-            <p id="feedback-compromisso" role="status"></p>
-        </form>`);
+    const dialog = $('editor-tarefa-mobile');
 
     const monthButton = $('compromisso-mes-atual');
     const previousMonth = $('compromisso-mes-anterior');
@@ -70,19 +58,21 @@
     const form = $('form-compromisso');
     let editing = null;
 
-    function open(row) {
+    function prepararEditor(row, day) {
         editing = row || null;
         form.reset();
         $('feedback-compromisso').textContent = '';
-        $('editor-compromisso-title').textContent = row ? 'Editar compromisso' : 'Novo compromisso';
         $('compromisso-titulo').value = row?.title || '';
         $('compromisso-descricao').value = row?.description || '';
         const today = C.today();
-        $('compromisso-data').value = row?.event_date || (today.startsWith(month.value) ? today : month.value + '-01');
+        $('compromisso-data').value = row?.event_date || day || today;
         $('compromisso-inicio').value = row?.start_time?.slice(0, 5) || '';
         $('compromisso-fim').value = row?.end_time?.slice(0, 5) || '';
-        dialog.showModal();
-        $('compromisso-titulo').focus();
+    }
+
+    function open(row, day) {
+        prepararEditor(row, day);
+        C.tarefasEditor.abrir('compromisso', row ? 'Editar compromisso' : null);
     }
 
     function draw() {
@@ -100,7 +90,7 @@
                 C.result(await supabaseClient.from('calendar_events').delete()
                     .eq('id', row.id).eq('version', row.version).select('id').single());
                 await load();
-                newEvent.focus();
+                newItem.focus();
                 C.notify('Compromisso excluído.');
             }, 'botao-secundario');
             edit.setAttribute('aria-label', 'Editar ' + row.title);
@@ -117,11 +107,9 @@
         if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month.value) || month.value < '1900-01' || month.value > '2100-12') {
             rows = [];
             draw();
-            newEvent.disabled = true;
             status.textContent = 'Escolha um mês válido no formato AAAA-MM.';
             return;
         }
-        newEvent.disabled = false;
         const start = month.value + '-01';
         const date = A.local(start);
         monthButton.textContent = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
@@ -161,10 +149,10 @@
         $('feedback-compromisso').textContent = feedback;
         dialog.close();
         await load();
-        newEvent.focus();
+        newItem.focus();
     });
 
-    newEvent.addEventListener('click', function () { open(); });
+    newItem.addEventListener('click', function () { prepararEditor(); });
     C.ready.then(async function (value) {
         context = value;
         month.value = C.today().slice(0, 7);
@@ -172,6 +160,7 @@
             status.textContent = 'Conecte seu casal em Configurações para criar compromissos.';
             return;
         }
+        newItem.disabled = false;
         await load();
         const requested = new URLSearchParams(location.search).get('evento');
         if (location.hash === '#compromissos' && /^\d{4}-\d{2}-\d{2}$/.test(requested || '')) {
@@ -179,8 +168,7 @@
             if (date.getTime() && A.key(date) === requested && requested >= '1900-01-01' && requested <= '2100-12-31') {
                 month.value = requested.slice(0, 7);
                 void load();
-                open();
-                $('compromisso-data').value = requested;
+                open(null, requested);
             }
         }
     }).catch(function (error) { status.textContent = C.error(error); });
