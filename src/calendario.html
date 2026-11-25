@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 <head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
 <base href="/src/"/>
 <title>Calendário | CoupleCare</title>
@@ -28,6 +28,8 @@
 <script defer src="js/calendario.js?v=agenda-consulta"></script>
 <script defer src="js/couple-brand.js"></script>
 <link rel="stylesheet" href="css/modal-consulta.css">
+<link rel="stylesheet" href="css/interior-mobile.css">
+<script defer src="js/interior-mobile.js"></script>
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -114,13 +116,18 @@
      https://creativecommons.org/licenses/by/4.0/ -->
 <section class="card calendario-mensal" aria-labelledby="mes">
     <div class="calendario-mensal-barra">
+        <div>
+        <p class="mobile-only mobile-calendar-label" id="mobile-calendar-label">Esta semana</p>
         <h2 id="mes" aria-live="polite">Calendário mensal</h2>
+        </div>
         <div class="calendario-mensal-acoes" aria-label="Controles do calendário" role="group">
             <button class="soft-button calendario-seta" aria-label="Mês anterior" id="anterior" type="button">‹</button>
             <button class="soft-button" id="hoje" type="button">Hoje</button>
             <button class="soft-button calendario-seta" aria-label="Próximo mês" id="seguinte" type="button">›</button>
+        <button id="alternar-calendario" type="button" class="mobile-only mobile-text-action" aria-controls="mobile-semana dias" aria-pressed="false">Ver mês</button>
         </div>
     </div>
+    <div class="mobile-only mobile-semana" id="mobile-semana" role="group" aria-label="Dias da semana"></div>
     <div class="calendario-mensal-grade">
         <div aria-hidden="true" class="calendario-semana">
             <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
@@ -136,6 +143,10 @@
         <button class="soft-button" id="atualizar-calendario" type="button">Atualizar</button>
     </div>
     <p id="status-calendario" role="status">Carregando calendário…</p>
+</section>
+<section class="card mobile-only mobile-dia-agenda" id="mobile-dia-agenda" aria-labelledby="mobile-dia-titulo">
+    <h2 id="mobile-dia-titulo">Agenda do dia</h2>
+    <div id="mobile-dia-itens"></div>
 </section>
 <dialog aria-labelledby="titulo-agenda" class="cc-modal modal-consulta" id="dialogo-dia">
     <header>

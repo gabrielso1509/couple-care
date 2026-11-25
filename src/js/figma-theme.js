@@ -131,14 +131,17 @@
         mobileMark.setAttribute('aria-pressed', 'false');
         const markSlot = elemento('span', 'marca-tarefas-icone');
         mobileMark.append(markSlot);
-        mobileBrand.append(mobileMark, elemento('strong', '', 'CoupleCare'),
+        const mobileName = elemento('strong', 'cc-mobile-wordmark', 'Couple');
+        mobileName.append(elemento('span', '', 'Care'));
+        mobileBrand.append(mobileMark, mobileName,
             elemento('span', '', '/ ' + (pagina ? pagina.titulo : cabecalho.querySelector('h1').textContent)));
         grupoTitulo.firstElementChild.after(mobileBrand);
         if (window.CCBrand) window.CCBrand(markSlot);
 
         const inferior = elemento('nav', 'cc-bottom-nav');
         inferior.setAttribute('aria-label', 'Navegação rápida');
-        paginas.slice(0, 4).forEach(function (item, indice) {
+        const interiorMobile = Boolean(document.querySelector('script[src="js/interior-mobile.js"]'));
+        paginas.slice(0, interiorMobile ? 5 : 4).forEach(function (item, indice) {
             const link = elemento('a', item.arquivo === arquivoAtual ? 'ativo' : '');
             link.href = '/src/' + item.arquivo;
             if (item.arquivo === arquivoAtual) link.setAttribute('aria-current', 'page');
@@ -151,7 +154,7 @@
         mais.setAttribute('aria-controls', lateral.id);
         mais.setAttribute('aria-expanded', 'false');
         if (paginas.slice(4).some(function (item) { return item.arquivo === arquivoAtual; })) mais.classList.add('ativo');
-        inferior.append(mais);
+        if (!interiorMobile) inferior.append(mais);
         app.append(inferior);
 
         /* A gaveta mobile limita o foco; Esc fecha e devolve o foco ao botão. */

@@ -75,6 +75,17 @@
         card.append(text);
     });
     // Preserve the full BRL string on one line, including cents and sign.
+    const privacy = document.createElement('button');
+    privacy.type = 'button';
+    privacy.className = 'mobile-only mobile-mask';
+    privacy.dataset.moneyToggle = '';
+    privacy.setAttribute('aria-pressed', 'false');
+    privacy.setAttribute('aria-controls', 'finance-income finance-expense finance-balance');
+    privacy.setAttribute('aria-label', 'Ocultar valores');
+    privacy.append(document.createElement('span'));
+    privacy.firstElementChild.setAttribute('aria-hidden', 'true');
+    privacy.firstElementChild.textContent = 'Ocultar';
+    balance.append(privacy);
     const metricValues = [income, expense, balance].map(card => card.querySelector('strong'));
     function fitValues() {
         metricValues.forEach(value => {

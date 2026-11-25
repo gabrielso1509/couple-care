@@ -1,0 +1,342 @@
+/* Os mesmos dados e formulários ganham uma composição própria em telas estreitas. */
+.cc-figma .mobile-only { display: none; }
+.dashboard-casal .mobile-quick-details { display: grid; gap: 14px; }
+
+@media (max-width: 720px) {
+    .cc-figma .mobile-only { display: revert; }
+    .cc-figma .mobile-desktop { display: none; }
+
+    .cc-figma body:has(.mobile-intro) {
+        --mobile-panel: #112740;
+        --mobile-line: #36506e;
+        --mobile-muted: #b0c1d7;
+        --mobile-purple: #d0baff;
+        --mobile-orange: #ffb882;
+        --mobile-mint: #9df0bf;
+        background: radial-gradient(ellipse at 85% 0, #152b49 0, transparent 25rem), #091628;
+    }
+
+    .cc-figma .aplicacao .conteudo-principal > .conteudo:has(.mobile-intro) {
+        gap: 13px;
+        padding: 12px max(16px, env(safe-area-inset-right)) calc(104px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    }
+
+    .cc-figma .aplicacao:has(.mobile-intro) .cabecalho {
+        padding-top: max(8px, env(safe-area-inset-top));
+    }
+
+    .cc-figma .aplicacao:has(.mobile-intro) .cc-mobile-brand > span { display: none; }
+    .cc-mobile-wordmark span { color: #ffb882; }
+
+    .cc-figma .aplicacao:has(.mobile-intro) .cc-bottom-nav {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        inset-inline: 10px;
+        padding: 6px;
+        gap: 2px;
+        background: #10243bee;
+    }
+
+    .cc-figma .aplicacao:has(.mobile-intro) .cc-bottom-nav a { min-height: 49px; padding-inline: 0; }
+    .cc-figma .aplicacao:has(.mobile-intro) .cc-bottom-nav span { font-size: clamp(8px, 2.4vw, 11px); }
+
+    .cc-figma .mobile-intro {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 4px 0 3px;
+    }
+
+    .mobile-intro-title {
+        color: #f3f6fc;
+        font: 700 clamp(28px, 8.2vw, 39px)/1.12 var(--font-display);
+        letter-spacing: -.045em;
+    }
+
+    @supports (background-clip: text) {
+        .pagina-dashboard .mobile-intro-title {
+            background: linear-gradient(100deg, #ffad70, #f8ece8 65%, #d9eaff);
+            background-clip: text;
+            color: transparent;
+        }
+    }
+
+    .mobile-intro-date {
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #b795ff25;
+        color: var(--mobile-purple);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .cc-figma .conteudo:has(.mobile-intro) .card {
+        border-color: var(--mobile-line);
+        background: linear-gradient(145deg, #172e4a, #10243c);
+        border-radius: 18px;
+        box-shadow: 0 6px 14px #03091224;
+    }
+
+    /* Início */
+    .cc-figma .dashboard-casal-topo,
+    .cc-figma .dashboard-casal-base { display: contents; }
+
+    .cc-figma .dashboard-casal .dashboard-widget { gap: 9px; padding: 14px; }
+    .dashboard-casal .dashboard-widget h2 { gap: 9px; padding-bottom: 0; border: 0; font-size: 19px; }
+    .dashboard-casal .dashboard-widget h2 > .mobile-only { font: inherit; color: inherit; }
+    .dashboard-casal .dashboard-widget h2 svg { width: 20px; height: 20px; }
+    .dashboard-casal .dashboard-rolagem { height: auto; max-height: 144px; }
+    .dashboard-casal .dashboard-hoje { display: block; }
+    .dashboard-casal .dashboard-hoje > .dashboard-data,
+    .dashboard-casal .dashboard-rotulo { display: none; }
+    .dashboard-casal #dashboard-eventos { border: 0; padding-inline: 1px 6px; margin: 0; }
+    .dashboard-casal #dashboard-eventos .dashboard-linha {
+        display: grid;
+        grid-template-columns: 67px minmax(0, 1fr);
+        justify-content: start;
+        min-height: 42px;
+        gap: 12px;
+    }
+
+    .dashboard-casal #dashboard-eventos .dashboard-linha small {
+        grid-row: 1;
+        grid-column: 1;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .dashboard-casal #dashboard-eventos .dashboard-linha span { grid-column: 2; grid-row: 1; }
+    .dashboard-casal #dashboard-eventos .dashboard-linha::before { display: none; }
+    .dashboard-casal .dashboard-linha { min-height: 44px; font-size: 14px; }
+    .dashboard-casal .dashboard-linha:last-child { border-bottom: 0; }
+    .dashboard-casal .dashboard-widget-link { min-height: 44px; font-size: 13px; }
+    .dashboard-casal .dashboard-pendentes:not(:empty) {
+        align-self: flex-start;
+        padding: 3px 9px;
+        color: var(--mobile-orange);
+        background: #ffad701c;
+        border-radius: 999px;
+        font-size: 12px;
+    }
+
+    .dashboard-casal .dashboard-financas { gap: 9px 13px; }
+    .dashboard-casal .dashboard-financas #dashboard-balance { font-size: clamp(27px, 8vw, 35px); }
+    .dashboard-casal .dashboard-financas dd { font-size: 17px; }
+    .dashboard-casal .dashboard-financas > div:not(:first-child) { border-top: 1px solid var(--mobile-line); padding-top: 8px; }
+    .dashboard-casal .dashboard-widget.mobile-finance-widget { position: relative; }
+    .dashboard-casal .mobile-finance-widget h2 { padding-inline-end: 42px; }
+
+    .cc-figma .mobile-mask {
+        position: absolute;
+        top: 9px;
+        right: 9px;
+        display: grid;
+        place-items: center;
+        width: 44px;
+        min-height: 44px;
+        padding: 0;
+        color: var(--mobile-purple);
+        background: #0b192b60;
+        border: 1px solid var(--mobile-line);
+        border-radius: 12px;
+    }
+    .mobile-mask > span {
+        position: relative;
+        width: 18px;
+        height: 12px;
+        border: 1.5px solid currentColor;
+        border-radius: 65% 65%;
+        font-size: 0;
+    }
+    .mobile-mask > span::before {
+        position: absolute;
+        top: 2px;
+        left: 5px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        content: '';
+    }
+    .mobile-mask[aria-pressed="true"] > span::after {
+        position: absolute;
+        inset: 4px -3px auto;
+        border-top: 2px solid currentColor;
+        transform: rotate(-40deg);
+        content: '';
+    }
+    [data-money-masked] { visibility: hidden; position: relative; }
+    [data-money-masked]::after { position: absolute; inset: 0; visibility: visible; content: '••••••'; }
+
+    .cc-figma .mobile-quick-toggle {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        min-height: 44px;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        text-align: start;
+        background: transparent;
+        color: var(--mobile-purple);
+        font-size: 14px;
+    }
+    .mobile-quick-toggle span:last-child { font-size: 23px; line-height: 1; }
+    .mobile-quick-toggle[aria-expanded="true"] span:last-child { transform: rotate(90deg); }
+    .mobile-quick-widget:not([data-expanded]) .mobile-quick-details { display: none; }
+    .mobile-quick-widget[data-expanded] .mobile-quick-details { border-top: 1px solid var(--mobile-line); padding-top: 10px; }
+
+    /* Calendário */
+    .calendario-mensal[data-week] .calendario-mensal-grade,
+    .calendario-mensal:not([data-week]) .mobile-semana { display: none; }
+    .cc-figma .calendario-mensal[data-week] .mobile-semana {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 3px;
+        padding: 5px;
+        margin-block: 5px 12px;
+        background: #0b1a2e;
+        border-radius: 13px;
+    }
+    .mobile-semana-dia {
+        display: grid;
+        position: relative;
+        place-content: center;
+        gap: 2px;
+        min-width: 0;
+        min-height: 55px;
+        padding: 5px 0 10px;
+        text-align: center;
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        color: #f0f4fc;
+        font-size: 14px;
+    }
+    .mobile-semana-dia > span { font-size: 10px; text-transform: uppercase; }
+    .mobile-semana-dia[aria-current="date"] { border-color: #b795ff83; }
+    .mobile-semana-dia[aria-pressed="true"] { background: var(--mobile-orange); color: #17223a; }
+    .mobile-semana-dot {
+        position: absolute;
+        bottom: 5px;
+        left: calc(50% - 2px);
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+    .calendario-mensal-acoes { gap: 5px; }
+    .calendario-mensal-acoes .calendario-seta { width: 39px; }
+    .mobile-calendar-label { margin: 0; color: var(--mobile-purple); font-size: 12px; }
+    .cc-figma .mobile-text-action {
+        min-height: 44px;
+        padding: 0 6px;
+        border: 0;
+        border-radius: 7px;
+        background: none;
+        color: var(--mobile-purple);
+        font-weight: 700;
+    }
+    .cc-figma .mobile-dia-agenda { padding: 14px; }
+    .mobile-dia-agenda h2 { margin: 0 0 10px; font-size: 21px; }
+    .mobile-dia-agenda .modal-consulta-item { margin-block: 7px; background: #102239; }
+    .mobile-dia-agenda .calendario-agenda-vazia { padding: 8px 0 0; }
+
+    /* Tarefas */
+    .cc-figma .tarefas-pagina .mobile-task-progress {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+    }
+    .mobile-task-progress h2 { margin: 0; font-size: 18px; }
+    .mobile-task-progress p { margin: 2px 0 0; color: var(--mobile-muted); font-size: 13px; }
+    .mobile-task-progress progress { width: 100%; height: 9px; accent-color: var(--mobile-orange); }
+    .cc-figma .tarefas-pagina > .stats-row { gap: 5px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cc-figma .tarefas-pagina > .stats-row > div { min-width: 0; padding: 9px 5px; justify-content: center; text-align: center; }
+    .tarefas-pagina > .stats-row .stat-icon { display: none; }
+    .cc-figma .tarefas-pagina > .stats-row small { font-size: 10px; }
+    .tarefas-pagina .two-column #editor-tarefa-mobile:not([data-task-open]) { display: none; }
+    .cc-figma .tarefas-pagina :is(.task-list-card, .add-task-card) { padding: 14px; }
+    .cc-figma .tarefas-pagina .tarefas-filtros { flex-wrap: nowrap; overflow-x: auto; padding: 3px; }
+    .tarefas-pagina .tarefas-filtros button { flex-shrink: 0; }
+    .cc-figma .tarefas-pagina .tarefa-cartao h3 { font-size: 15px; }
+
+    /* Finanças */
+    .cc-figma body.cc-finances .finance-summary {
+        gap: 0;
+        padding: 10px;
+        background: radial-gradient(ellipse at 95% 0, #b795ff23, transparent 65%), var(--mobile-panel);
+        border: 1px solid var(--mobile-line);
+        border-radius: 18px;
+    }
+    .cc-figma body.cc-finances .finance-summary > :is(.card, .balance-card, .account-tile) {
+        gap: 8px;
+        min-height: 52px;
+        padding: 8px;
+        box-shadow: none;
+        background: transparent;
+        border: 0;
+    }
+    .cc-figma body.cc-finances .finance-summary #balance-card {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        position: relative;
+        min-height: 76px;
+        padding-inline-end: 52px;
+        border-bottom: 1px solid var(--mobile-line);
+        border-radius: 0;
+    }
+    .cc-figma body.cc-finances .finance-summary #balance-card strong {
+        font-size: clamp(23px, 7vw, 33px);
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .cc-figma body.cc-finances .finance-summary .account-tile { grid-column: 1 / -1; border-top: 1px solid var(--mobile-line); border-radius: 0; }
+    .cc-figma body.cc-finances .finance-summary .finance-metric-text > strong { font-size: clamp(12px, 3.8vw, 17px); }
+    .cc-figma body.cc-finances .finance-grid > :is(.spending-card, .transactions-card) { padding: 13px; }
+
+    /* Bem-estar */
+    .cc-figma .menstruacao-real :is(#individual, .cc-partner-wellness, .wellness-grid) {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+    .cc-figma .menstruacao-real :is(.cycle-card, .checkin-card, .partner-feelings-card, .partner-care-card, .support-card) {
+        min-height: 0;
+        padding: 16px;
+    }
+    .cc-figma .menstruacao-real .cycle-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 10px 14px;
+    }
+    .cc-figma .cycle-card .card-title { gap: 6px; align-self: start; flex-wrap: wrap; }
+    .cc-figma .cycle-card .card-title h3 { font-size: 20px; }
+    .cc-figma .cycle-card .cycle-visual {
+        width: 88px;
+        height: 88px;
+        margin: 0;
+        padding: 6px;
+        background: conic-gradient(#b795ff var(--cycle-progress,0deg), #ffffff12 0);
+    }
+    .cc-figma .cycle-card .cycle-visual strong { font-size: 23px; }
+    .cc-figma .cycle-card .cycle-visual span { font-size: 8px; }
+    .cc-figma .cycle-card :is(.cycle-info, .soft-button) { grid-column: 1 / -1; }
+    .cc-figma .cycle-card .cycle-info { justify-items: start; text-align: start; margin: 0; }
+    .cc-figma .menstruacao-real .checkin-card h3 { font-size: 20px; }
+    .cc-figma .menstruacao-real .feeling-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cc-figma .menstruacao-real .feeling-grid button { margin: 0; padding: 7px; font-size: 12px; }
+    .cc-figma .menstruacao-real .partner-care-art { display: none; }
+    .cc-figma .menstruacao-real .partner-profile { margin: 11px 0; align-items: center; gap: 10px; }
+    .cc-figma .menstruacao-real .partner-profile h2 { font-size: 19px; }
+    .cc-figma .menstruacao-real .partner-profile .conta-avatar { width: 42px; height: 42px; flex-shrink: 0; }
+    .cc-figma .menstruacao-real .support-card { display: grid; gap: 10px; }
+    .cc-figma .menstruacao-real .support-card h3,
+    .cc-figma .menstruacao-real .partner-care-card h2 { font-size: 20px; }
+    .cc-figma .menstruacao-real .cc-cycle-history { padding-inline: 14px; }
+}

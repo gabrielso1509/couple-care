@@ -282,7 +282,7 @@
     function limparEditor() {
         edicao = null; form.reset(); $('titulo').setCustomValidity('');
         $('prazo').setCustomValidity(''); $('checklist-texto').setCustomValidity('');
-        $('titulo-editor').textContent = 'Uma coisa de cada vez';
+        $('titulo-editor').textContent = 'Nova tarefa';
         $('salvar-tarefa').textContent = 'Criar tarefa'; $('cancelar-edicao').hidden = true;
     }
     function editar(t) {
@@ -294,6 +294,7 @@
         $('repeticao').value = t.recurrence; $('checklist-texto').value = t.checklist.map(i => i.text).join('\n');
         $('titulo-editor').textContent = 'Editar tarefa'; $('salvar-tarefa').textContent = 'Salvar alterações';
         $('cancelar-edicao').hidden = false; mensagem('Editando “' + t.title + '”.');
+        $('editor-tarefa-mobile').dispatchEvent(new Event('abrir-editor-tarefa'));
         $('titulo').focus(); $('titulo-editor').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
     function checklistDoEditor() {

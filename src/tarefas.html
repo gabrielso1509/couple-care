@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 <head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
 <base href="/src/"/>
 <title>Tarefas | CoupleCare</title>
@@ -16,6 +16,8 @@
 <script defer src="js/agenda-dados.js"></script>
 <script defer src="js/tarefas-compromissos.js"></script>
 <link rel="stylesheet" href="css/tarefas-compromissos.css">
+<link rel="stylesheet" href="css/interior-mobile.css">
+<script defer src="js/interior-mobile.js"></script>
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -99,8 +101,8 @@
 <span class="selo-tarefas">Feito para construir juntos</span>
 </header>
 <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1"><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><div class="two-column"><section aria-labelledby="titulo-editor" class="card add-task-card"><span class="section-label">NOVA TAREFA</span>
-<h2 id="titulo-editor">Uma coisa de cada vez</h2><p>Dividir o cuidado deixa tudo mais leve.</p>
+<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1"><section class="card mobile-only mobile-task-progress" aria-labelledby="mobile-task-progress-title"><div><h2 id="mobile-task-progress-title">Progresso das tarefas</h2><p id="mobile-task-progress-count">Carregando tarefas…</p></div><progress id="mobile-task-progress-bar" aria-labelledby="mobile-task-progress-title" hidden></progress></section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><div class="two-column"><button class="primary-button mobile-only" data-task-editor type="button" aria-expanded="false" aria-controls="editor-tarefa-mobile">+ Nova tarefa</button><section id="editor-tarefa-mobile" aria-labelledby="titulo-editor" class="card add-task-card"><span class="section-label">NOVA TAREFA</span>
+<h2 id="titulo-editor">Nova tarefa</h2>
 <form class="form-app" id="form-tarefa">
 <fieldset disabled="" id="campos-tarefa">
 <div class="campo-app"><label for="titulo">O que precisa ser feito?</label><input id="titulo" maxlength="150" placeholder="O que vocês vão cuidar hoje?" required="" type="text"/></div><div class="tarefas-linha"><div class="campo-app"><label for="prazo">Prazo (opcional)</label><input id="prazo" type="date"/></div><div class="campo-app"><label for="responsavel">Responsável</label><select id="responsavel"><option value="">Sem responsável</option></select></div></div>

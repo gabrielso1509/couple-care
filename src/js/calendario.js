@@ -14,7 +14,13 @@
         fertility_estimate: 'Janela fértil estimada',
         pms_estimate: 'Possível início da TPM'
     };
-    let month = A.local(C.today());
+    const mobile = matchMedia('(max-width: 720px)');
+    const weekGrid = $('mobile-semana');
+    const toggle = $('alternar-calendario');
+    const calendar = grid.closest('.calendario-mensal');
+    let selected = C.today();
+    let weekMode = mobile.matches;
+    let month = A.local(selected);
     let context;
     let grouped = new Map();
     let viewing = null;
@@ -24,11 +30,58 @@
 
     month.setDate(1);
 
+    function weekStart() {
+        return A.plusDays(selected, -A.local(selected).getDay());
+    }
+
+    function paintWeek() {
+        calendar.toggleAttribute('data-week', weekMode);
+        toggle.setAttribute('aria-pressed', String(!weekMode));
+        toggle.textContent = weekMode ? 'Ver mês' : 'Ver semana';
+        $('mobile-calendar-label').textContent = weekMode ? 'Semana selecionada' : 'Mês selecionado';
+        $('anterior').setAttribute('aria-label', weekMode ? 'Semana anterior' : 'Mês anterior');
+        $('seguinte').setAttribute('aria-label', weekMode ? 'Próxima semana' : 'Próximo mês');
+        if (!mobile.matches) return;
+
+        const focused = document.activeElement?.dataset.semanaDia;
+        const fragment = document.createDocumentFragment();
+        const first = weekStart();
+        for (let index = 0; index < 7; index += 1) {
+            const day = A.plusDays(first, index);
+            const date = A.local(day);
+            const button = C.el('button', 'mobile-semana-dia');
+            const count = (grouped.get(day) || []).length;
+            button.type = 'button';
+            button.dataset.semanaDia = day;
+            button.disabled = day < '1900-01-01' || day > '2100-12-31';
+            button.setAttribute('aria-pressed', String(day === selected));
+            button.setAttribute('aria-label', C.date(day) + (count ? ', ' + count + (count === 1 ? ' item' : ' itens') : ''));
+            if (day === C.today()) button.setAttribute('aria-current', 'date');
+            button.append(C.el('span', '', date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')),
+                C.el('strong', '', String(date.getDate())));
+            if (count) button.append(C.el('i', 'mobile-semana-dot'));
+            fragment.append(button);
+        }
+        weekGrid.replaceChildren(fragment);
+        if (focused) weekGrid.querySelector('[data-semana-dia="' + focused + '"]')?.focus({ preventScroll: true });
+    }
+
+    function paintInline() {
+        if (!mobile.matches) return;
+        $('mobile-dia-titulo').textContent = A.local(selected).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+        const items = grouped.get(selected) || [];
+        const list = $('mobile-dia-itens');
+        list.replaceChildren();
+        items.forEach(function (item) { list.append(makeCard(item)); });
+        if (loading || partial || !items.length) list.append(C.el('p', 'calendario-agenda-vazia',
+            loading ? 'Carregando agenda…' : partial ? 'Parte da agenda está indisponível.' : 'Nenhum item para este dia.'));
+    }
+
     function controls() {
         const year = month.getFullYear();
         const number = month.getMonth();
-        $('anterior').disabled = year === 1900 && number === 0;
-        $('seguinte').disabled = year === 2100 && number === 11;
+        $('anterior').disabled = weekMode ? A.plusDays(weekStart(), -1) < '1900-01-01' : year === 1900 && number === 0;
+        $('seguinte').disabled = weekMode ? A.plusDays(weekStart(), 7) > '2100-12-31' : year === 2100 && number === 11;
         $('atualizar-calendario').disabled = !context || loading;
     }
 
@@ -107,6 +160,8 @@
 
         grid.replaceChildren(days);
         if (activeDay) grid.querySelector('[data-dia="' + activeDay + '"]')?.focus();
+        paintWeek();
+        paintInline();
         controls();
     }
 
@@ -118,8 +173,11 @@
     async function load() {
         if (!context) return;
         const id = ++requestId;
-        const start = A.key(month);
-        const end = A.key(new Date(month.getFullYear(), month.getMonth() + 1, 0));
+        const first = weekStart();
+        const last = A.plusDays(first, 6);
+        const start = weekMode ? (first < '1900-01-01' ? '1900-01-01' : first) : A.key(month);
+        const end = weekMode ? (last > '2100-12-31' ? '2100-12-31' : last) :
+            A.key(new Date(month.getFullYear(), month.getMonth() + 1, 0));
         const couple = context.couple;
         loading = true;
         controls();
@@ -164,6 +222,7 @@
         // Mantém o botão de origem no DOM enquanto o modal estiver aberto.
         if (dialog.open) {
             drawAgenda(viewing);
+            paintInline();
             controls();
         } else drawMonth();
 
@@ -171,25 +230,52 @@
     }
 
     function go(target) {
-        month = target;
+        selected = A.key(target);
+        month = A.local(selected);
         month.setDate(1);
         grouped = new Map();
+        loading = true;
         drawMonth();
         void load();
     }
 
-    $('anterior').addEventListener('click', function () {
-        go(new Date(month.getFullYear(), month.getMonth() - 1, 1));
-    });
-    $('seguinte').addEventListener('click', function () {
-        go(new Date(month.getFullYear(), month.getMonth() + 1, 1));
-    });
+    function move(amount) {
+        if (weekMode) {
+            const day = A.plusDays(selected, amount * 7);
+            go(A.local(day < '1900-01-01' ? '1900-01-01' : day > '2100-12-31' ? '2100-12-31' : day));
+        }
+        else go(new Date(month.getFullYear(), month.getMonth() + amount, 1));
+    }
+
+    $('anterior').addEventListener('click', function () { move(-1); });
+    $('seguinte').addEventListener('click', function () { move(1); });
     $('hoje').addEventListener('click', function () { go(A.local(C.today())); });
+    toggle.addEventListener('click', function () {
+        weekMode = !weekMode;
+        go(A.local(selected));
+    });
+    mobile.addEventListener('change', function () {
+        weekMode = mobile.matches;
+        if (dialog.open) dialog.close();
+        go(A.local(selected));
+    });
+    weekGrid.addEventListener('click', function (event) {
+        const button = event.target.closest('[data-semana-dia]');
+        if (!button || button.disabled) return;
+        selected = button.dataset.semanaDia;
+        month = A.local(selected);
+        month.setDate(1);
+        monthTitle.textContent = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        paintWeek();
+        paintInline();
+    });
     $('atualizar-calendario').addEventListener('click', load);
     grid.addEventListener('click', function (event) {
         const button = event.target.closest('[data-dia]');
         if (!button) return;
         viewing = button.dataset.dia;
+        selected = viewing;
+        paintInline();
         drawAgenda(viewing);
         dialog.scrollTop = 0;
         C.openOverview(dialog, button);
@@ -218,6 +304,7 @@
         partial = true;
         status.textContent = C.error(error);
         if (dialog.open) drawAgenda(viewing);
+        paintInline();
         controls();
     });
 })();
