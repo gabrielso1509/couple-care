@@ -3,7 +3,7 @@
     'use strict';
     const C = CC, $ = C.$;
     let user, coupleId, active = null, cursor = null, rows = [], busy = false;
-    let accounts = [], syncing = false;
+    let accounts = [], syncing = false, queuedRange = null;
 
     const section = C.el('section', 'card bank-panel');
     section.setAttribute('aria-labelledby', 'bank-title');
@@ -58,7 +58,7 @@
     }
 
     async function connect(itemId) {
-        if (busy) return;
+        if (busy || syncing) return;
         controls(true); notice('Preparando conexão segura…');
         try {
             await sdk();
@@ -84,7 +84,7 @@
                 },
                 onClose: function () { controls(false); }
             });
-            widget.init();
+            await widget.init();
             notice(token.sandbox ? 'Ambiente de desenvolvimento: contas sandbox são de teste.' : 'Autorize a conexão no fluxo seguro da instituição.');
         } catch (error) { notice(error.message, true); controls(false); }
     }
@@ -176,6 +176,7 @@
                     row.append(info, C.button('Ver e importar extrato', async function () {
                         active = { itemId: ref.item_id, accountId: account.id, financeAccountId: financeAccountId, name: data.bank + ' · ' + account.name };
                         await statement(false);
+                        if (!$('bank-statement').hidden) $('bank-statement').scrollIntoView({ block: 'nearest' });
                     }, 'soft-button'));
                     row.append(C.button('Agendamentos', async function () {
                         const end = new Date(today + 'T12:00:00Z');
@@ -224,13 +225,14 @@
         return /transfer[eê]ncia entre contas|pagamento de fatura|pagamento cart[aã]o|quitar fatura/.test(value);
     }
 
-    async function saveTransactions(transactions) {
+    async function saveTransactions(transactions, financeAccountId) {
         const payload = transactions.filter(function (item) {
-            return item.status !== 'PENDING' && !isInternalTransfer(item) && Number(item.amount) !== 0;
+            return item.status !== 'PENDING' && !item.billPayment && !isInternalTransfer(item) && Number.isFinite(Number(item.amount)) && Number(item.amount) !== 0;
         }).map(function (item) {
             return {
                 couple_id: coupleId,
-                account_id: active.financeAccountId,
+                account_id: financeAccountId,
+                payment_method: item.paymentMethod || null,
                 description: String(item.description || 'Movimentação bancária').slice(0, 150),
                 entry_type: item.type === 'CREDIT' ? 'income' : 'expense',
                 amount_cents: Math.max(1, Math.round(Math.abs(Number(item.amount)) * 100)),
@@ -245,7 +247,7 @@
             const chunk = payload.slice(index, index + 100);
             const externalIds = chunk.map(function (row) { return row.external_transaction_id; });
             const existingRows = C.result(await supabaseClient.from('finance_entries')
-                .select('id,external_transaction_id,account_id,description,entry_type,amount_cents,category,entry_date')
+                .select('id,external_transaction_id,account_id,description,entry_type,amount_cents,category,entry_date,payment_method')
                 .eq('couple_id', coupleId).eq('external_provider', 'pluggy').in('external_transaction_id', externalIds));
             const existingById = new Map(existingRows.map(function (row) { return [row.external_transaction_id, row]; }));
             const inserts = [];
@@ -254,12 +256,14 @@
                 if (!existing) { inserts.push(row); continue; }
                 const changed = existing.account_id !== row.account_id || existing.description !== row.description ||
                     existing.entry_type !== row.entry_type || Number(existing.amount_cents) !== row.amount_cents ||
-                    existing.category !== row.category || existing.entry_date !== row.entry_date;
+                    existing.category !== row.category || existing.entry_date !== row.entry_date ||
+                    (row.payment_method !== null && existing.payment_method !== row.payment_method);
                 if (!changed) continue;
                 // Atualiza somente as colunas liberadas para o papel authenticated.
                 C.result(await supabaseClient.from('finance_entries').update({
                     account_id: row.account_id, description: row.description, entry_type: row.entry_type,
-                    amount_cents: row.amount_cents, category: row.category, entry_date: row.entry_date
+                    amount_cents: row.amount_cents, category: row.category, entry_date: row.entry_date,
+                    payment_method: row.payment_method || existing.payment_method
                 }).eq('id', existing.id).eq('couple_id', coupleId).select('id').single());
             }
             if (inserts.length) {
@@ -281,13 +285,13 @@
     }
 
     async function fetchTransactions(more) {
-        const range = dateRange();
-        const data = await api('connection', Object.assign({ action: 'transactions' }, active, range, more && cursor ? { cursor: cursor } : {}));
+        const range = dateRange(), account = active;
+        const data = await api('connection', Object.assign({ action: 'transactions' }, account, range, more && cursor ? { cursor: cursor } : {}));
         cursor = data.next || null;
         const map = new Map(rows.map(function (row) { return [row.id, row]; }));
         data.transactions.forEach(function (row) { map.set(row.id, row); });
         rows = Array.from(map.values());
-        return saveTransactions(data.transactions);
+        return saveTransactions(data.transactions, account.financeAccountId);
     }
 
     async function statement(more) {
@@ -321,28 +325,42 @@
     }
 
     async function syncRange(from, to) {
-        if (!user || !accounts.length || syncing) return false;
-        if (!from || !to) return false;
+        if (!user || !accounts.length || !from || !to) return false;
+        if (syncing) { queuedRange = [from, to]; return false; }
         syncing = true;
-        const previous = active; let partial = false;
+        let partial = false;
         try {
-            for (const account of accounts) {
-                active = account;
-                $('bank-date-from').value = from; $('bank-date-to').value = to;
-                rows = []; cursor = null;
-                let pages = 0;
-                do {
-                    await fetchTransactions(pages > 0);
-                    pages++;
-                } while (cursor && pages < 20);
+            for (const account of accounts.slice()) {
+                let cursor = null;
+                const seen = new Set();
+                for (let page = 0; page < 20; page++) {
+                    const data = await api('connection', {
+                        action: 'transactions', itemId: account.itemId, accountId: account.accountId,
+                        dateFrom: from, dateTo: to, cursor
+                    });
+                    await saveTransactions(data.transactions, account.financeAccountId);
+                    cursor = data.next;
+                    if (!cursor) break;
+                    if (seen.has(cursor)) break;
+                    seen.add(cursor);
+                }
                 if (cursor) partial = true;
             }
-            window.dispatchEvent(new Event('cc-finance-bank-synced'));
-            if (partial) notice('Importação parcial: este período é muito extenso. Escolha um intervalo menor para concluir a sincronização.');
-            else notice('Contas sincronizadas com as finanças compartilhadas.');
+            notice(partial ? 'Importação parcial. Escolha um período menor para concluir.' :
+                'Contas sincronizadas com as finanças compartilhadas.');
             return true;
-        } catch (error) { notice('Não foi possível sincronizar o extrato: ' + error.message, true); }
-        finally { active = previous; syncing = false; }
+        } catch (error) {
+            notice('Não foi possível sincronizar o extrato: ' + error.message, true);
+            return false;
+        } finally {
+            window.dispatchEvent(new Event('cc-finance-bank-synced'));
+            syncing = false;
+            if (queuedRange) {
+                const next = queuedRange;
+                queuedRange = null;
+                syncRange(next[0], next[1]);
+            }
+        }
     }
 
     window.CCOpenFinance = { syncRange: syncRange };

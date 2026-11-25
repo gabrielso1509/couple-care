@@ -209,10 +209,23 @@
         if ((new Date(end + 'T12:00:00') - new Date(start + 'T12:00:00')) / 86400000 > 365) throw new Error('O intervalo personalizado pode ter até 366 dias.');
         return { start: start, end: end, label: preset === 'custom' ? C.date(start) + ' a ' + C.date(end) : $('finance-period').selectedOptions[0].textContent };
     }
+    const paymentLabels = { pix: 'Pix', credit: 'Crédito', debit: 'Débito', boleto: 'Boleto', ted: 'TED', doc: 'DOC' };
+    function paymentLabel(entry) {
+        return paymentLabels[entry.payment_method] || 'Meio não informado';
+    }
+    let dismissChart = function () {};
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('.chart-bar')) dismissChart();
+    });
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') dismissChart();
+    });
+
     /* Eixos e marcas em reais; a altura das barras usa a mesma escala do eixo Y. */
     function chart(summary) {
         const box = $('finance-chart'); box.replaceChildren();
-        const data = summary.categories || [];
+        dismissChart = function () {};
+        const data = (summary.categories || []).filter(row => Number(row.amount) > 0);
         if (!data.length) { box.append(C.el('p', 'empty-state', 'Nenhuma despesa registrada neste período.')); return; }
         const max = Math.max.apply(null, data.map(function (r) { return Number(r.amount); }));
         const raw = max / 5, power = Math.pow(10, Math.floor(Math.log10(raw)));
@@ -222,38 +235,92 @@
         const frame = C.el('div', 'chart-frame'), y = C.el('div', 'chart-y-axis'); y.setAttribute('aria-hidden', 'true');
         for (let i = 0; i <= 5; i++) { const label = C.el('span', '', C.money(top - i * step)); label.style.top = i * 20 + '%'; y.append(label); }
         const scroll = C.el('div', 'chart-scroll'); scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', 'Gráfico de despesas por categoria. Role horizontalmente para ver mais categorias.');
-        const plot = C.el('div', 'chart-plot'); plot.style.minWidth = Math.max(220, data.length * 116) + 'px';
+        const plot = C.el('div', 'chart-plot'); plot.style.minWidth = Math.max(200, data.length * 68) + 'px';
         const lines = C.el('div', 'chart-grid'); lines.setAttribute('aria-hidden', 'true');
         for (let i = 0; i <= 5; i++) { const line = C.el('span'); line.style.top = i * 20 + '%'; lines.append(line); }
         const bars = C.el('div', 'chart-bars'); bars.append(lines);
         const x = C.el('div', 'chart-x-axis');
         const table = C.el('table', 'cc-sr'); const caption = C.el('caption', '', 'Despesas por categoria em reais'); const body = C.el('tbody'); table.append(caption, body);
+        const detail = C.el('p', 'chart-detail');
+        detail.setAttribute('aria-live', 'polite');
+        detail.hidden = true;
+        box.append(detail);
+        let selected = null;
+        function display(state) {
+            bars.querySelectorAll('.chart-bar').forEach(item => item.classList.toggle('is-highlighted', item === state?.bar));
+            detail.hidden = !state;
+            detail.textContent = state ? state.text() : '';
+        }
+        dismissChart = function () {
+            selected?.bar.setAttribute('aria-pressed', 'false');
+            selected = null;
+            display(null);
+        };
         data.forEach(function (row) {
             const name = row.name || categories[row.category] || 'Categoria do casal';
-            const slot = C.el('div', 'chart-bar-slot'), bar = C.el('div', 'chart-bar');
-            bar.tabIndex = 0; bar.setAttribute('role','button');
+            const slot = C.el('div', 'chart-bar-slot'), bar = C.el('button', 'chart-bar');
+            bar.type = 'button';
             const label = name + ' · ' + C.money(row.amount);
-            bar.setAttribute('aria-label',label);
-            function showDetail() {
-                let detail = box.querySelector('.chart-detail');
-                if (!detail) { detail=C.el('p','chart-detail'); box.prepend(detail); }
-                detail.textContent=label;
-                const amounts = new Map();
+            bar.setAttribute('aria-label', label);
+            bar.setAttribute('aria-pressed', 'false');
+            const state = { bar, text: function () {
+                const amounts = new Map(), places = new Set();
                 let loaded = 0;
-                entries.filter(e => e.entry_type==='expense' && categoryName(e)===name).forEach(e => {
-                    const desc=e.description.toLowerCase();
-                    const method=/\bpix\b/.test(desc)?'Pix':/cartão de crédito/.test(desc)?'Crédito':/cartão de débito/.test(desc)?'Débito':'Não informado';
-                    loaded+=Number(e.amount_cents); amounts.set(method,(amounts.get(method)||0)+Number(e.amount_cents));
+                entries.filter(entry => entry.entry_type === 'expense' &&
+                    (entry.custom_category_id ? 'custom:' + entry.custom_category_id : entry.category) === row.category
+                ).forEach(entry => {
+                    const method = paymentLabel(entry), amount = Number(entry.amount_cents);
+                    loaded += amount;
+                    amounts.set(method, (amounts.get(method) || 0) + amount);
+                    places.add(entry.description);
                 });
-                if(loaded===Number(row.amount)) for (const [method, cents] of amounts) detail.textContent+=' · '+method+' '+C.money(cents);
-                else detail.textContent+=' · Detalhamento parcial nas movimentações carregadas';
-            }
-            for(const event of ['focus','mouseenter','click']) bar.addEventListener(event,showDetail);
-            bar.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();showDetail();}};
+                const methods = Array.from(amounts, ([method, cents]) => method + ' ' + C.money(cents));
+                const preview = Array.from(places).slice(0, 2);
+                const coverage = loaded === Number(row.amount) ? '' : 'Detalhes das movimentações carregadas';
+                return [label, coverage, ...methods, ...preview].filter(Boolean).join(' · ');
+            } };
+            bar.addEventListener('mouseenter', () => display(state));
+            bar.addEventListener('mouseleave', () => display(selected));
+            bar.addEventListener('focus', () => display(state));
+            bar.addEventListener('blur', () => display(selected));
+            bar.addEventListener('click', () => {
+                if (selected === state) { dismissChart(); return; }
+                selected?.bar.setAttribute('aria-pressed', 'false');
+                selected = state;
+                bar.setAttribute('aria-pressed', 'true');
+                display(state);
+            });
             bar.style.height = Number(row.amount) / top * 100 + '%';
             const amount = C.el('span', 'chart-bar-value', C.money(row.amount)); bar.append(amount); slot.append(bar); bars.append(slot);
             x.append(C.el('span', '', name));
             const tr = C.el('tr'), th = C.el('th', '', name); th.scope = 'row'; tr.append(th, C.el('td', '', C.money(row.amount))); body.append(tr);
+        });
+        let drag = null, dragged = false;
+        scroll.addEventListener('pointerdown', event => {
+            dragged = false;
+            if (event.pointerType === 'mouse' && event.button === 0 && scroll.scrollWidth > scroll.clientWidth) {
+                drag = { x: event.clientX, left: scroll.scrollLeft };
+            }
+        });
+        scroll.addEventListener('pointermove', event => {
+            if (!drag || !(event.buttons & 1)) { drag = null; return; }
+            const dx = event.clientX - drag.x;
+            if (Math.abs(dx) > 5 || dragged) {
+                dragged = true;
+                scroll.setPointerCapture(event.pointerId);
+                scroll.scrollLeft = drag.left - dx;
+            }
+        });
+        scroll.addEventListener('pointerup', () => { drag = null; });
+        scroll.addEventListener('click', event => {
+            if (dragged) { event.stopPropagation(); event.preventDefault(); }
+            dragged = false;
+        }, true);
+        scroll.addEventListener('keydown', event => {
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                event.preventDefault();
+                scroll.scrollLeft += event.key === 'ArrowRight' ? 90 : -90;
+            }
         });
         plot.append(bars, x); scroll.append(plot); frame.append(y, scroll); box.append(frame, C.el('p', 'chart-axis-caption', 'Categorias'), table);
     }
@@ -270,12 +337,22 @@
         if (!entries.length) box.append(C.el('p', 'empty-state', 'Nenhum lançamento neste período.'));
         entries.forEach(function (row) {
             const line = C.el('article', 'transaction'), text = C.el('p');
-            const icon = /restaurante|lanch|pizza/i.test(row.description)?'🍴':row.category==='market'?'🛒':/pix/i.test(row.description)?'◇':row.entry_type==='income'?'↙':'↗';
-            const mark=C.el('span','entry-icon',icon); mark.setAttribute('aria-hidden','true'); text.prepend(mark);
+            const paths = {
+                food: 'M4 3v6a3 3 0 0 0 6 0V3M7 3v18m11 0V3c-3 2-4 5-4 9h4',
+                cart: 'M2 4h3l2 11h12l2-8H6m3 13h.01m8 0h.01',
+                pix: 'M12 2l10 10-10 10L2 12zM7 8l5 5 5-5M7 16l5-5 5 5',
+                transit: 'M4 16V6l2-2h12l2 2v10H4zm0-6h16M6 17v3m12-3v3',
+                transfer: row.entry_type === 'income' ? 'M18 6 6 18V9m0 9h9' : 'M6 18 18 6v9m0-9H9'
+            };
+            const key = row.payment_method === 'pix' ? 'pix' : /restaurante|lanch|pizza/i.test(row.description) ?
+                'food' : row.category === 'market' ? 'cart' : row.category === 'transport' ? 'transit' : 'transfer';
+            const mark = C.el('span', 'entry-icon');
+            mark.setAttribute('aria-hidden', 'true');
+            mark.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="' + paths[key] + '"/></svg>';
             text.append(C.el('b', '', row.description), C.el('small', '', C.date(row.entry_date) + ' · ' + categoryName(row)));
-            line.append(text, C.el('strong', row.entry_type === 'income' ? 'positive' : '', (row.entry_type === 'income' ? '+ ' : '− ') + C.money(row.amount_cents)));
+            line.append(mark, text, C.el('strong', row.entry_type === 'income' ? 'positive' : '', (row.entry_type === 'income' ? '+ ' : '− ') + C.money(row.amount_cents)));
             if (row.source === 'pluggy') {
-                text.append(C.el('small', 'finance-entry-source', 'Importado automaticamente · não editável'));
+                text.append(C.el('small', 'finance-entry-source', row.payment_method ? paymentLabel(row) + ' · Importado' : 'Importado'));
             } else {
                 const actions = C.el('div', 'cc-row-actions');
                 actions.append(C.button('Editar', function () { editEntry(row); }), C.button('Excluir', async function () {
@@ -342,9 +419,6 @@
             syncCategories(); syncAccountOptions(); syncBillOptions(); summaryState(summary);
             $('finance-balance').textContent = C.money(summary.balance); $('finance-income').textContent = C.money(summary.income); $('finance-expense').textContent = C.money(summary.expense);
             $('finance-ratio').textContent = Number(summary.income) > 0 ? Math.round(Number(summary.expense) / Number(summary.income) * 100) + '% das receitas no período' : 'Sem receitas no período';
-            $('balance-card').querySelector('span').textContent = 'SALDO · ' + bounds.label.toLocaleUpperCase('pt-BR');
-            $('finance-income').parentElement.querySelector('small').textContent = 'Entradas no período selecionado';
-            $('finance-expense').parentElement.querySelector('small').textContent = 'Saídas no período selecionado';
             chart(summary); renderEntries(); renderGoals(); renderAccounts(); renderBills();
             $('finance-status').textContent = 'Resumo de ' + bounds.label + '. Lançamentos bancários aparecem após sincronizar uma conta conectada.';
         } catch (error) {
@@ -402,17 +476,14 @@
         limit = 30;
         try {
             const bounds = periodBounds();
-            if (window.CCOpenFinance) {
-                window.CCOpenFinance.syncRange(bounds.start, bounds.end).then(function (synced) {
-                    if (!synced) load();
-                });
-            } else load();
+            load();
+            if (window.CCOpenFinance) window.CCOpenFinance.syncRange(bounds.start, bounds.end);
         } catch (error) { $('finance-status').textContent = C.error(error); }
     }
     $('finance-period').addEventListener('change', changePeriod);
     $('finance-from').addEventListener('change', function () { if ($('finance-period').value === 'custom') changePeriod(); });
     $('finance-to').addEventListener('change', function () { if ($('finance-period').value === 'custom') changePeriod(); });
-    window.addEventListener('cc-finance-bank-synced', function () { if (!loading) load(); });
+    window.addEventListener('cc-finance-bank-synced', function () { load(); });
     $('reload-finance').addEventListener('click', load);
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });
     C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-entries','finance-goals','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });

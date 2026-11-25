@@ -50,10 +50,10 @@
     }
 
     const paginas = [
-        { arquivo: 'index.html', titulo: 'Visão geral', icone: 'home' },
+        { arquivo: 'index.html', titulo: 'Dashboard', icone: 'home' },
         { arquivo: 'tarefas.html', titulo: 'Tarefas', icone: 'tasks' },
         { arquivo: 'calendario.html', titulo: 'Calendário', icone: 'calendar' },
-        { arquivo: 'menstruacao.html', titulo: 'Bem-estar', icone: 'heart' },
+        { arquivo: 'menstruacao.html', titulo: 'Menstruação', icone: 'heart' },
         { arquivo: 'financas.html', titulo: 'Finanças', icone: 'wallet' },
         { arquivo: 'espaco.html', titulo: 'Nosso espaço', icone: 'sparkles' },
         { arquivo: 'config.html', titulo: 'Configurações', icone: 'settings' }
@@ -161,6 +161,12 @@
             nav.append(link);
         });
 
+        if (arquivoAtual !== 'financas.html') {
+            const metas = elemento('a', 'soft-button cc-goals-link', 'Metas');
+            metas.href = '/financas#metas';
+            nav.append(metas);
+        }
+
         const nota = elemento('p', 'cc-menu-note', 'Pequenos cuidados. Mais vida juntos.');
         const conta = lateral.querySelector('.conta-menu');
         if (conta) conta.before(nota);
@@ -178,6 +184,18 @@
         cabecalho.firstElementChild.before(grupoTitulo);
         grupoTitulo.append(menuMovel, grupoTitulo.nextElementSibling);
 
+        const mobileBrand = elemento('div', 'cc-mobile-brand');
+        const mobileMark = elemento('button', 'cc-mobile-brand-icon');
+        mobileMark.type = 'button';
+        mobileMark.setAttribute('aria-label', 'Animar coração do CoupleCare');
+        mobileMark.setAttribute('aria-pressed', 'false');
+        const markSlot = elemento('span', 'marca-tarefas-icone');
+        mobileMark.append(markSlot);
+        mobileBrand.append(mobileMark, elemento('strong', '', 'CoupleCare'),
+            elemento('span', '', '/ ' + (pagina ? pagina.titulo : cabecalho.querySelector('h1').textContent)));
+        grupoTitulo.firstElementChild.after(mobileBrand);
+        if (window.CCBrand) window.CCBrand(markSlot);
+
         const inferior = elemento('nav', 'cc-bottom-nav');
         inferior.setAttribute('aria-label', 'Navegação rápida');
         paginas.slice(0, 4).forEach(function (item, indice) {
@@ -185,7 +203,7 @@
             link.href = '/src/' + item.arquivo;
             if (item.arquivo === arquivoAtual) link.setAttribute('aria-current', 'page');
             link.innerHTML = icone(item.icone);
-            link.append(elemento('span', '', indice === 0 ? 'Início' : item.titulo));
+            link.append(elemento('span', '', indice === 0 ? 'Início' : indice === 3 ? 'Bem-estar' : item.titulo));
             inferior.append(link);
         });
         const mais = botao('', 'Mais páginas', 'menu');
