@@ -44,12 +44,120 @@
 .site-section h3 { margin: 0 0 5px; font: 650 20px/1.2 var(--font-display); }
 .site-section p { color: var(--muted); margin: 0; line-height: 1.5; }
 .feature-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
-.feature-grid article, .plan, .faq details { padding: 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 13px; }
-.plan { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-.plan strong { color: var(--orange-soft); font-size: 22px; }
-.faq details { margin-bottom: 8px; }
-.faq summary { cursor: pointer; font-weight: 650; }
-.faq details p { margin-top: 8px; }
+.feature-grid article {
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+.feature-grid h3 { font-size: 1rem; }
+.feature-grid p { font-size: .85rem; }
+.feature-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 10px;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--orange-soft);
+  background: #ffa6641c;
+}
+
+.pricing-and-faq {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(24px, 5vw, 58px);
+}
+.pricing-and-faq h2, .landing-closing h2 {
+  font-family: Georgia, serif;
+  letter-spacing: -.025em;
+}
+.plan {
+  display: grid;
+  gap: 11px;
+  padding: clamp(20px, 4vw, 30px);
+  border: 1px solid #db8a52;
+  border-radius: 20px;
+  background: #16263d;
+}
+.plan h3 {
+  margin: 0 0 9px;
+  color: var(--orange-soft);
+  font-size: .79rem;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+.plan .plan-price {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.plan-price strong {
+  font-size: clamp(2.25rem, 5vw, 3.125rem);
+  letter-spacing: -.065em;
+}
+.plan-price small, .plan-description { color: var(--muted); font-size: .9rem; }
+.plan-features {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 5px 0 8px;
+  padding: 13px 0 0;
+  border-top: 1px solid var(--line);
+  font-size: .88rem;
+}
+.plan-features li::before { content: "✓" / ""; margin-right: 8px; color: var(--orange-soft); }
+
+.faq details { border-top: 1px solid var(--line); }
+.faq details:last-child { border-bottom: 1px solid var(--line); }
+.faq summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 0;
+  list-style: none;
+  cursor: pointer;
+  font-weight: 650;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  display: grid;
+  place-items: center;
+  flex: 0 0 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--orange-soft);
+  background: #ffa6641c;
+  content: "+" / "";
+}
+.faq details[open] summary::after { content: "−" / ""; }
+.faq details p { padding: 0 26px 13px 0; font-size: .9rem; }
+
+.landing-closing {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: clamp(24px, 5vw, 52px);
+  padding: clamp(18px, 4vw, 28px);
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: radial-gradient(ellipse at 92% 0, #513a3c, transparent 58%), var(--panel);
+}
+.landing-closing h2 { margin: 0; font-size: clamp(1.4rem, 3.5vw, 2rem); }
+.landing :is(.plan, .landing-closing) [hidden] { display: none !important; }
+.landing :is(.plan, .faq, .landing-closing) :is(.button, summary):focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 3px;
+}
+@media (max-width: 660px) {
+  .pricing-and-faq { grid-template-columns: minmax(0, 1fr); }
+  .landing-closing { align-items: stretch; flex-direction: column; }
+}
 
 .landing:has(.auth-dialog[open]) { overflow: hidden; }
 .auth-dialog { width: min(448px, calc(100% - 24px)); max-height: calc(100dvh - 24px); margin: auto; padding: 0; overflow: auto; overscroll-behavior: contain; border: 1px solid #839bc553; border-radius: 20px; background: linear-gradient(145deg, #202f49, var(--navy) 68%); color: var(--text); }

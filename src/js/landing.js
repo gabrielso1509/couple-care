@@ -9,7 +9,7 @@
     const nomeConta = document.getElementById('landing-account-name');
     const avatarConta = document.getElementById('landing-account-avatar');
     const statusConta = document.getElementById('landing-account-status');
-    const linkPainel = document.getElementById('landing-dashboard');
+    const linksPainel = document.querySelectorAll('[data-enter-app]');
     const sair = document.getElementById('landing-sign-out');
     const cadastroPublico = document.querySelectorAll('[data-signup]');
     let versaoConta = 0;
@@ -58,7 +58,7 @@
     document.getElementById('abrir-cadastro').addEventListener('click', event => {
         origemCadastro = event.currentTarget;
     });
-    document.querySelectorAll('[data-signup]').forEach(function (button) {
+    cadastroPublico.forEach(function (button) {
         button.addEventListener('click', function () {
             origemCadastro = button;
             abrirCadastro();
@@ -78,7 +78,7 @@
         entrada.hidden = autenticado;
         cadastroPublico.forEach(button => { button.hidden = autenticado; });
         conta.hidden = !autenticado;
-        linkPainel.hidden = !autenticado;
+        linksPainel.forEach(link => { link.hidden = !autenticado; });
         if (!autenticado) conta.open = false;
     }
 
