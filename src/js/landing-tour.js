@@ -210,6 +210,7 @@
         renderScreen({ reset: true });
         tour.querySelectorAll('[data-demo-page]').forEach(tab => tab.setAttribute('aria-pressed', String(tab.dataset.demoPage === id)));
         document.getElementById('demo-feature-title').textContent = active.headline;
+        tour.querySelector(".showcase-feature-icon").innerHTML = icon(active.icon);
         document.getElementById('demo-feature-description').textContent = active.copy;
         dots.innerHTML = screens.map(page => '<span' + (page.id === id ? ' class="active"' : '') + '></span>').join('');
     }
