@@ -109,7 +109,6 @@
     }
 
     .dashboard-casal #dashboard-eventos .dashboard-linha span { grid-column: 2; grid-row: 1; }
-    .dashboard-casal #dashboard-eventos .dashboard-linha::before { display: none; }
     .dashboard-casal .dashboard-linha { min-height: 44px; font-size: 14px; }
     .dashboard-casal .dashboard-linha:last-child { border-bottom: 0; }
     .dashboard-casal .dashboard-widget-link { min-height: 44px; font-size: 13px; }
@@ -461,17 +460,30 @@
     }
     .dashboard-casal .dashboard-event-details { display: grid; min-width: 0; gap: 2px; align-content: center; }
     .dashboard-casal .dashboard-event-details small { display: block; color: var(--mobile-muted); line-height: 1.4; font-size: 11px; overflow-wrap: anywhere; }
-    .dashboard-casal #dashboard-eventos .dashboard-event-details { position: relative; padding-inline-start: 12px; border-inline-start: 1px solid #b795ff65; }
-    .dashboard-casal #dashboard-eventos .dashboard-event-details::before {
-        position: absolute;
-        inset: 6px auto auto -4px;
+    .dashboard-casal #dashboard-eventos .dashboard-linha {
+        --agenda-axis-x: 64px;
+        --agenda-point-y: 16px;
+    }
+    .dashboard-casal #dashboard-eventos .dashboard-linha::before {
+        inset: var(--agenda-point-y) auto auto calc(var(--agenda-axis-x) - 3px);
         width: 7px;
         height: 7px;
-        border-radius: 50%;
-        background: var(--mobile-purple);
-        box-shadow: 0 0 0 4px #b795ff25;
+        transform: none;
+        box-shadow: 0 0 0 4px #b795ff22;
+        content: '';
+        z-index: 1;
+    }
+    .dashboard-casal #dashboard-eventos .dashboard-linha::after {
+        position: absolute;
+        inset: 0 auto 0 var(--agenda-axis-x);
+        width: 1px;
+        background: #b795ff80;
         content: '';
     }
+    .dashboard-casal #dashboard-eventos .dashboard-linha:first-child::after { top: calc(var(--agenda-point-y) + 3px); }
+    .dashboard-casal #dashboard-eventos .dashboard-linha:last-child::after { bottom: auto; height: calc(var(--agenda-point-y) + 3px); }
+    .dashboard-casal #dashboard-eventos .dashboard-linha:only-child::after { content: none; }
+    .dashboard-casal #dashboard-eventos .dashboard-event-details { padding-inline-start: 8px; }
     .dashboard-casal #dashboard-tarefas .dashboard-linha {
         display: grid;
         grid-template-columns: 22px minmax(0, 1fr) auto;
@@ -558,7 +570,11 @@
     }
     .tarefas-pagina .tarefa-cartao-texto .tarefa-meta { font-size: 10px; }
     .tarefas-pagina .tarefa-cartao-prazo { align-self: center; color: var(--mobile-purple); font-size: 11px; font-weight: 700; }
-    .cc-figma .tarefas-pagina .tarefa-pessoa { grid-column: 2 / -1; }
+    .cc-figma .tarefas-pagina .tarefa-cartao-lado { grid-column: 3; grid-row: 1; justify-self: end; }
+    .cc-figma .tarefas-pagina .tarefa-cartao-lado .tarefa-avatar { width: 19px; height: 19px; font-size: 9px; }
+    .cc-figma .tarefas-pagina .tarefa-cartao-lado .tarefa-pessoa { margin: 0; }
+    .cc-figma .tarefas-pagina .tarefas-filtros { margin: 8px 0 10px; padding: 2px 0; }
+    .cc-figma .tarefas-pagina #resumo { font-size: 11px; }
     .cc-figma .tarefas-pagina .tarefa-details { grid-column: 2 / -1; }
     .compromisso-periodo { width: 100%; }
     .cc-figma .tarefas-compromissos-cabecalho { align-items: start; }

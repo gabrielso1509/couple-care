@@ -124,14 +124,51 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
 <p aria-live="polite" class="feedback-app" id="feedback" role="status"></p>
 </form>
 </section><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="section-label">PRÓXIMOS PASSOS</span>
-<div class="tarefas-cabecalho"><h2 id="titulo-lista">O que vem por aí</h2><button id="atualizar-tarefas" type="button">Atualizar</button><div class="campo-app"><label for="busca-tarefa">Buscar tarefa</label><input id="busca-tarefa" placeholder="Título ou descrição" type="search"/></div></div>
-<div aria-label="Filtrar tarefas" class="acoes-app tarefas-filtros" role="group">
-<button aria-pressed="true" data-filtro="all" type="button">Todas</button><button aria-pressed="false" data-filtro="pending" type="button">Pendentes</button><button aria-pressed="false" data-filtro="completed" type="button">Concluídas</button><button aria-pressed="false" data-filtro="today" type="button">Hoje</button><button aria-pressed="false" data-filtro="upcoming" type="button">Próximas</button><button aria-pressed="false" data-filtro="overdue" type="button">Atrasadas</button>
+<div class="tarefas-cabecalho">
+    <h2 id="titulo-lista">O que vem por aí</h2>
+    <button class="soft-button tarefas-abrir-filtros" id="abrir-filtros-tarefas" type="button"
+            aria-label="Filtros de tarefas" title="Filtros de tarefas" aria-haspopup="dialog" aria-controls="filtros-tarefas">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 6h16M7 12h10m-7 6h4"/>
+        </svg>
+    </button>
 </div>
-<details class="cc-advanced"><summary>Responsável e ordenação</summary><div class="tarefas-ferramentas">
-<div class="campo-app"><label for="filtro-responsavel">Responsável</label><select id="filtro-responsavel"><option value="all">Todos</option><option value="unassigned">Sem responsável</option></select></div>
-<div class="campo-app"><label for="ordenacao">Ordenar por</label><select id="ordenacao"><option value="due">Prazo mais próximo</option><option value="priority">Maior prioridade</option><option value="newest">Mais recentes</option></select></div>
-</div></details>
+<div aria-label="Filtros rápidos" class="acoes-app tarefas-filtros" role="group">
+    <button aria-pressed="false" data-filtro="today" type="button">Hoje</button>
+    <button aria-pressed="false" data-filtro="upcoming" type="button">Próximas</button>
+    <button aria-pressed="false" data-filtro="completed" type="button">Concluídas</button>
+</div>
+<dialog id="filtros-tarefas" class="cc-modal filtros-tarefas" aria-labelledby="titulo-filtros-tarefas">
+    <header>
+        <h2 id="titulo-filtros-tarefas">Filtrar tarefas</h2>
+        <button id="fechar-filtros-tarefas" type="button" data-close aria-label="Fechar filtros"></button>
+    </header>
+    <div class="tarefas-ferramentas">
+        <div class="campo-app">
+            <label for="busca-tarefa">Buscar tarefa</label>
+            <input id="busca-tarefa" placeholder="Título ou descrição" type="search">
+        </div>
+        <div class="campo-app">
+            <label for="filtro-estado-tarefa">Mostrar</label>
+            <select id="filtro-estado-tarefa">
+                <option value="all">Todas</option><option value="today">Hoje</option><option value="upcoming">Próximas</option>
+                <option value="pending">Pendentes</option><option value="completed">Concluídas</option><option value="overdue">Atrasadas</option>
+            </select>
+        </div>
+        <div class="campo-app">
+            <label for="filtro-responsavel">Responsável</label>
+            <select id="filtro-responsavel"><option value="all">Todos</option><option value="unassigned">Sem responsável</option></select>
+        </div>
+        <div class="campo-app">
+            <label for="ordenacao">Ordenar por</label>
+            <select id="ordenacao"><option value="due">Prazo mais próximo</option><option value="priority">Maior prioridade</option><option value="newest">Mais recentes</option></select>
+        </div>
+    </div>
+    <div class="acoes-app filtros-tarefas-acoes">
+        <button class="soft-button" id="atualizar-tarefas" type="button">Atualizar tarefas</button>
+        <button class="primary-button" id="ver-tarefas-filtradas" type="button">Ver tarefas</button>
+    </div>
+</dialog>
 <p aria-live="polite" class="texto-suave" id="resumo" role="status"></p>
 <div class="lista-app tarefas-lista" id="lista"></div>
 <button hidden="" id="mais-tarefas" type="button">Mostrar mais tarefas</button>

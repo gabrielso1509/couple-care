@@ -11,7 +11,7 @@
     let tarefas = [], membros = [], eventos = [];
     let casalId = null, usuarioId = null, edicao = null;
     let ocupado = false, carregando = false, pronto = false, atualizarDepois = false;
-    let filtro = 'all', limite = 30, canal = null, timerRealtime = null;
+    let filtro = matchMedia('(max-width: 720px)').matches ? 'today' : 'all', limite = 30, canal = null, timerRealtime = null;
     let conectado = false, encerrado = false;
     const fotos = new Map();
     let historicoLimite = 50, temMaisHistorico = false;
@@ -164,8 +164,11 @@
             const header = elemento('div', 'tarefa-cartao-texto');
             header.append(elemento('h3', '', t.title), elemento('p', 'tarefa-meta', dataCurta(t.due_date) + ' · ' + categorias[t.category]));
             if (t.description) header.append(elemento('p', 'mobile-only tarefa-cartao-resumo', t.description));
-            card.append(toggle, header, elemento('span', 'mobile-only tarefa-cartao-prazo',
-                concluida ? 'Feita' : t.due_date === dia ? 'Hoje' : t.due_date === CC.agenda.plusDays(dia, 1) ? 'Amanhã' : t.due_date ? dataCurta(t.due_date).slice(0, 5) : ''));
+            const lado = elemento('div', 'tarefa-cartao-lado');
+            const prazo = concluida ? 'Feita' : t.due_date === dia ? 'Hoje' :
+                t.due_date === CC.agenda.plusDays(dia, 1) ? 'Amanhã' : t.due_date ? dataCurta(t.due_date).slice(0, 5) : '';
+            if (prazo) lado.append(elemento('span', 'mobile-only tarefa-cartao-prazo', prazo));
+            card.append(toggle, header, lado);
             const details = elemento('details', 'tarefa-details'); details.append(elemento('summary', '', 'Detalhes e ações')); 
             const tags = elemento('div', 'tarefa-etiquetas');
             tags.append(elemento('span', 'tarefa-etiqueta', categorias[t.category]), elemento('span', 'tarefa-etiqueta' + (t.priority === 'high' ? ' alta' : ''), 'Prioridade ' + prioridades[t.priority].toLowerCase()));
@@ -174,19 +177,23 @@
             if (t.recurrence !== 'none') tags.append(elemento('span', 'tarefa-etiqueta', 'Repetição ' + repeticoes[t.recurrence].toLowerCase()));
             details.append(tags);
             if (t.description) details.append(elemento('p', 'tarefa-descricao', t.description));
-            const responsavel = membros.find(m => m.user_id === t.assigned_to);
-            const pessoaEl = elemento('div', 'tarefa-pessoa');
-            if (t.assigned_to_both) {
-                pessoaEl.append(elemento('span', '', 'Nós dois'));
-                membros.forEach(function (membro) { const foto = elemento('span', 'tarefa-avatar'); foto.setAttribute('aria-hidden', 'true'); pessoaEl.append(foto); queueMicrotask(function () { avatar(foto, membro); }); });
-                card.append(pessoaEl);
-            } else if (responsavel) {
-                const foto = elemento('span', 'tarefa-avatar'); foto.setAttribute('aria-hidden', 'true');
-                pessoaEl.append(foto, elemento('span', '', responsavel.display_name));
-                card.append(pessoaEl);
-                // Aguarda a inserção do cartão no DOM antes de preencher a foto.
-                queueMicrotask(() => avatar(foto, responsavel));
-            } else { pessoaEl.textContent = 'Sem responsável'; card.append(pessoaEl); }
+            const responsaveis = t.assigned_to_both ? membros : membros.filter(m => m.user_id === t.assigned_to);
+            const nomeResponsavel = t.assigned_to_both ? 'Nós dois' :
+                t.assigned_to ? nome(t.assigned_to) : 'Sem responsável';
+            details.append(elemento('p', 'tarefa-responsavel-texto', 'Responsável: ' + nomeResponsavel));
+            if (responsaveis.length) {
+                const fotos = elemento('div', 'tarefa-pessoa');
+                fotos.title = nomeResponsavel;
+                fotos.setAttribute('role', 'img');
+                fotos.setAttribute('aria-label', 'Responsável: ' + nomeResponsavel);
+                responsaveis.forEach(function (membro) {
+                    const foto = elemento('span', 'tarefa-avatar');
+                    foto.setAttribute('aria-hidden', 'true');
+                    fotos.append(foto);
+                    queueMicrotask(function () { avatar(foto, membro); });
+                });
+                lado.append(fotos);
+            }
             if (t.checklist.length) {
                 const feitos = t.checklist.filter(i => i.done).length;
                 details.append(elemento('small', '', `Checklist: ${feitos}/${t.checklist.length}`));
@@ -421,11 +428,32 @@
         const checklist = t.checklist.map(i => i.id === check.dataset.item ? { ...i, done: check.checked } : i);
         await gravar(() => atualizarTarefa(t, { checklist }), 'Checklist atualizado.');
     });
-    document.querySelectorAll('[data-filtro]').forEach(b => b.addEventListener('click', () => {
-        filtro = b.dataset.filtro; limite = 30;
-        document.querySelectorAll('[data-filtro]').forEach(el => el.setAttribute('aria-pressed', String(el === b)));
+    const botoesFiltro = document.querySelectorAll('[data-filtro]');
+    const filtroEstado = $('filtro-estado-tarefa');
+    const dialogoFiltros = $('filtros-tarefas');
+    const abrirFiltros = $('abrir-filtros-tarefas');
+
+    function sincronizarFiltros() {
+        filtroEstado.value = filtro;
+        botoesFiltro.forEach(function (botao) {
+            botao.setAttribute('aria-pressed', String(botao.dataset.filtro === filtro));
+        });
+    }
+    function filtrar(valor) {
+        filtro = valor;
+        limite = 30;
+        sincronizarFiltros();
         renderizar();
-    }));
+    }
+    botoesFiltro.forEach(function (botao) {
+        botao.addEventListener('click', function () { filtrar(botao.dataset.filtro); });
+    });
+    filtroEstado.addEventListener('change', function () { filtrar(filtroEstado.value); });
+    abrirFiltros.addEventListener('click', function () { dialogoFiltros.showModal(); });
+    $('fechar-filtros-tarefas').addEventListener('click', function () { dialogoFiltros.close(); });
+    $('ver-tarefas-filtradas').addEventListener('click', function () { dialogoFiltros.close(); });
+    dialogoFiltros.addEventListener('close', function () { abrirFiltros.focus({ preventScroll: true }); });
+    sincronizarFiltros();
     ['busca-tarefa', 'filtro-responsavel', 'ordenacao'].forEach(id => $(id).addEventListener('input', () => { limite = 30; renderizar(); }));
     $('mais-tarefas').addEventListener('click', () => { limite += 30; renderizar(); });
     $('atualizar-tarefas').addEventListener('click', atualizar);

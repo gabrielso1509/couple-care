@@ -40,8 +40,21 @@
 .cc-figma .tarefas-filtros button { min-height: 36px; padding: 8px 12px; font-size: 10px; }
 .cc-figma .tarefas-cabecalho { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .cc-figma .tarefas-cabecalho h2 { margin: 5px 0 0; font: 600 23px 'Outfit',sans-serif; }
-.cc-figma .tarefas-cabecalho .campo-app label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.cc-figma #busca-tarefa { min-height: 36px; max-width: 200px; font-size: 11px; }
+.cc-figma .tarefas-cabecalho .tarefas-abrir-filtros {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    min-height: 44px;
+    padding: 0;
+    color: #c4b4ff;
+}
+.cc-figma .filtros-tarefas .tarefas-ferramentas { grid-template-columns: 1fr 1fr; margin-bottom: 18px; }
+.cc-figma .filtros-tarefas .tarefas-ferramentas > :first-child { grid-column: 1 / -1; }
+.cc-figma .filtros-tarefas-acoes { justify-content: end; }
+.cc-figma .filtros-tarefas-acoes button { width: auto; min-height: 44px; }
+@media (max-width: 390px) {
+    .cc-figma .filtros-tarefas .tarefas-ferramentas { grid-template-columns: 1fr; }
+}
 .cc-figma .tarefas-ferramentas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .cc-figma .tarefas-ferramentas > :first-child { grid-column: auto; }
 .cc-figma .tarefa-cartao { display: grid; grid-template-columns: 25px minmax(0,1fr) auto; align-items: start; gap: 14px; border: 0; border-bottom: 1px solid #ffffff10; border-radius: 0; background: transparent; padding: 20px 0; }
@@ -50,7 +63,16 @@
 .cc-figma .tarefa-cartao h3 { font-size: 13px; margin: 0 0 4px; }
 .cc-figma .tarefa-cartao.concluida h3 { text-decoration: line-through; color: #a9b7ce; }
 .cc-figma .tarefa-meta { font-size: 10px; color: #a9b7ce; }
-.cc-figma .tarefa-cartao .tarefa-pessoa { margin: 0; font-size: 0; }
+.tarefa-cartao-lado, .cc-figma .tarefa-cartao .tarefa-pessoa {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+.cc-figma .tarefa-cartao .tarefa-pessoa { gap: 0; }
+.tarefa-cartao .tarefa-pessoa .tarefa-avatar { border: 1px solid #11243a; }
+.tarefa-cartao .tarefa-pessoa .tarefa-avatar + .tarefa-avatar { margin-inline-start: -5px; }
+.tarefa-responsavel-texto { margin: 5px 0; color: #a9b7ce; font-size: 11px; }
 .cc-figma .tarefa-avatar { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 50%; overflow: hidden; background: #503696; font-size: 11px; }
 .cc-figma .tarefa-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .cc-figma .tarefa-details { grid-column: 2 / -1; }
