@@ -235,7 +235,7 @@
         const frame = C.el('div', 'chart-frame'), y = C.el('div', 'chart-y-axis'); y.setAttribute('aria-hidden', 'true');
         for (let i = 0; i <= 5; i++) { const label = C.el('span', '', C.money(top - i * step)); label.style.top = i * 20 + '%'; y.append(label); }
         const scroll = C.el('div', 'chart-scroll'); scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', 'Gráfico de despesas por categoria. Role horizontalmente para ver mais categorias.');
-        const plot = C.el('div', 'chart-plot'); plot.style.minWidth = Math.max(200, data.length * 68) + 'px';
+        const plot = C.el('div', 'chart-plot'); plot.style.minWidth = Math.max(200, data.length * 62) + 'px';
         const lines = C.el('div', 'chart-grid'); lines.setAttribute('aria-hidden', 'true');
         for (let i = 0; i <= 5; i++) { const line = C.el('span'); line.style.top = i * 20 + '%'; lines.append(line); }
         const bars = C.el('div', 'chart-bars'); bars.append(lines);
@@ -244,12 +244,13 @@
         const detail = C.el('p', 'chart-detail');
         detail.setAttribute('aria-live', 'polite');
         detail.hidden = true;
-        box.append(detail);
+
         let selected = null;
         function display(state) {
             bars.querySelectorAll('.chart-bar').forEach(item => item.classList.toggle('is-highlighted', item === state?.bar));
             detail.hidden = !state;
             detail.textContent = state ? state.text() : '';
+            bars.querySelectorAll('.chart-tooltip').forEach(tip => { tip.hidden = tip.parentElement !== state?.bar; });
         }
         dismissChart = function () {
             selected?.bar.setAttribute('aria-pressed', 'false');
@@ -291,7 +292,11 @@
                 display(state);
             });
             bar.style.height = Number(row.amount) / top * 100 + '%';
-            const amount = C.el('span', 'chart-bar-value', C.money(row.amount)); bar.append(amount); slot.append(bar); bars.append(slot);
+            const amount = C.el('span', 'chart-bar-value', C.money(row.amount));
+            const tooltip = C.el('span', 'chart-tooltip', label);
+            tooltip.setAttribute('aria-hidden', 'true');
+            tooltip.hidden = true;
+            bar.append(amount, tooltip); slot.append(bar); bars.append(slot);
             x.append(C.el('span', '', name));
             const tr = C.el('tr'), th = C.el('th', '', name); th.scope = 'row'; tr.append(th, C.el('td', '', C.money(row.amount))); body.append(tr);
         });
@@ -322,15 +327,13 @@
                 scroll.scrollLeft += event.key === 'ArrowRight' ? 90 : -90;
             }
         });
-        plot.append(bars, x); scroll.append(plot); frame.append(y, scroll); box.append(frame, C.el('p', 'chart-axis-caption', 'Categorias'), table);
+        plot.append(bars, x); scroll.append(plot); frame.append(y, scroll); box.append(frame, C.el('p', 'chart-axis-caption', 'Categorias'), detail, table);
     }
     function summaryState(summary) {
         const balance = Number(summary.balance), card = $('balance-card');
         card.classList.remove('is-positive','is-negative','is-neutral'); card.classList.add(balance > 0 ? 'is-positive' : balance < 0 ? 'is-negative' : 'is-neutral');
-        card.querySelector('small').textContent = balance > 0 ? 'Receitas acima das despesas no período.' : balance < 0 ? 'Despesas acima das receitas no período.' : Number(summary.income) ? 'Receitas e despesas equilibradas.' : 'Sem lançamentos no período.';
-        let badge = $('balance-state');
-        if (!badge) { badge = C.el('span', 'balance-state'); badge.id = 'balance-state'; card.append(badge); }
-        badge.textContent = balance > 0 ? 'Positivo' : balance < 0 ? 'Negativo' : 'Equilibrado';
+        $('finance-balance').setAttribute('aria-label',
+            (balance < 0 ? 'Saldo negativo: ' : balance > 0 ? 'Saldo positivo: ' : 'Saldo: ') + C.money(balance));
     }
     function renderEntries() {
         const box = $('finance-entries'); box.replaceChildren();
@@ -398,7 +401,7 @@
     }
     async function load() {
         if (!context?.couple) return;
-        const token = ++generation; loading = true; $('finance-status').textContent = 'Atualizando finanças…'; $('finance-status').classList.remove('is-error');
+        const token = ++generation; loading = true; $('finance-status').classList.add('cc-sr'); $('finance-status').textContent = 'Atualizando finanças…'; $('finance-status').classList.remove('is-error');
         try {
             const bounds = periodBounds();
             const responses = await Promise.all([
@@ -418,18 +421,16 @@
             $('new-bill').disabled = !billsReady;
             syncCategories(); syncAccountOptions(); syncBillOptions(); summaryState(summary);
             $('finance-balance').textContent = C.money(summary.balance); $('finance-income').textContent = C.money(summary.income); $('finance-expense').textContent = C.money(summary.expense);
-            $('finance-ratio').textContent = Number(summary.income) > 0 ? Math.round(Number(summary.expense) / Number(summary.income) * 100) + '% das receitas no período' : 'Sem receitas no período';
             chart(summary); renderEntries(); renderGoals(); renderAccounts(); renderBills();
-            $('finance-status').textContent = 'Resumo de ' + bounds.label + '. Lançamentos bancários aparecem após sincronizar uma conta conectada.';
+            $('finance-status').textContent = 'Resumo de ' + bounds.label + ' atualizado.';
         } catch (error) {
             if (token !== generation) return;
             ['finance-balance','finance-income','finance-expense'].forEach(function (id) { $(id).textContent = '—'; });
             ['finance-chart','finance-entries','finance-goals','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
-            $('finance-status').textContent = C.error(error); $('finance-status').classList.add('is-error');
+            $('finance-status').textContent = C.error(error); $('finance-status').classList.add('is-error'); $('finance-status').classList.remove('cc-sr');
             $('balance-card').classList.remove('is-positive','is-negative'); $('balance-card').classList.add('is-neutral');
-            $('balance-card').querySelector('small').textContent = 'Consulta indisponível.';
-            if ($('balance-state')) $('balance-state').textContent = 'Sem consulta';
-        } finally { loading = false; }
+            $('finance-balance').removeAttribute('aria-label');
+        } finally { if (token === generation) loading = false; }
     }
     C.form($('entry-form'), async function () {
         const title = $('entry-description').value.trim(); if (!title) throw new Error('Informe uma descrição.');
@@ -468,7 +469,6 @@
     $('new-goal').addEventListener('click', function () { editGoal(null); });
     function changePeriod() {
         const custom = $('finance-period').value === 'custom';
-        $('finance-from-wrap').hidden = !custom; $('finance-to-wrap').hidden = !custom;
         if (custom) {
             if (!$('finance-from').value) $('finance-from').value = C.today();
             if (!$('finance-to').value) $('finance-to').value = C.today();
@@ -481,8 +481,6 @@
         } catch (error) { $('finance-status').textContent = C.error(error); }
     }
     $('finance-period').addEventListener('change', changePeriod);
-    $('finance-from').addEventListener('change', function () { if ($('finance-period').value === 'custom') changePeriod(); });
-    $('finance-to').addEventListener('change', function () { if ($('finance-period').value === 'custom') changePeriod(); });
     window.addEventListener('cc-finance-bank-synced', function () { load(); });
     $('reload-finance').addEventListener('click', load);
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });

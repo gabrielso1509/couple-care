@@ -191,3 +191,193 @@ body{background-color:var(--cc-ink)}
 @media (min-width: 901px) {
     .cc-figma .cabecalho .cc-date { display: inline; white-space: nowrap; }
 }
+
+/* Navegação em vidro fosco, com transparência moderada. */
+.cc-figma .aplicacao {
+    --cc-glass: linear-gradient(150deg, #25374edb, #122035de 52%, #101a2bcf);
+}
+.cc-figma .aplicacao :is(.menu-lateral, .cc-bottom-nav) {
+    border-color: #b6d0ec38;
+    backdrop-filter: blur(19px) saturate(112%);
+    box-shadow: inset 0 1px #ebf6ff10, 0 12px 32px #04091437;
+}
+.cc-figma .aplicacao .menu-lateral .item-menu.ativo {
+    background: #dca387;
+    color: #141b2c;
+}
+
+/* O X usa o tamanho do controle e ganha contraste com mouse ou teclado. */
+.cc-figma :is(.finance-sheet, .cc-modal) [data-close] {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: #c3d1e4;
+    font-size: 0;
+    cursor: pointer;
+    transition: color .16s, background-color .16s;
+}
+.cc-figma :is(.finance-sheet, .cc-modal) [data-close]::before,
+.cc-figma :is(.finance-sheet, .cc-modal) [data-close]::after {
+    content: '';
+    position: absolute;
+    width: 32px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transform: rotate(45deg);
+}
+.cc-figma :is(.finance-sheet, .cc-modal) [data-close]::after { transform: rotate(-45deg); }
+.cc-figma :is(.finance-sheet, .cc-modal) [data-close]:is(:hover, :focus-visible) {
+    background-color: #dfac9030;
+    color: #ffcfb3;
+}
+.cc-figma :is(.finance-sheet, .cc-modal) [data-close]:focus-visible { outline: 2px solid #edb397; outline-offset: 1px; }
+
+.cc-figma .cc-finances .finance-toolbar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+.cc-figma .cc-finances .finance-period-controls {
+    display: flex;
+    flex: 0 1 420px;
+    flex-wrap: nowrap;
+    align-items: center;
+    min-width: 0;
+    gap: 8px;
+}
+.cc-figma .cc-finances .cc-periods {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 11px;
+    background: #1a293e;
+}
+.cc-figma .cc-finances .cc-periods .finance-segment,
+.cc-figma .cc-finances .finance-calendar {
+    display: grid;
+    place-items: center;
+    min-height: 44px;
+    min-width: 0;
+    padding: 0 4px;
+    border: 0;
+    border-radius: 11px;
+    background: transparent;
+    color: #e6edf6;
+    font: 600 13px/1 "DM Sans", sans-serif;
+    cursor: pointer;
+}
+.cc-figma .cc-finances .finance-calendar { flex: 0 0 44px; background: #1a293e; }
+.cc-figma .cc-finances :is(.finance-segment, .finance-calendar):hover { filter: brightness(1.15); }
+.cc-figma .cc-finances :is(.finance-segment, .finance-calendar)[aria-pressed=true] { background: #dfa88d; color: #172030; }
+.cc-figma .finance-calendar-form { display: grid; gap: 14px; }
+.cc-figma .finance-calendar-sheet { width: min(440px, calc(100% - 24px)); }
+.cc-figma .finance-calendar-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.cc-figma .finance-calendar-dates input { width: 100%; min-width: 0; }
+.cc-figma .finance-calendar-form button { justify-self: end; }
+
+.cc-figma body.cc-finances .finance-summary > :is(.card, .balance-card, .account-tile) {
+    background: #18263a;
+    border: 1px solid #92a8c21a;
+    border-radius: 13px;
+    box-shadow: none;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+.cc-figma body.cc-finances .finance-summary .account-tile:hover { background: #22334b; }
+.cc-figma .finance-metric-text { flex: 1; }
+.cc-figma body.cc-finances .finance-summary .finance-metric-text > span { font-size: clamp(10px, 2.8vw, 13px); }
+.cc-figma body.cc-finances .finance-summary .finance-metric-text > strong { letter-spacing: 0; }
+.cc-figma .cc-finances .finance-summary .finance-icon { width: 22px; height: 22px; flex-basis: 22px; }
+.cc-figma .cc-finances .finance-summary .expense-card .finance-icon { color: #d1919a; }
+.cc-figma body.cc-finances .finance-grid > :is(.spending-card, .transactions-card) {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+.cc-figma body.cc-finances .finance-grid > .spending-card {
+    padding-inline-end: clamp(12px, 2vw, 26px);
+    border-inline-end: 1px solid #829bbb28;
+}
+.cc-figma .cc-finances .finance-grid { margin-top: 10px; }
+.cc-figma .cc-finances .finance-grid .card-title h3 { font-size: clamp(18px, 3.3vw, 25px); }
+.cc-figma .cc-finances .category-chart { min-height: 0; margin-top: 12px; }
+.cc-figma .cc-finances .chart-bars { gap: 5px; }
+.cc-figma .cc-finances .chart-x-axis { gap: 5px; margin-top: 7px; }
+.cc-figma .cc-finances .chart-bar-value { font-size: 10px; }
+.cc-figma .cc-finances .chart-tooltip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 9px);
+    transform: translateX(-50%);
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: #dfa88d;
+    color: #142036;
+    font: 700 11px/1.2 "DM Sans", sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+}
+.cc-figma .cc-finances .chart-bar-slot:nth-child(2) .chart-tooltip { left: 0; transform: none; }
+.cc-figma .cc-finances .chart-bar-slot:last-child .chart-tooltip { right: 0; left: auto; transform: none; }
+.cc-figma .cc-finances .chart-bar.is-highlighted { z-index: 2; }
+.cc-figma .cc-finances .chart-bar.is-highlighted .chart-bar-value { visibility: hidden; }
+.cc-figma .cc-finances .chart-detail { margin-top: 8px; }
+.cc-figma .cc-finances .finance-mobile-entry { display: none; }
+.cc-figma .cc-finances #new-entry { flex: 0 0 auto; white-space: nowrap; }
+
+@media (max-width: 900px) {
+    .cc-figma .cc-finances .finance-toolbar .finance-period-controls { flex: 1 1 100%; }
+    .cc-figma body.cc-finances .finance-grid > .spending-card { border: 0; padding: 0; }
+    .cc-figma .cc-finances .finance-grid { gap: 18px; }
+    .cc-figma .cc-finances .chart-frame { grid-template-columns: 64px minmax(0, 1fr); }
+    .cc-figma .cc-finances .chart-axis-caption { margin-left: 70px; }
+    .cc-figma .cc-finances :is(.chart-bars, .chart-y-axis) { height: clamp(126px, 36vw, 190px); }
+    .cc-figma .cc-finances .finance-mobile-entry { display: flex; justify-content: flex-end; }
+    .cc-figma .cc-finances .finance-mobile-entry #new-entry {
+        min-height: 44px;
+        padding: 8px 13px;
+        border: 1px solid #bc896f;
+        border-radius: 12px;
+        background: transparent;
+        color: #f4cab5;
+    }
+    .cc-figma .cc-finances .finance-mobile-entry #new-entry:hover { background: #cc987822; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cc-figma :is(.finance-sheet, .cc-modal) [data-close] { transition: none; }
+}
+.cc-figma .cc-menu-open .menu-lateral .botao-menu[aria-label="Fechar menu"] {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+}
+.cc-figma .cc-menu-open .menu-lateral .botao-menu[aria-label="Fechar menu"] svg {
+    width: 32px;
+    height: 32px;
+}
+.cc-figma .cc-menu-open .menu-lateral .botao-menu[aria-label="Fechar menu"]:is(:hover, :focus-visible) {
+    background: #dfac9030;
+    color: #ffcfb3;
+}
