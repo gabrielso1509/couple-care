@@ -561,8 +561,8 @@ svg { width: 21px; height: 21px; }
     gap: 4px; margin-bottom: 16px; min-height: 0; overflow: auto;
 }
 .cc-figma .cc-nav-label {
-    margin: 14px 13px 5px; color: #91a2bc;
-    font-size: 9px; font-weight: 700; letter-spacing: .18em;
+    margin: 14px 13px 5px; color: #eef4fb;
+    font-size: 11px; font-weight: 700; letter-spacing: .14em;
 }
 .cc-figma .menu-lateral .item-menu {
     position: relative; min-height: 48px; gap: 13px; padding: 0 14px;
@@ -775,3 +775,4 @@ svg { width: 21px; height: 21px; }
 .cc-figma .cc-stage-grid .status-pill { display: inline-block; padding: 5px 10px; border: 1px solid #ad9aff30; border-radius: 20px; color: #cbbfff; font-size: 11px; }
 
 @media(max-width:900px) { .cc-figma .cc-bottom-nav { grid-template-columns:repeat(5,minmax(0,1fr)); } .cc-figma .cc-mobile-open { display:none !important; } .cc-figma .cc-bottom-nav span { font-size:10px; } }
+

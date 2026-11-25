@@ -50,9 +50,11 @@
     document.getElementById('abrir-cadastro').addEventListener('click', event => {
         origemCadastro = event.currentTarget;
     });
-    document.querySelector('[data-signup]').addEventListener('click', event => {
-        origemCadastro = event.currentTarget;
-        abrirCadastro();
+    document.querySelectorAll('[data-signup]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            origemCadastro = button;
+            abrirCadastro();
+        });
     });
     document.getElementById('voltar-login').addEventListener('click', () => {
         if (!cadastroEmAndamento && !login.open) abrirLogin(origemCadastro);

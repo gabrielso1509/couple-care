@@ -7,9 +7,10 @@ assert.equal((await call(token,{},'GET')).code,405);assert.equal(calls.length,0)
 const t=await call(token,{clientUserId:'forged'});assert.equal(t.code,200);assert.equal(JSON.parse(calls.find(x=>x.url.endsWith('/connect_token')).opts.body).options.clientUserId,A);assert.equal(JSON.stringify(t.body).includes('private'),false);
 owner='other';assert.equal((await call(connection,{itemId:I,action:'accounts'})).code,403);assert.equal((await call(token,{itemId:I})).code,403);owner=A;
 assert.equal((await call(connection,{itemId:I,action:'register'})).code,200);assert.equal((await call(connection,{itemId:I,action:'accounts'})).body.accounts.length,1);
-accountItem='other';assert.equal((await call(connection,{itemId:I,accountId:B,action:'transactions',month:'2026-11'})).code,403);accountItem=I;
-const tx=await call(connection,{itemId:I,accountId:B,action:'transactions',month:'2026-11'});assert.equal(tx.code,200);assert.equal(tx.body.transactions.length,1);
-assert.equal((await call(connection,{itemId:I,accountId:B,action:'transactions',month:'2026-11',cursor:'?after=abc&accountId=forged'})).code,200);assert.equal(calls.at(-1).url.includes('forged'),false);
-assert.equal((await call(connection,{itemId:I,accountId:B,action:'transactions',month:'2026-13'})).code,400);
+accountItem='other';assert.equal((await call(connection,{itemId:I,accountId:B,action:'transactions',dateFrom:'2026-11-01',dateTo:'2026-11-30'})).code,403);accountItem=I;
+const tx=await call(connection,{itemId:I,accountId:B,action:'transactions',dateFrom:'2026-11-01',dateTo:'2026-11-30'});assert.equal(tx.code,200);assert.equal(tx.body.transactions.length,1);
+assert.equal((await call(connection,{itemId:I,accountId:B,action:'transactions',dateFrom:'2026-11-01',dateTo:'2026-11-30',cursor:'?after=abc&accountId=forged'})).code,200);assert.equal(calls.at(-1).url.includes('forged'),false);
+assert.equal((await call(connection,{itemId:I,accountId:B,action:'transactions',dateFrom:'2026-13-01',dateTo:'2026-13-30'})).code,400);
 assert.equal((await call(connection,{itemId:I,action:'disconnect'})).code,200);assert.ok(calls.some(x=>x.url.endsWith('/items/'+I)&&x.opts.method==='DELETE'));
 global.fetch=original;console.log('PASS: sessão, titularidade, registro, extrato v2, paginação segura e desconexão.');})().catch(e=>{console.error(e);process.exit(1)});
+

@@ -9,14 +9,14 @@
   <title>CoupleCare | Organizem a vida a dois</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="/src/css/figma-theme.css">
-  <link rel="stylesheet" href="/src/css/landing.css">
+  <link rel="stylesheet" href="/src/css/landing.css?v=header-auth">
   <script defer src="/src/js/analytics.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="/src/js/supabase-client.js"></script>
   <script defer src="/src/js/login.js"></script>
   <script defer src="/src/js/cadastro.js"></script>
   <script defer src="/src/js/couple-brand.js"></script>
-  <script defer src="/src/js/landing.js"></script>
+  <script defer src="/src/js/landing.js?v=header-auth"></script>
 </head>
 <body class="landing">
   <header class="site-header wrap">
@@ -24,7 +24,10 @@
     <nav aria-label="Navegação principal">
       <a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a>
     </nav>
-    <button class="button outline" type="button" data-login aria-haspopup="dialog">Entrar</button>
+    <div class="header-auth">
+      <button class="button outline" type="button" data-signup aria-haspopup="dialog">Cadastrar-se</button>
+      <button class="button outline login-button" type="button" data-login aria-haspopup="dialog">Logar</button>
+    </div>
   </header>
 
   <main>
@@ -43,7 +46,7 @@
             <strong class="brand"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</strong>
             <span>Dashboard</span><span>Tarefas</span><span>Calendário</span><span>Menstruação</span>
             <span class="selected">Finanças</span><small>CONECTAR</small>
-            <span>Nosso espaço</span><span>Configurações</span><span class="demo-goals">Metas</span>
+            <span>Nosso espaço</span><span>Configurações</span>
           </div>
           <div class="preview-content">
             <strong>Finanças<span>.</span></strong>

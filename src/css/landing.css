@@ -28,7 +28,6 @@
 .preview-menu small { color: var(--muted); font-size: 8px; letter-spacing: .12em; }
 .preview-menu .brand { gap: 3px; font-size: 11px; margin-bottom: 4px; }
 .preview-menu .marca-icone { width: 18px; height: 18px; }
-.demo-goals { border: 1px solid var(--line); }
 .selected { color: var(--ink); background: var(--orange-soft); }
 .preview-content { min-width: 0; }
 .preview-content > strong { display: block; margin: 4px 0 8px; font: 700 26px/1.1 var(--font-display); }
@@ -85,4 +84,21 @@
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .demo-details, .auth-dialog .cadastro-senhas { grid-template-columns: 1fr; }
   .brand { font-size: 20px; }
+}
+
+.header-auth { display: flex; align-items: center; gap: 8px; }
+.landing .header-auth .login-button {
+    border-color: var(--orange);
+    color: var(--orange-soft);
+    transition: background-color .16s, color .16s;
+}
+.landing .header-auth .login-button:is(:hover, :focus-visible, :active) {
+    background: var(--orange);
+    color: var(--ink);
+}
+@media (max-width: 560px) {
+    .header-auth .button { padding-inline: 10px; font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .landing .header-auth .login-button { transition: none; }
 }

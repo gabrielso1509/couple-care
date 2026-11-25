@@ -1,5 +1,9 @@
 (function () {
     'use strict';
+    if (location.hash === '#metas') {
+        location.replace('/nosso-espaco#metas');
+        return;
+    }
     const one = selector => document.querySelector(selector);
     const icon = (path, tone = '') => '<svg class="finance-icon ' + tone + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + path + '"/></svg>';
     function button(label, action) {
@@ -96,14 +100,6 @@
     }
     new MutationObserver(balanceIcon).observe(balance, { attributes: true, attributeFilter: ['class'] });
     balanceIcon();
-
-    const goals = sheet('Metas do casal', one('.goal-card'), one('#new-goal'));
-    const goalsTab = button('Metas', () => goals.showModal());
-    goalsTab.classList.add('cc-goals-link');
-    one('.navegacao').append(goalsTab);
-    if (location.hash === '#metas') CC.ready.then(() => {
-        if (!goals.open) goals.showModal();
-    }).catch(() => {});
 
     one('.finance-bills-panel').hidden = true;
     one('.spending-card .card-title span').hidden = true;
@@ -217,3 +213,4 @@
     mobile.addEventListener('change', positionEntry);
     positionEntry();
 })();
+

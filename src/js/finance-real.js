@@ -1,9 +1,9 @@
-/* Lançamentos reais em centavos; metas e aportes ficam no banco do casal. */
+/* Lançamentos reais em centavos. */
 (function () {
     'use strict';
     const C = CC, $ = C.$;
     const categories = { house: 'Casa', leisure: 'Lazer', health: 'Saúde', market: 'Mercado', transport: 'Transporte', salary: 'Salário', other: 'Outros' };
-    let context, entries = [], goals = [], financeAccounts = [], bills = [], billsReady = true, edited = null, goalEdit = null, billEdit = null, accountEdit = null, limit = 30, generation = 0;
+    let context, entries = [], financeAccounts = [], bills = [], billsReady = true, edited = null, billEdit = null, accountEdit = null, limit = 30, generation = 0;
     let loading = false, customCategories = [], categorySaving = false, draftKey = null;
     $('finance-month').value = C.today().slice(0, 7);
     const periodControl = C.el('div', 'finance-period-controls');
@@ -76,11 +76,6 @@
         }
     });
     syncCategories();
-    const goalDialog = C.dialog('goal-dialog', 'Um sonho em conjunto', `
-        <form id="goal-form"><label class="cc-field">Nome da meta<input id="goal-title" maxlength="150" required></label><label class="cc-field">Valor desejado em reais<input id="goal-target" inputmode="decimal" placeholder="0,00" required></label><label class="cc-field">Prazo opcional<input id="goal-date" type="date" min="1900-01-01" max="2100-12-31"></label><button type="submit" class="primary-button">Salvar meta</button><p id="goal-status" role="status"></p></form>`);
-    const contributionDialog = C.dialog('contribution-dialog', 'Adicionar valor à meta', `
-        <form id="contribution-form"><p id="contribution-title"></p><label class="cc-field">Valor em reais<input id="contribution-amount" inputmode="decimal" placeholder="0,00" required></label><p class="cc-status">Este aporte acompanha a meta. Ele não cria automaticamente uma receita ou despesa.</p><button type="submit" class="primary-button">Registrar aporte</button><p id="contribution-status" role="status"></p></form><div id="contribution-list"></div>`);
-    let contributionGoal = null;
     const accountsPanel = C.el('section', 'card finance-accounts-panel');
     accountsPanel.innerHTML = '<div class="card-title"><div><span>CONTAS DO CASAL</span><h3>Contas e saldos</h3></div><button type="button" class="soft-button" id="new-account">+ Cadastrar conta</button></div><div id="finance-accounts-list"></div>';
     const financeGrid = document.querySelector('.finance-grid');
@@ -169,7 +164,7 @@
             row.append(actions); box.append(row);
         });
     }
-    function enable(ok) { ['new-entry','new-goal','new-account'].forEach(function (id) { $(id).disabled = !ok; }); $('new-bill').disabled = !ok || !billsReady; }
+    function enable(ok) { ['new-entry','new-account'].forEach(function (id) { $(id).disabled = !ok; }); $('new-bill').disabled = !ok || !billsReady; }
     enable(false);
     function editEntry(row) {
         edited = row;
@@ -185,13 +180,6 @@
         syncCategories(row?.custom_category_id ? 'custom:' + row.custom_category_id : row?.category || 'house');
         syncAccountOptions(row?.account_id || '');
         entryDialog.showModal();
-    }
-    function editGoal(row) {
-        goalEdit = row; $('goal-form').reset(); $('goal-status').textContent = '';
-        $('goal-title').value = row?.title || '';
-        $('goal-target').value = row ? (Number(row.target_cents) / 100).toFixed(2).replace('.', ',') : '';
-        $('goal-date').value = row?.target_date || '';
-        goalDialog.showModal();
     }
     function shiftDate(date, days) {
         const d = new Date(date + 'T12:00:00'); d.setDate(d.getDate() + days);
@@ -368,65 +356,36 @@
         });
         $('more-entries').hidden = entries.length < limit;
     }
-    async function openContributions(goal) {
-        contributionGoal = goal; $('contribution-form').reset(); $('contribution-status').textContent = '';
-        $('contribution-title').textContent = goal.title; C.empty('contribution-list', 'Carregando aportes…');
-        contributionDialog.showModal();
-        const rows = C.result(await supabaseClient.from('goal_contributions').select('id,amount_cents,created_at').eq('goal_id', goal.id).order('created_at', { ascending: false }).limit(30));
-        const box = $('contribution-list'); box.replaceChildren();
-        if (!rows.length) box.append(C.el('p', 'empty-state', 'A meta ainda não recebeu aportes.'));
-        rows.forEach(function (r) {
-            const line = C.el('div', 'transaction'); line.append(C.el('b', '', C.money(r.amount_cents)), C.el('small', '', C.date(r.created_at)));
-            line.append(C.button('Excluir aporte', async function () {
-                if (!confirm('Retirar este aporte da meta?')) return;
-                C.result(await supabaseClient.from('goal_contributions').delete().eq('id', r.id).select('id').single()); C.notify('Aporte removido.');
-                await load(); await openContributions(goals.find(function (g) { return g.id === goal.id; }) || goal);
-            })); box.append(line);
-        });
-    }
-    function renderGoals() {
-        const box = $('finance-goals'); box.replaceChildren();
-        if (!goals.length) box.append(C.el('p', 'empty-state', 'Qual é o próximo sonho de vocês? Crie uma meta para começar.'));
-        goals.forEach(function (g) {
-            const card = C.el('section', 'cc-goal'); const ratio = Math.min(100, Math.round(Number(g.saved_cents) / Number(g.target_cents) * 100));
-            card.append(C.el('h4', '', g.title), C.el('strong', '', C.money(g.saved_cents)), C.el('small', '', 'de ' + C.money(g.target_cents)));
-            const progress = C.el('div', 'progress-bar'), fill = C.el('i'); fill.style.width = ratio + '%'; progress.append(fill); progress.setAttribute('aria-label', ratio + '% da meta');
-            card.append(progress, C.el('p', 'goal-meta', ratio + '% alcançado' + (g.target_date ? ' · Meta: ' + C.date(g.target_date) : '')));
-            const actions = C.el('div', 'cc-row-actions');
-            actions.append(C.button('+ Adicionar valor', async function () { await openContributions(g); }, 'soft-button'), C.button('Editar', function () { editGoal(g); }), C.button('Excluir', async function () {
-                if (!confirm('Excluir esta meta e os aportes dela?')) return;
-                C.result(await supabaseClient.from('savings_goals').delete().eq('id', g.id).eq('version', g.version).select('id').single()); C.notify('Meta removida.'); await load();
-            })); card.append(actions); box.append(card);
-        });
-    }
     async function load() {
         if (!context?.couple) return;
         const token = ++generation; loading = true; $('finance-status').classList.add('cc-sr'); $('finance-status').textContent = 'Atualizando finanças…'; $('finance-status').classList.remove('is-error');
         try {
             const bounds = periodBounds();
-            const responses = await Promise.all([
+            const [summaryResponse, entriesResponse, categoriesResponse, accountsResponse, billsResponse] = await Promise.all([
                 supabaseClient.rpc('finance_period_summary', { p_from: bounds.start, p_to: bounds.end }),
                 supabaseClient.from('finance_entries').select('*').eq('couple_id', context.couple).gte('entry_date', bounds.start).lte('entry_date', bounds.end).order('entry_date', { ascending: false }).order('id').limit(limit),
-                supabaseClient.rpc('list_savings_goals'),
                 C.all(function () { return supabaseClient.from('finance_categories').select('id,name').eq('couple_id', context.couple).order('name').order('id'); })
                 ,supabaseClient.from('finance_accounts').select('id,name,account_type,source,balance_cents,currency_code,balance_updated_at,version').eq('couple_id', context.couple).order('created_at', { ascending: false }),
                 supabaseClient.from('finance_bills').select('*').eq('couple_id', context.couple).order('is_active', { ascending: false }).order('due_date')
             ]);
-            const data = responses.slice(0,3).map(C.result); if (token !== generation) return;
-            const summary = data[0]; entries = data[1]; goals = data[2]; customCategories = responses[3]; financeAccounts = C.result(responses[4]);
-            const billError = responses[5].error;
-            if (billError && billError.code !== 'PGRST205' && billError.code !== '42P01') C.result(responses[5]);
+            if (token !== generation) return;
+            const summary = C.result(summaryResponse);
+            entries = C.result(entriesResponse);
+            customCategories = categoriesResponse;
+            financeAccounts = C.result(accountsResponse);
+            const billError = billsResponse.error;
+            if (billError && billError.code !== 'PGRST205' && billError.code !== '42P01') C.result(billsResponse);
             billsReady = !billError;
-            if (billsReady) bills = C.result(responses[5]); else bills = [];
+            if (billsReady) bills = C.result(billsResponse); else bills = [];
             $('new-bill').disabled = !billsReady;
             syncCategories(); syncAccountOptions(); syncBillOptions(); summaryState(summary);
             $('finance-balance').textContent = C.money(summary.balance); $('finance-income').textContent = C.money(summary.income); $('finance-expense').textContent = C.money(summary.expense);
-            chart(summary); renderEntries(); renderGoals(); renderAccounts(); renderBills();
+            chart(summary); renderEntries(); renderAccounts(); renderBills();
             $('finance-status').textContent = 'Resumo de ' + bounds.label + ' atualizado.';
         } catch (error) {
             if (token !== generation) return;
             ['finance-balance','finance-income','finance-expense'].forEach(function (id) { $(id).textContent = '—'; });
-            ['finance-chart','finance-entries','finance-goals','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
+            ['finance-chart','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
             $('finance-status').textContent = C.error(error); $('finance-status').classList.add('is-error'); $('finance-status').classList.remove('cc-sr');
             $('balance-card').classList.remove('is-positive','is-negative'); $('balance-card').classList.add('is-neutral');
             $('finance-balance').removeAttribute('aria-label');
@@ -437,17 +396,6 @@
         const values = { description: title, entry_type: $('entry-type').value, amount_cents: C.cents($('entry-amount').value), entry_date: $('entry-date').value, category: $('entry-category').value.startsWith('custom:') ? 'other' : $('entry-category').value, custom_category_id: $('entry-category').value.startsWith('custom:') ? $('entry-category').value.slice(7) : null, account_id: $('entry-account').value || null };
         const query = edited ? supabaseClient.from('finance_entries').update(values).eq('id', edited.id).eq('version', edited.version) : supabaseClient.from('finance_entries').insert(Object.assign({ couple_id: context.couple }, values));
         C.result(await query.select('id').single()); draftKey = null; entryDialog.close(); await load();
-    });
-    C.form($('goal-form'), async function () {
-        const title = $('goal-title').value.trim(); if (!title) throw new Error('Informe um nome para a meta.');
-        const values = { title: title, target_cents: C.cents($('goal-target').value), target_date: $('goal-date').value || null };
-        const query = goalEdit ? supabaseClient.from('savings_goals').update(values).eq('id', goalEdit.id).eq('version', goalEdit.version) : supabaseClient.from('savings_goals').insert(Object.assign({ couple_id: context.couple }, values));
-        C.result(await query.select('id').single()); goalDialog.close(); await load();
-    });
-    C.form($('contribution-form'), async function () {
-        C.result(await supabaseClient.from('goal_contributions').insert({ goal_id: contributionGoal.id, amount_cents: C.cents($('contribution-amount').value) }).select('id').single());
-        $('contribution-form').reset(); $('contribution-status').textContent = 'Aporte registrado.'; await load();
-        await openContributions(goals.find(function (g) { return g.id === contributionGoal.id; }) || contributionGoal);
     });
     $('new-entry').addEventListener('click', function () { editEntry(null); });
     $('new-account').addEventListener('click', function () { editAccount(null); });
@@ -466,7 +414,6 @@
         const query = billEdit ? supabaseClient.from('finance_bills').update(values).eq('id', billEdit.id).eq('version', billEdit.version) : supabaseClient.from('finance_bills').insert(Object.assign({ couple_id: context.couple }, values));
         C.result(await query.select('id').single()); billDialog.close(); await load();
     });
-    $('new-goal').addEventListener('click', function () { editGoal(null); });
     function changePeriod() {
         const custom = $('finance-period').value === 'custom';
         if (custom) {
@@ -484,7 +431,8 @@
     window.addEventListener('cc-finance-bank-synced', function () { load(); });
     $('reload-finance').addEventListener('click', load);
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });
-    C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-entries','finance-goals','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });
+    C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });
 })();
+
 
 

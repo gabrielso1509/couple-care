@@ -100,12 +100,6 @@
             nav.append(link);
         });
 
-        if (arquivoAtual !== 'financas.html') {
-            const metas = elemento('a', 'soft-button cc-goals-link', 'Metas');
-            metas.href = '/financas#metas';
-            nav.append(metas);
-        }
-
         const nota = elemento('p', 'cc-menu-note', 'Pequenos cuidados. Mais vida juntos.');
         const conta = lateral.querySelector('.conta-menu');
         if (conta) conta.before(nota);
@@ -284,3 +278,4 @@
 
     prepararAplicacao();
 })();
+
