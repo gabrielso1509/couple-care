@@ -187,15 +187,17 @@
     };
     C.context = null;
     C.ready = (async function () {
-        const r = await supabaseClient.auth.getUser();
-        const auth = C.result(r); if (!auth.user) throw new Error('Sessão indisponível.');
-        const profile = C.result(await supabaseClient.from('profiles').select('id,display_name,gender,avatar_path').eq('id', auth.user.id).single());
-        const members = C.result(await supabaseClient.rpc('get_couple_members'));
-        const own = members.find(function (m) { return m.user_id === auth.user.id; });
-        C.context = { user: auth.user, profile: profile, members: members, couple: own?.couple_id || null };
+        const user = await obterUsuarioDaPagina();
+        if (!user) throw new Error('Sessão indisponível.');
+        const [profile, members] = await Promise.all([
+            obterPerfilDaPagina(),
+            supabaseClient.rpc('get_couple_members').then(C.result)
+        ]);
+        const own = members.find(function (member) { return member.user_id === user.id; });
+        C.context = { user, profile, members, couple: own?.couple_id || null };
         return C.context;
     })();
-    // Evita rejeição solta antes de o módulo de página registrar seu tratamento.
+
     C.ready.catch(function () {});
 
     C.photo = async function (img, path) {
@@ -212,3 +214,4 @@
     C.releasePhotos = function () { C.photoUrls.forEach(URL.revokeObjectURL); C.photoUrls = []; };
     window.addEventListener('pagehide', C.releasePhotos);
 })();
+

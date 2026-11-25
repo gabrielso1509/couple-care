@@ -76,73 +76,77 @@ const botaoSair = document.querySelector('#botao-sair');
 /* ========================================
    2. VERIFICAÇÃO DE ACESSO À PÁGINA
 ======================================== */
+// A proteção da página e o app-core compartilham a mesma validação do Auth.
+let usuarioDaPagina;
+let perfilDaPagina;
+let versaoSessao = 0;
+let sessaoEncerrada = false;
+
+function obterUsuarioDaPagina() {
+    if (!usuarioDaPagina) {
+        usuarioDaPagina = supabaseClient.auth.getUser().then(function ({ data, error }) {
+            if (error) throw error;
+            return data.user;
+        });
+    }
+    return usuarioDaPagina;
+}
+
+function obterPerfilDaPagina() {
+    if (!perfilDaPagina) {
+        perfilDaPagina = obterUsuarioDaPagina().then(async function (user) {
+            if (!user) return null;
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('id,display_name,gender,avatar_path')
+                .eq('id', user.id)
+                .single();
+            if (error) throw error;
+            return data;
+        });
+    }
+    return perfilDaPagina;
+}
+
+function mostrarFalhaDeSessao(texto) {
+    statusSessao.textContent = texto;
+    statusSessao.hidden = false;
+}
+
 async function verificarSessao() {
+    const versao = ++versaoSessao;
+    if (sessaoEncerrada) return;
+
     try {
-        // Consulta o Auth para validar o usuário atual.
-        const { data, error } = await supabaseClient.auth.getUser();
-
-        if (error) {
-            // Sessão ausente ou rejeitada: volta ao login.
-            if (
-                error.name === 'AuthSessionMissingError' ||
-                error.status === 401 ||
-                error.status === 403
-            ) {
-                window.location.replace('/index.html');
-                return;
-            }
-
-            throw error;
-        }
-
-        if (!data.user) {
-            window.location.replace('/index.html');
+        const user = await obterUsuarioDaPagina();
+        if (versao !== versaoSessao) return;
+        if (!user) {
+            window.location.replace('/#entrar');
             return;
         }
-
-        // Busca o perfil correspondente à conta autenticada.
-        const { data: perfil, error: erroPerfil } = await supabaseClient
-            .from('profiles')
-            .select('display_name, avatar_path')
-            .eq('id', data.user.id)
-            .single();
-
-        if (erroPerfil) {
-            statusSessao.textContent =
-                'Não foi possível carregar seu perfil. Recarregue a página para tentar novamente.';
-
-            console.error(
-                'Falha ao carregar perfil:',
-                erroPerfil.code,
-                erroPerfil.message
-            );
-
+    } catch (erro) {
+        if (versao !== versaoSessao) return;
+        if (erro.name === 'AuthSessionMissingError' || [401, 403].includes(erro.status)) {
+            window.location.replace('/#entrar');
             return;
         }
+        mostrarFalhaDeSessao('Não foi possível verificar sua sessão. Confira sua conexão e recarregue a página.');
+        return;
+    }
 
-        // Preenche a área da conta se ela estiver presente na página.
+    try {
+        const perfil = await obterPerfilDaPagina();
+        if (versao !== versaoSessao || sessaoEncerrada) return;
         if (nomeUsuario) {
             nomeUsuario.textContent = perfil.display_name;
-
-            // Permite consultar o nome completo ao passar o mouse.
             nomeUsuario.title = perfil.display_name;
         }
-
-        // Carrega a foto sem atrasar a abertura do conteúdo.
-        carregarAvatar(
-            avatarUsuario,
-            perfil.display_name,
-            perfil.avatar_path
-        );
-
-        // Exibe a página somente após validar a conta e carregar o perfil.
+        carregarAvatar(avatarUsuario, perfil.display_name, perfil.avatar_path);
         conteudoAplicacao.hidden = false;
         statusSessao.hidden = true;
     } catch (erro) {
-        // Falha de conexão não significa que a conta foi desconectada.
-        statusSessao.hidden = false;
-        statusSessao.textContent =
-            'Não foi possível verificar sua sessão. Confira sua conexão e recarregue a página.';
+        if (versao !== versaoSessao || sessaoEncerrada) return;
+        mostrarFalhaDeSessao('Não foi possível carregar seu perfil. Recarregue a página para tentar novamente.');
     }
 }
 
@@ -190,6 +194,8 @@ if (botaoSair) {
 // Também reage quando a sessão é encerrada em outra aba.
 supabaseClient.auth.onAuthStateChange(function (evento) {
     if (evento === 'SIGNED_OUT') {
+        sessaoEncerrada = true;
+        versaoSessao++;
         conteudoAplicacao.hidden = true;
         window.location.replace('/index.html');
     }
@@ -201,4 +207,9 @@ supabaseClient.auth.onAuthStateChange(function (evento) {
 verificarSessao();
 
 // Atualiza a conta no menu após editar o nome ou a foto.
-window.addEventListener('perfil-atualizado', verificarSessao);
+window.addEventListener('perfil-atualizado', function () {
+    usuarioDaPagina = null;
+    perfilDaPagina = null;
+    verificarSessao();
+});
+
