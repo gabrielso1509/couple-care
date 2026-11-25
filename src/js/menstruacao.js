@@ -605,7 +605,7 @@
         }
     }
 
-    async function carregar() {
+    async function carregar(membrosIniciais) {
         if (!feminino) return;
         if (!identidadePronta) {
             return iniciar();
@@ -617,12 +617,13 @@
 
         carregando = true;
         controles();
+        buscar('atualizar-registros').hidden = true;
 
         buscar('status-menstruacao').textContent =
             'Carregando registros…';
 
         try {
-            const membrosResposta = await supabaseClient.rpc(
+            const membrosResposta = membrosIniciais ? { data: membrosIniciais } : await supabaseClient.rpc(
                 'get_couple_members'
             );
 
@@ -713,10 +714,11 @@
                 'Registros atualizados.';
         } catch (erro) {
             ocultarDados();
+            buscar('atualizar-registros').hidden = false;
 
             buscar('status-menstruacao').textContent =
                 'Não foi possível carregar. Confira a conexão ' +
-                'e clique em Atualizar registros.';
+                'e tente novamente.';
 
             console.error(
                 'Falha ao carregar menstruação:',
@@ -1098,11 +1100,9 @@
         'click',
         function () {
             if (
-                temRascunho() &&
-                !window.confirm(
-                    'Descartar alterações não salvas e atualizar?'
-                )
+                temRascunho()
             ) {
+                void carregar();
                 return;
             }
 
@@ -1159,31 +1159,14 @@
         controles();
 
         try {
-            const autenticacao =
-                await supabaseClient.auth.getUser();
+            const [usuario, perfil] = await Promise.all([
+                obterUsuarioDaPagina(),
+                obterPerfilDaPagina()
+            ]);
+            if (!usuario || !perfil) throw new Error('Sem sessão.');
 
-            if (
-                autenticacao.error ||
-                !autenticacao.data.user
-            ) {
-                throw autenticacao.error ||
-                    new Error('Sem sessão.');
-            }
-
-            const id = autenticacao.data.user.id;
-
-            const perfil = await supabaseClient
-                .from('profiles')
-                .select('gender')
-                .eq('id', id)
-                .single();
-
-            if (perfil.error) {
-                throw perfil.error;
-            }
-
-            usuarioId = id;
-            feminino = perfil.data.gender === 'feminino';
+            usuarioId = usuario.id;
+            feminino = perfil.gender === 'feminino';
             identidadePronta = true;
 
             buscar('individual').hidden = !feminino;
@@ -1193,7 +1176,7 @@
         } catch (erro) {
             buscar('status-menstruacao').textContent =
                 'Não foi possível carregar a conta. Confira a conexão ' +
-                'e clique em Atualizar registros.';
+                'e tente novamente.';
 
             return;
         } finally {
@@ -1201,7 +1184,8 @@
             controles();
         }
 
-        await carregar();
+        const contexto = await CC.ready.catch(() => null);
+        await carregar(contexto?.members);
     }
 
     document.addEventListener(
@@ -1221,7 +1205,7 @@
         ocultarDados();
 
         buscar('status-menstruacao').textContent =
-            'Sem conexão. Reconecte e atualize os registros.';
+            'Sem conexão. Os registros serão atualizados quando a conexão voltar.';
     });
 
     window.addEventListener(

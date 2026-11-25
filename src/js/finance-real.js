@@ -382,18 +382,17 @@
     }
     async function load() {
         if (!context?.couple) return;
-        const token = ++generation; loading = true; $('finance-status').classList.add('cc-sr'); $('finance-status').textContent = 'Atualizando finanças…'; $('finance-status').classList.remove('is-error');
+        const token = ++generation; loading = true; $('reload-finance').hidden = true; $('finance-status').classList.add('cc-sr'); $('finance-status').textContent = 'Atualizando finanças…'; $('finance-status').classList.remove('is-error');
         try {
             const bounds = periodBounds();
-            const [summaryResponse, entriesResponse, categoriesResponse, accountsResponse, billsResponse] = await Promise.all([
-                supabaseClient.rpc('finance_period_summary', { p_from: bounds.start, p_to: bounds.end }),
+            const [summary, entriesResponse, categoriesResponse, accountsResponse, billsResponse] = await Promise.all([
+                C.financeSummary(bounds.start, bounds.end),
                 supabaseClient.from('finance_entries').select('*').eq('couple_id', context.couple).gte('entry_date', bounds.start).lte('entry_date', bounds.end).order('entry_date', { ascending: false }).order('id').limit(limit),
                 C.all(function () { return supabaseClient.from('finance_categories').select('id,name').eq('couple_id', context.couple).order('name').order('id'); })
                 ,supabaseClient.from('finance_accounts').select('id,name,account_type,source,balance_cents,currency_code,balance_updated_at,version').eq('couple_id', context.couple).order('created_at', { ascending: false }),
                 supabaseClient.from('finance_bills').select('*').eq('couple_id', context.couple).order('is_active', { ascending: false }).order('due_date')
             ]);
             if (token !== generation) return;
-            const summary = C.result(summaryResponse);
             entries = C.result(entriesResponse);
             customCategories = categoriesResponse;
             financeAccounts = C.result(accountsResponse);
@@ -405,7 +404,7 @@
             syncCategories(); syncAccountOptions(); syncBillOptions(); summaryState(summary);
             $('finance-balance').textContent = C.money(summary.balance); $('finance-income').textContent = C.money(summary.income); $('finance-expense').textContent = C.money(summary.expense);
             chart(summary); renderEntries(); renderAccounts(); renderBills();
-            window.dispatchEvent(new Event('finance-summary-updated'));
+            window.dispatchEvent(new CustomEvent('finance-summary-updated', { detail: { bounds, summary } }));
             $('finance-status').textContent = 'Resumo de ' + bounds.label + ' atualizado.';
         } catch (error) {
             if (token !== generation) return;
@@ -414,7 +413,9 @@
             $('finance-status').textContent = C.error(error); $('finance-status').classList.add('is-error'); $('finance-status').classList.remove('cc-sr');
             $('balance-card').classList.remove('is-positive','is-negative'); $('balance-card').classList.add('is-neutral');
             $('finance-balance').removeAttribute('aria-label');
-        } finally { if (token === generation) loading = false; }
+            $('reload-finance').hidden = false;
+            window.dispatchEvent(new Event('finance-summary-updated'));
+        } finally { if (token === generation) { loading = false; C.pageReady(); } }
     }
     C.form($('entry-form'), async function () {
         const title = $('entry-description').value.trim(); if (!title) throw new Error('Informe uma descrição.');
@@ -454,9 +455,10 @@
     }
     $('finance-period').addEventListener('change', changePeriod);
     window.addEventListener('cc-finance-bank-synced', function () { load(); });
-    $('reload-finance').addEventListener('click', load);
+    $('reload-finance').addEventListener('click', function () { if (context) void load(); else window.location.reload(); });
+    C.refreshOnReturn(function () { if (!loading && !document.querySelector('dialog[open]')) return load(); });
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });
-    C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-categories-mobile','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });
+    C.ready.then(function (c) { context = c; if (!c.couple) { C.pageReady(); $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-categories-mobile','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { C.pageReady(); $('reload-finance').hidden = false; $('finance-status').textContent = C.error(e); });
 })();
 
 

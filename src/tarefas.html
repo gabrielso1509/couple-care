@@ -12,17 +12,21 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
-<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer src="js/agenda-dados.js"></script><script defer="" src="js/tarefas.js"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="js/tasks-extra.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
-<script defer src="js/tarefas-compromissos.js"></script>
-<link rel="stylesheet" href="css/tarefas-compromissos.css">
-<link rel="stylesheet" href="css/interior-mobile.css">
-<script defer src="js/interior-mobile.js"></script>
+<link href="/src/css/figma-theme.css" rel="stylesheet"/><link href="/src/css/app.css" rel="stylesheet"/><link rel="stylesheet" href="/src/css/navegacao.css?v=1">
+<script defer src="/src/js/couple-brand.js"></script>
+<script defer src="/src/js/figma-theme.js?v=navegacao"></script>
+<link rel="preconnect" href="https://cwsmavsxeudwjocqakhh.supabase.co" crossorigin>
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="/src/js/supabase-client.js"></script><script defer="" src="/src/js/sessao.js?v=navegacao"></script><script defer="" src="/src/js/app-core.js?v=navegacao"></script><script defer="" src="/src/js/app-shell.js"></script><script defer src="/src/js/agenda-dados.js"></script><script defer="" src="/src/js/tarefas.js?v=navegacao"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="/src/js/tasks-extra.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css">
+<script defer src="/src/js/tarefas-compromissos.js?v=navegacao"></script>
+<link rel="stylesheet" href="/src/css/tarefas-compromissos.css">
+<link rel="stylesheet" href="/src/css/interior-mobile.css">
+<script defer src="/src/js/interior-mobile.js"></script>
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
-<p aria-live="polite" id="status-sessao" role="status" hidden></p>
+
 <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
-<div class="aplicacao" hidden="">
+<div class="aplicacao" data-shell-state="loading">
 <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
 <aside class="menu-lateral">
 <div class="menu-lateral-cabecalho">
@@ -100,7 +104,16 @@
 <span class="selo-tarefas">Feito para construir juntos</span>
 </header>
 <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1"><section class="card mobile-only mobile-task-progress" aria-labelledby="mobile-task-progress-title">
+<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1" data-page-loading>
+<p aria-live="polite" id="status-sessao" role="status" hidden></p>
+<section class="cc-page-skeleton">
+    <span class="cc-sr" role="status">Carregando tarefas…</span>
+    <div class="cc-skeleton-card cc-skeleton-progress" aria-hidden="true"><i></i><div><span></span><span></span></div></div>
+    <button class="primary-button cc-skeleton-action" type="button" disabled>+ Nova tarefa</button>
+    <div class="cc-skeleton-heading" aria-hidden="true"></div>
+    <div class="cc-skeleton-card cc-skeleton-rows" aria-hidden="true"><span></span><span></span><span></span></div>
+</section>
+<section class="card mobile-only mobile-task-progress" aria-labelledby="mobile-task-progress-title">
     <div class="mobile-progress-ring" id="mobile-progress-ring" hidden>
         <strong id="mobile-progress-completed">0</strong>
         <small id="mobile-progress-total"></small>
@@ -111,7 +124,8 @@
         <h2 id="mobile-task-progress-title">Um passo de cada vez</h2>
         <p id="mobile-task-progress-count">Carregando tarefas…</p>
     </div>
-</section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><button class="primary-button tarefas-novo-item" id="novo-item" type="button"
+</section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p>
+<button class="soft-button" id="atualizar-tarefas" type="button" hidden>Tentar novamente</button><button class="primary-button tarefas-novo-item" id="novo-item" type="button"
         aria-haspopup="dialog" aria-controls="editor-tarefa-mobile" disabled>＋ Novo item</button>
 <dialog id="editor-tarefa-mobile" class="cc-modal tarefas-editor" aria-labelledby="titulo-editor">
     <header>
@@ -190,7 +204,7 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
         </div>
     </div>
     <div class="acoes-app filtros-tarefas-acoes">
-        <button class="soft-button" id="atualizar-tarefas" type="button">Atualizar tarefas</button>
+
         <button class="primary-button" id="ver-tarefas-filtradas" type="button">Ver tarefas</button>
     </div>
 </dialog>

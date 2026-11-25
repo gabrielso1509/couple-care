@@ -140,7 +140,7 @@
 
         const inferior = elemento('nav', 'cc-bottom-nav');
         inferior.setAttribute('aria-label', 'Navegação rápida');
-        const interiorMobile = Boolean(document.querySelector('script[src="js/interior-mobile.js"]'));
+        const interiorMobile = Boolean(document.querySelector('script[src$="/interior-mobile.js"]'));
         paginas.slice(0, interiorMobile ? 5 : 4).forEach(function (item, indice) {
             const link = elemento('a', item.arquivo === arquivoAtual ? 'ativo' : '');
             link.href = '/src/' + item.arquivo;
@@ -287,6 +287,19 @@
 
 
     prepararAplicacao();
+
+    // A tela restaurada pelo histórico precisa validar a sessão novamente.
+    const app = document.querySelector('.aplicacao[data-shell-state]');
+    if (!app) return;
+    window.addEventListener('pagehide', function (event) {
+        if (event.persisted && !app.hidden) {
+            document.documentElement.classList.add('cc-history-restore');
+            app.dataset.shellState = 'loading';
+        }
+    });
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) window.location.reload();
+    });
 })();
 
 

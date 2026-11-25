@@ -94,7 +94,8 @@
         const number = month.getMonth();
         $('anterior').disabled = weekMode ? A.plusDays(weekStart(), -1) < '1900-01-01' : year === 1900 && number === 0;
         $('seguinte').disabled = weekMode ? A.plusDays(weekStart(), 7) > '2100-12-31' : year === 2100 && number === 11;
-        $('atualizar-calendario').disabled = !context || loading;
+        $('atualizar-calendario').hidden = !partial;
+        $('atualizar-calendario').disabled = loading;
     }
 
     function byPerson(personId) {
@@ -243,7 +244,8 @@
             controls();
         } else drawMonth();
 
-        status.textContent = partial ? 'Parte do calendário está indisponível. Confira a conexão ou atualize.' : 'Atualizado.';
+        status.textContent = partial ? 'Parte do calendário está indisponível. Confira a conexão ou tente novamente.' : 'Atualizado agora';
+        C.pageReady();
     }
 
     function go(target) {
@@ -286,7 +288,7 @@
         paintWeek();
         paintInline();
     });
-    $('atualizar-calendario').addEventListener('click', load);
+    $('atualizar-calendario').addEventListener('click', function () { if (context) void load(); else window.location.reload(); });
     grid.addEventListener('click', function (event) {
         const button = event.target.closest('[data-dia]');
         if (!button) return;
@@ -306,9 +308,8 @@
         // Redesenha só depois que o foco voltar ao botão que abriu o modal.
         queueMicrotask(drawMonth);
     });
-    window.addEventListener('pageshow', function (event) { if (event.persisted) void load(); });
-    document.addEventListener('visibilitychange', function () {
-        if (document.hidden || !context) return;
+    C.refreshOnReturn(function () {
+        if (!context || loading) return;
         // Evita exibir dados antigos após trocar de aba ou revogar compartilhamento.
         grouped = new Map();
         partial = false;
@@ -322,6 +323,7 @@
         context = value;
         return load();
     }).catch(function (error) {
+        C.pageReady();
         loading = false;
         partial = true;
         status.textContent = C.error(error);

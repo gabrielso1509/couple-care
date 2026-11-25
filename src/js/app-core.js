@@ -185,6 +185,49 @@
             }
         });
     };
+    C.pageReady = function () {
+        document.getElementById('conteudo-pagina')?.removeAttribute('data-page-loading');
+    };
+
+    C.refreshOnReturn = function (refresh) {
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) void refresh();
+        });
+        window.addEventListener('online', function () {
+            if (!document.hidden) void refresh();
+        });
+    };
+
+    const financeRequests = new Map();
+    C.financeSummary = function (from, to) {
+        const key = from + '/' + to;
+        if (!financeRequests.has(key)) {
+            const request = supabaseClient.rpc('finance_period_summary', { p_from: from, p_to: to })
+                .then(C.result).finally(function () { financeRequests.delete(key); });
+            financeRequests.set(key, request);
+        }
+        return financeRequests.get(key);
+    };
+
+    C.taskAssignment = function (task, members) {
+        const people = task.assigned_to_both ? members :
+            members.filter(function (person) { return person.user_id === task.assigned_to; });
+        if (!people.length) return null;
+
+        const group = C.el('span', 'cc-assignment');
+        const photos = C.el('span', 'cc-assignment-photos');
+        photos.setAttribute('aria-hidden', 'true');
+        people.forEach(function (person) {
+            const photo = C.el('span', 'cc-assignment-photo');
+            photos.append(photo);
+            queueMicrotask(function () { void carregarAvatar(photo, person.display_name, person.avatar_path); });
+        });
+        const label = task.assigned_to_both ? 'Nós dois' : people[0].display_name;
+        group.title = people.map(function (person) { return person.display_name; }).join(' e ');
+        group.append(photos, C.el('span', '', label));
+        return group;
+    };
+
     C.context = null;
     C.ready = (async function () {
         const user = await obterUsuarioDaPagina();

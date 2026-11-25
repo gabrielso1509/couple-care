@@ -55,24 +55,10 @@
         atualizarControles();
 
         try {
-            const { data: autenticacao, error: erroAuth } =
-                await supabaseClient.auth.getUser();
+            const perfil = await obterPerfilDaPagina();
+            if (!perfil) throw new Error('Sessão indisponível.');
 
-            if (erroAuth || !autenticacao.user) {
-                throw new Error('Sessão indisponível.');
-            }
-
-            const { data: perfil, error: erroPerfil } = await supabaseClient
-                .from('profiles')
-                .select('display_name, avatar_path')
-                .eq('id', autenticacao.user.id)
-                .single();
-
-            if (erroPerfil) {
-                throw erroPerfil;
-            }
-
-            usuarioId = autenticacao.user.id;
+            usuarioId = perfil.id;
             caminhoAtual = perfil.avatar_path;
             inicial.textContent = perfil.display_name.trim().charAt(0).toUpperCase();
 

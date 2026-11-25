@@ -2,66 +2,38 @@
    EXIBIÇÃO COMPARTILHADA DOS AVATARES
 ======================================== */
 const estadosAvatares = new WeakMap();
+const fotosDaPagina = new Map();
 
 async function carregarAvatar(elemento, nome, caminho) {
-    if (!elemento) {
-        return;
-    }
-
-    const anterior = estadosAvatares.get(elemento);
-
-    if (anterior && anterior.url) {
-        URL.revokeObjectURL(anterior.url);
-    }
-
-    // Identifica esta chamada para ignorar respostas antigas.
-    const estado = { url: null };
+    if (!elemento) return;
+    const inicial = nome.trim().charAt(0).toUpperCase();
+    const estado = {};
     estadosAvatares.set(elemento, estado);
+    elemento.textContent = inicial;
+    if (!caminho || sessaoEncerrada) return;
 
-    elemento.textContent = nome.trim().charAt(0).toUpperCase();
-
-    if (!caminho) {
-        return;
+    if (!fotosDaPagina.has(caminho)) {
+        const foto = supabaseClient.storage.from('avatars').download(caminho)
+            .then(function ({ data, error }) {
+                if (error || !data || sessaoEncerrada) throw error || new Error('Foto indisponível.');
+                return URL.createObjectURL(data);
+            }).catch(function () {
+                fotosDaPagina.delete(caminho);
+                return null;
+            });
+        fotosDaPagina.set(caminho, foto);
     }
+    const url = await fotosDaPagina.get(caminho);
+    if (!url || !elemento.isConnected || estadosAvatares.get(elemento) !== estado) return;
 
-    try {
-        const { data, error } = await supabaseClient
-            .storage
-            .from('avatars')
-            .download(caminho);
-
-        if (error) {
-            throw error;
-        }
-
-        // Outra atualização pode ter ocorrido enquanto aguardávamos.
-        if (
-            estadosAvatares.get(elemento) !== estado ||
-            !elemento.isConnected
-        ) {
-            return;
-        }
-
-        estado.url = URL.createObjectURL(data);
-
-        const imagem = document.createElement('img');
-        imagem.alt = '';
-        imagem.src = estado.url;
-
-        imagem.addEventListener('error', function () {
-            if (estadosAvatares.get(elemento) === estado) {
-                elemento.textContent = nome.trim().charAt(0).toUpperCase();
-                URL.revokeObjectURL(estado.url);
-                estado.url = null;
-            }
-        });
-
-        elemento.replaceChildren(imagem);
-    } catch (erro) {
-        // Uma falha na foto mantém a inicial e não bloqueia a página.
-    }
+    const imagem = document.createElement('img');
+    imagem.alt = '';
+    imagem.addEventListener('error', function () {
+        if (estadosAvatares.get(elemento) === estado) elemento.textContent = inicial;
+    });
+    imagem.src = url;
+    elemento.replaceChildren(imagem);
 }
-
 
 /* ========================================
    1. ELEMENTOS DA PÁGINA E DA CONTA
@@ -81,6 +53,7 @@ let usuarioDaPagina;
 let perfilDaPagina;
 let versaoSessao = 0;
 let sessaoEncerrada = false;
+let usuarioValidado = null;
 
 function obterUsuarioDaPagina() {
     if (!usuarioDaPagina) {
@@ -109,7 +82,13 @@ function obterPerfilDaPagina() {
 }
 
 function mostrarFalhaDeSessao(texto) {
-    statusSessao.textContent = texto;
+    const retry = document.createElement('button');
+    retry.type = 'button';
+    retry.className = 'soft-button cc-session-retry';
+    retry.textContent = 'Tentar novamente';
+    retry.addEventListener('click', function () { window.location.reload(); });
+    statusSessao.replaceChildren(texto + ' ', retry);
+    conteudoAplicacao.dataset.shellState = 'error';
     statusSessao.hidden = false;
 }
 
@@ -124,6 +103,7 @@ async function verificarSessao() {
             window.location.replace('/#entrar');
             return;
         }
+        usuarioValidado = user.id;
     } catch (erro) {
         if (versao !== versaoSessao) return;
         if (erro.name === 'AuthSessionMissingError' || [401, 403].includes(erro.status)) {
@@ -142,6 +122,7 @@ async function verificarSessao() {
             nomeUsuario.title = perfil.display_name;
         }
         carregarAvatar(avatarUsuario, perfil.display_name, perfil.avatar_path);
+        conteudoAplicacao.dataset.shellState = 'ready';
         conteudoAplicacao.hidden = false;
         statusSessao.hidden = true;
     } catch (erro) {
@@ -171,6 +152,7 @@ async function sairDaConta() {
             throw error;
         }
 
+        sessaoEncerrada = true;
         conteudoAplicacao.hidden = true;
         window.location.replace('/index.html');
     } catch (erro) {
@@ -192,7 +174,12 @@ if (botaoSair) {
    4. ALTERAÇÕES NA AUTENTICAÇÃO
 ======================================== */
 // Também reage quando a sessão é encerrada em outra aba.
-supabaseClient.auth.onAuthStateChange(function (evento) {
+if (window.supabase) supabaseClient.auth.onAuthStateChange(function (evento, sessao) {
+    if (evento === 'SIGNED_IN' && usuarioValidado && sessao?.user.id !== usuarioValidado) {
+        conteudoAplicacao.hidden = true;
+        window.location.reload();
+        return;
+    }
     if (evento === 'SIGNED_OUT') {
         sessaoEncerrada = true;
         versaoSessao++;
@@ -204,7 +191,12 @@ supabaseClient.auth.onAuthStateChange(function (evento) {
 /* ========================================
    5. INICIALIZAÇÃO
 ======================================== */
-verificarSessao();
+if (window.supabase) verificarSessao();
+else mostrarFalhaDeSessao('Não foi possível conectar. Confira sua conexão.');
+
+window.addEventListener('online', function () {
+    if (conteudoAplicacao.dataset.shellState === 'error') window.location.reload();
+});
 
 // Atualiza a conta no menu após editar o nome ou a foto.
 window.addEventListener('perfil-atualizado', function () {

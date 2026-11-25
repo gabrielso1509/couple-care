@@ -46,16 +46,18 @@
         }
     }
 
-    async function load() {
+    async function load(latest) {
         if (!context?.couple) return;
         const token = ++generation;
         const start = C.today().slice(0, 7) + '-01';
-        const end = new Date(Number(start.slice(0, 4)), Number(start.slice(5, 7)), 0).getDate();
+        const lastDay = new Date(Number(start.slice(0, 4)), Number(start.slice(5, 7)), 0).getDate();
+        const end = start.slice(0, 8) + lastDay;
+        const sameInterval = latest?.bounds.start === start && latest.bounds.end === end;
         try {
             const [row, summary] = await Promise.all([
                 supabaseClient.from('finance_monthly_budgets').select('amount_cents')
                     .eq('couple_id', context.couple).eq('month_start', start).maybeSingle().then(C.result),
-                supabaseClient.rpc('finance_period_summary', { p_from: start, p_to: start.slice(0, 8) + end }).then(C.result)
+                sameInterval ? latest.summary : C.financeSummary(start, end)
             ]);
             if (token !== generation) return;
             month = start;
@@ -95,13 +97,13 @@
             await load();
             area.querySelector('button')?.focus();
         });
-        window.addEventListener('finance-summary-updated', function () { void load(); });
+        window.addEventListener('finance-summary-updated', function (event) { void load(event.detail); });
     } else {
+        window.addEventListener('dashboard-refresh', function () { void load(); });
         document.querySelector('[data-money-toggle]')?.addEventListener('click', () => { if (ready) draw(); });
     }
     C.ready.then(function (value) {
         context = value;
-        if (context.couple) return load();
-        area.hidden = true;
+        if (!context.couple) area.hidden = true;
     }).catch(function () { area.hidden = true; });
 })();

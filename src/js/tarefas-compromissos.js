@@ -153,6 +153,9 @@
     });
 
     newItem.addEventListener('click', function () { prepararEditor(); });
+    C.refreshOnReturn(function () {
+        if (context?.couple && !document.querySelector('dialog[open]')) return load();
+    });
     C.ready.then(async function (value) {
         context = value;
         month.value = C.today().slice(0, 7);

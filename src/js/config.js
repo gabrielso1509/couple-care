@@ -29,22 +29,8 @@
         bloquearFormulario(true);
 
         try {
-            const { data: autenticacao, error: erroAutenticacao } =
-                await supabaseClient.auth.getUser();
-
-            if (erroAutenticacao || !autenticacao.user) {
-                throw new Error('Não foi possível validar a conta.');
-            }
-
-            const { data: perfil, error: erroPerfil } = await supabaseClient
-                .from('profiles')
-                .select('id, display_name, gender')
-                .eq('id', autenticacao.user.id)
-                .single();
-
-            if (erroPerfil) {
-                throw erroPerfil;
-            }
+            const perfil = await obterPerfilDaPagina();
+            if (!perfil) throw new Error('Não foi possível validar a conta.');
 
             usuarioId = perfil.id;
             campoNome.value = perfil.display_name;
@@ -238,7 +224,8 @@
                 feedbackCasal.textContent = erro.message;
             } else {
                 feedbackCasal.textContent =
-                    'Não foi possível concluir. Atualize os dados para conferir a situação antes de tentar novamente.';
+                    'Não foi possível concluir. Consulte a situação do casal antes de tentar a operação novamente.';
+                botaoAtualizar.hidden = false;
             }
 
             // Não registra códigos secretos de convite no Console.
@@ -250,22 +237,21 @@
     }
 
     /* 3. Consulta e desenha os participantes reais. */
-    async function consultarCasal() {
+    async function consultarCasal(participantes) {
         quantidadeParticipantes = null;
         atualizarControles();
 
         listaParticipantes.replaceChildren();
         statusCasal.textContent = 'Carregando seu casal…';
 
-        const { data, error } = await supabaseClient.rpc(
-            'get_couple_members'
-        );
+        const { data, error } = participantes ? { data: participantes } : await supabaseClient.rpc('get_couple_members');
 
         if (error) {
             statusCasal.textContent = 'Não foi possível carregar seu casal.';
             throw error;
         }
 
+        botaoAtualizar.hidden = true;
         quantidadeParticipantes = data.length;
 
         data.forEach(function (participante) {
@@ -405,14 +391,22 @@
         });
     });
 
-    /* 8. Atualização manual e carregamento inicial. */
+    /* 8. Carregamento inicial e atualização da situação do casal. */
     botaoAtualizar.addEventListener('click', function () {
         executarOperacao(consultarCasal);
     });
 
     window.addEventListener('perfil-atualizado', function () {
-    executarOperacao(consultarCasal);
+        void executarOperacao(consultarCasal);
     });
 
-    executarOperacao(consultarCasal);
+    CC.ready.then(function (contexto) {
+        return executarOperacao(function () { return consultarCasal(contexto.members); });
+    }).catch(function () { return executarOperacao(consultarCasal); });
+
+    CC.refreshOnReturn(function () {
+        if (!codigoRecebido.matches(':focus') && !document.querySelector('dialog[open]')) {
+            return executarOperacao(consultarCasal);
+        }
+    });
 })();

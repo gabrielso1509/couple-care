@@ -1,0 +1,112 @@
+/* A navegação aparece antes da sessão. O conteúdo continua protegido. */
+.aplicacao[data-shell-state]:not([data-shell-state="ready"]) .conteudo > :not(.cc-page-skeleton, #status-sessao),
+.aplicacao[data-shell-state]:not([data-shell-state="ready"]) :is(.conta-menu, .cc-header-actions) {
+    display: none !important;
+}
+
+.cc-page-skeleton {
+    display: none;
+}
+
+[data-shell-state="loading"] .cc-page-skeleton,
+[data-shell-state="ready"] [data-page-loading] > .cc-page-skeleton {
+    display: grid;
+    width: min(100%, 55rem);
+    gap: 1rem;
+}
+
+[data-shell-state="ready"] [data-page-loading] > :not(.cc-page-skeleton, #status-sessao) {
+    display: none !important;
+}
+
+.cc-skeleton-card {
+    display: grid;
+    padding: 1rem;
+    gap: .9rem;
+    border: 1px solid rgba(155, 178, 218, .18);
+    border-radius: 1.1rem;
+    background: #14243b;
+}
+
+.cc-skeleton-progress {
+    grid-template-columns: 3rem 1fr;
+    align-items: center;
+}
+
+.cc-skeleton-progress i {
+    width: 2.8rem;
+    height: 2.8rem;
+    border: .35rem solid #314662;
+    border-radius: 50%;
+}
+
+.cc-skeleton-card span,
+.cc-skeleton-heading {
+    display: block;
+    height: .65rem;
+    width: 56%;
+    border-radius: 1rem;
+    background: #304560;
+    animation: cc-skeleton-pulse 1.65s ease-in-out infinite alternate;
+}
+
+.cc-skeleton-card span + span { width: 33%; }
+.cc-skeleton-card span:last-child { margin-top: .5rem; }
+.cc-skeleton-heading { width: min(40%, 10rem); margin-top: .35rem; }
+.cc-page-skeleton .cc-skeleton-action { width: 100%; opacity: .65; cursor: default; }
+.cc-session-retry { margin-inline-start: .35rem; }
+
+@keyframes cc-skeleton-pulse {
+    from { opacity: .6; }
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-skeleton-card span, .cc-skeleton-heading { animation: none; }
+}
+
+.cc-figma .cc-assignment {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .35rem;
+    margin-top: .4rem;
+    color: #c3cde2;
+    font-size: .72rem;
+    line-height: 1.25;
+    font-weight: 500;
+}
+
+.cc-assignment-photos { display: inline-flex; }
+.cc-assignment .cc-assignment-photo {
+    display: grid;
+    place-items: center;
+    width: 1.32rem;
+    height: 1.32rem;
+    border: 1px solid #14243b;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #553c89;
+    color: white;
+    font-size: .6rem;
+}
+.cc-assignment-photo + .cc-assignment-photo { margin-inline-start: -.18rem; }
+.cc-assignment-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+
+.cc-figma #status-sessao:not([hidden]) {
+    max-width: 42rem;
+    margin: 0 0 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #14243b;
+    text-align: left;
+}
+
+.cc-history-restore :is(dialog, [popover]) {
+    display: none !important;
+}
+
+.cc-figma .finance-grid #reload-finance:not([hidden]) {
+    display: inline-flex;
+}

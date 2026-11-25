@@ -3,7 +3,7 @@
     'use strict';
     const C = CC, $ = C.$;
     const feelings = { calm: ['😌','Tranquila'], energetic: ['⚡','Com energia'], sensitive: ['🥺','Sensível'], tired: ['🪫','Cansada'], happy: ['😊','Feliz'], affectionate: ['😍','Carinhosa'], sad: ['😔','Triste'], tearful: ['😢','Com vontade de chorar'], irritated: ['😠','Irritada'], anxious: ['😰','Ansiosa'], overwhelmed: ['🤯','Sobrecarregada'], sleepy: ['😴','Sonolenta'], pain: ['🤕','Com dor'], nausea: ['🤢','Enjoada'], bloated: ['🎈','Inchada'], wants_affection: ['🤗','Quero carinho'], wants_company: ['🫂','Quero companhia'], wants_space: ['🌿','Quero um tempo para mim'] };
-    let context, current = null, selected = [], generation = 0;
+    let context, current = null, selected = [], generation = 0, dirty = false, dayLoading = false;
     $('cc-checkin-date').value = C.today(); $('cc-checkin-date').max = C.today();
     const more = C.el('details', 'cc-advanced'); more.append(C.el('summary', '', 'Outros sentimentos'));
     const extra = C.el('div', 'feeling-grid'); more.append(extra); $('cc-feelings').after(more);
@@ -19,8 +19,8 @@
         saveCheckin.classList.toggle('is-saved', saved);
         saveCheckin.textContent = saved ? '✓ Check-in salvo' : 'Salvar check-in';
     }
-    $('cc-checkin').addEventListener('input', function () { checkinSaved(false); });
-    $('cc-checkin').addEventListener('click', function (event) { if (event.target.closest('[data-feeling]')) checkinSaved(false); });
+    $('cc-checkin').addEventListener('input', function (event) { if (event.target.id !== 'cc-checkin-date') dirty = true; checkinSaved(false); });
+    $('cc-checkin').addEventListener('click', function (event) { if (event.target.closest('[data-feeling]')) { dirty = true; checkinSaved(false); } });
     function ring(summary) {
         if (!context || context.profile.gender !== 'feminino') return;
         const start = summary?.last_start_date;
@@ -40,10 +40,12 @@
     }
     async function loadDay() {
         if (!context || context.profile.gender !== 'feminino') return;
-        const token = ++generation; $('cc-checkin-fields').disabled = true;
+        const token = ++generation; dayLoading = true; $('cc-checkin-fields').disabled = true;
+        $('retry-checkin').hidden = true;
         try {
             const row = C.result(await supabaseClient.from('daily_wellbeing').select('*').eq('user_id', context.user.id).eq('entry_date', $('cc-checkin-date').value).maybeSingle());
             if (token !== generation) return;
+            dirty = false;
             checkinSaved(!!row);
             current = row; selected = row ? row.feelings.slice() : [];
             $('cc-checkin-note').value = row?.note || '';
@@ -51,9 +53,13 @@
             $('cc-checkin-share').disabled = !context.couple;
             document.querySelectorAll('[data-feeling]').forEach(function (b) { b.setAttribute('aria-pressed', String(selected.includes(b.dataset.feeling))); });
             $('cc-checkin-status').textContent = row ? 'Seu registro deste dia foi carregado.' : '';
-        } catch (e) { $('cc-checkin-status').textContent = C.error(e); return; }
+        } catch (e) {
+            if (token === generation) { $('cc-checkin-status').textContent = C.error(e); $('retry-checkin').hidden = false; }
+            return;
+        } finally { if (token === generation) dayLoading = false; }
         $('cc-checkin-fields').disabled = false;
     }
+    $('retry-checkin').addEventListener('click', loadDay);
     $('cc-checkin-date').addEventListener('change', function () {
         $('checkin-date-caption').textContent = this.value === C.today() ? 'Registro de hoje · Alterar data' : 'Registro de ' + C.date(this.value) + ' · Alterar data';
         loadDay();
@@ -68,14 +74,14 @@
         if (!selected.length && !note) throw new Error('Escolha ao menos um sentimento ou escreva uma observação.');
         const values = { entry_date: $('cc-checkin-date').value, feelings: selected, note: note, shared_with_couple_id: $('cc-checkin-share').checked ? context.couple : null };
         const query = current ? supabaseClient.from('daily_wellbeing').update(values).eq('id', current.id).eq('version', current.version) : supabaseClient.from('daily_wellbeing').insert(values);
-        current = C.result(await query.select('*').single()); checkinSaved(true); $('cc-checkin-status').textContent = 'Check-in salvo. ' + (values.shared_with_couple_id ? 'Compartilhado com seu casal atual.' : 'Só você vê este registro.');
+        current = C.result(await query.select('*').single()); dirty = false; checkinSaved(true); $('cc-checkin-status').textContent = 'Check-in salvo. ' + (values.shared_with_couple_id ? 'Compartilhado com seu casal atual.' : 'Só você vê este registro.');
     });
     window.addEventListener('cycle-summary-updated', function (e) { ring(e.detail); });
     /* O parceiro vê apenas sentimentos autorizados; nenhum período privado é consultado. */
     let partnerLoading = false;
     async function loadPartner() {
         if (!context || context.profile.gender === 'feminino' || partnerLoading) return;
-        partnerLoading = true; $('refresh-partner-wellness').disabled = true;
+        partnerLoading = true; $('refresh-partner-wellness').disabled = true; $('refresh-partner-wellness').hidden = true;
         $('status-menstruacao').textContent = 'Bem-estar compartilhado, com respeito à privacidade.';
         const other = context.members.find(function (p) { return p.user_id !== context.user.id; });
         $('partner-wellness-name').textContent = other ? 'Como ' + other.display_name.split(' ')[0] + ' está se sentindo' : 'Bem-estar de vocês';
@@ -96,11 +102,15 @@
             }
             $('partner-feelings-status').textContent = 'Somente o que ela escolheu compartilhar com seu casal atual.';
             $('status-menstruacao').textContent = 'Bem-estar compartilhado, com respeito à privacidade.';
-        } catch (e) { $('partner-wellness-caption').textContent = 'Não foi possível atualizar agora.'; $('partner-feelings-status').textContent = C.error(e); }
+        } catch (e) { $('refresh-partner-wellness').hidden = false; $('partner-wellness-caption').textContent = 'Não foi possível atualizar agora.'; $('partner-feelings-status').textContent = C.error(e); }
         finally { partnerLoading = false; $('refresh-partner-wellness').disabled = false; }
     }
     $('refresh-partner-wellness').addEventListener('click', loadPartner);
-    document.addEventListener('visibilitychange', function () { if (!document.hidden) loadPartner(); });
+    C.refreshOnReturn(function () {
+        if (!context) return;
+        if (context.profile.gender !== 'feminino') return loadPartner();
+        if (!dirty && !dayLoading && !$('cc-checkin').hasAttribute('aria-busy')) return loadDay();
+    });
     C.ready.then(async function (c) {
         context = c;
         if (c.profile.gender !== 'feminino') { await loadPartner(); return; }

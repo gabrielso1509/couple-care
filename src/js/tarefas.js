@@ -62,8 +62,7 @@
     let casalId = null, usuarioId = null, edicao = null;
     let ocupado = false, carregando = false, pronto = false, atualizarDepois = false;
     let filtro = matchMedia('(max-width: 720px)').matches ? 'today' : 'all', limite = 30, canal = null, timerRealtime = null;
-    let conectado = false, encerrado = false;
-    const fotos = new Map();
+    let ultimaAtualizacao = null;
     let historicoLimite = 50, temMaisHistorico = false;
     const periodosHistoricoAbertos = new Set();
 
@@ -93,27 +92,15 @@
     }
     function estadoConexao() {
         if (!casalId) return;
-        $('status-tarefas').textContent = carregando ? 'Atualizando tarefas…' : !pronto
-            ? 'Não foi possível atualizar. Use Atualizar para tentar novamente.'
-            : conectado ? 'Tudo em dia · atualização automática conectada.'
-            : 'Atualização automática desconectada. Você pode usar Atualizar.';
-    }
-
-    // Reutiliza URLs das fotos privadas e libera a memória ao sair da página.
-    async function avatar(el, membro) {
-        el.textContent = membro.display_name.trim().charAt(0).toUpperCase();
-        if (!membro.avatar_path) return;
-        const caminho = membro.avatar_path;
-        if (!fotos.has(caminho)) {
-            fotos.set(caminho, supabaseClient.storage.from('avatars').download(caminho)
-                .then(({ data, error }) => !error && !encerrado ? URL.createObjectURL(data) : null)
-                .catch(() => null));
-        }
-        const url = await fotos.get(caminho);
-        if (url && el.isConnected) {
-            const img = elemento('img'); img.alt = ''; img.src = url;
-            img.addEventListener('error', () => { el.textContent = membro.display_name.charAt(0).toUpperCase(); });
-            el.replaceChildren(img);
+        const status = $('status-tarefas');
+        if (!pronto) {
+            status.textContent = carregando ? 'Carregando tarefas…' : 'Não foi possível atualizar as tarefas.';
+        } else if (!navigator.onLine) {
+            status.textContent = 'Sem conexão. As tarefas serão atualizadas quando a conexão voltar.';
+        } else {
+            const minutos = (Date.now() - ultimaAtualizacao.getTime()) / 60000;
+            status.textContent = minutos < 1 ? 'Atualizado agora' :
+                'Atualizado às ' + ultimaAtualizacao.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         }
     }
     function opcoesMembros() {
@@ -228,26 +215,11 @@
             if (t.recurrence !== 'none') tags.append(elemento('span', 'tarefa-etiqueta', 'Repetição ' + repeticoes[t.recurrence].toLowerCase()));
             details.append(tags);
             if (t.description) details.append(elemento('p', 'tarefa-descricao', t.description));
-            const responsaveis = t.assigned_to_both ? membros : membros.filter(m => m.user_id === t.assigned_to);
             const nomeResponsavel = t.assigned_to_both ? 'Nós dois' :
                 t.assigned_to ? nome(t.assigned_to) : 'Sem responsável';
             details.append(elemento('p', 'tarefa-responsavel-texto', 'Responsável: ' + nomeResponsavel));
-            if (responsaveis.length) {
-                const fotos = elemento('div', 'tarefa-pessoa');
-                fotos.title = nomeResponsavel;
-                fotos.setAttribute('role', 'img');
-                fotos.setAttribute('aria-label', 'Responsável: ' + nomeResponsavel);
-                responsaveis.forEach(function (membro) {
-                    const foto = elemento('span', 'tarefa-avatar');
-                    foto.setAttribute('aria-hidden', 'true');
-                    fotos.append(foto);
-                    queueMicrotask(function () { avatar(foto, membro); });
-                });
-                const equipe = elemento('div', 'tarefa-cartao-equipe');
-                equipe.append(fotos);
-                if (t.assigned_to_both) equipe.append(elemento('span', 'tarefa-pessoa-rotulo', 'Nós dois'));
-                lado.append(equipe);
-            }
+            const equipe = CC.taskAssignment(t, membros);
+            if (equipe) header.append(equipe);
             if (t.checklist.length) {
                 const feitos = t.checklist.filter(i => i.done).length;
                 details.append(elemento('small', '', `Checklist: ${feitos}/${t.checklist.length}`));
@@ -326,7 +298,7 @@
                 rodape.append(elemento('span', 'activity-badge ' + evento.action, textos[evento.action] || 'Alteração'));
                 const time = elemento('time', '', new Date(evento.created_at).toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' }));
                 time.dateTime = evento.created_at; rodape.append(time); corpo.append(frase, rodape); li.append(foto, corpo); itens.append(li);
-                if (autor) queueMicrotask(function () { avatar(foto, autor); });
+                if (autor) queueMicrotask(function () { carregarAvatar(foto, autor.display_name, autor.avatar_path); });
             });
             periodo.append(topo, itens); secao.append(periodo); lista.append(secao);
         });
@@ -351,7 +323,8 @@
             if (data.length < 500) return resultado;
         }
     }
-    async function atualizar() {
+    async function atualizar(participantesIniciais) {
+        const iniciais = Array.isArray(participantesIniciais) ? participantesIniciais : null;
         if (!casalId) return iniciar();
         if (ocupado || carregando) { atualizarDepois = true; return; }
         carregando = true; atualizarDepois = false; controles(); estadoConexao();
@@ -360,7 +333,7 @@
                 buscarTarefas(),
                 supabaseClient.from('task_events').select('id,actor_id,action,title,created_at')
                     .eq('couple_id', casalId).order('created_at', { ascending: false }).order('id').limit(historicoLimite + 1),
-                supabaseClient.rpc('get_couple_members')
+                iniciais ? { data: iniciais } : supabaseClient.rpc('get_couple_members')
             ]);
             if (historico.error) throw historico.error;
             if (participantes.error) throw participantes.error;
@@ -372,13 +345,16 @@
             // Uma migration ausente precisa de uma mensagem útil, sem habilitar gravações.
             if (novas.some(t => !Array.isArray(t.checklist) || !t.version)) throw new Error('Estrutura de tarefas desatualizada.');
             tarefas = novas; temMaisHistorico = historico.data.length > historicoLimite; eventos = historico.data.slice(0, historicoLimite); pronto = true;
+            ultimaAtualizacao = new Date();
+            $('atualizar-tarefas').hidden = true;
             renderizar();
         } catch (erro) {
             pronto = false;
-            mensagem('Não foi possível carregar as tarefas. Confira a conexão e se a migration de melhorias foi executada. Depois clique em Atualizar.');
+            $('atualizar-tarefas').hidden = false;
+            mensagem('Não foi possível carregar as tarefas. Confira a conexão e se a migration de melhorias foi executada. Depois tente novamente.');
             console.error('Falha ao carregar tarefas:', erro.code || erro.name);
         } finally {
-            carregando = false; controles(); estadoConexao();
+            carregando = false; controles(); estadoConexao(); CC.pageReady();
             if (atualizarDepois) { atualizarDepois = false; void atualizar(); }
         }
     }
@@ -528,45 +504,50 @@
                 clearTimeout(timerRealtime); timerRealtime = setTimeout(atualizar, 300);
             })
             .subscribe(estado => {
-                conectado = estado === 'SUBSCRIBED'; estadoConexao();
-                if (conectado) void atualizar();
+                if (estado === 'SUBSCRIBED' && ultimaAtualizacao && Date.now() - ultimaAtualizacao.getTime() > 1000) void atualizar();
             });
     }
     async function iniciar() {
         if (carregando || ocupado) return;
         carregando = true; controles();
         try {
-            const { data: auth, error: erroAuth } = await supabaseClient.auth.getUser();
-            if (erroAuth || !auth.user) throw erroAuth || new Error('Sem sessão.');
-            usuarioId = auth.user.id;
-            const { data, error } = await supabaseClient.rpc('get_couple_members');
-            if (error) throw error;
-            membros = data; casalId = membros.find(m => m.user_id === usuarioId)?.couple_id || null;
+            const auth = await obterUsuarioDaPagina();
+            if (!auth) throw new Error('Sem sessão.');
+            usuarioId = auth.id;
+            const context = await CC.ready.catch(() => null);
+            const data = context ? context.members : CC.result(await supabaseClient.rpc('get_couple_members'));
+            membros = data;
+            casalId = membros.find(m => m.user_id === usuarioId)?.couple_id || null;
             opcoesMembros();
             if (!casalId) {
                 $('status-tarefas').replaceChildren(document.createTextNode('Você precisa criar ou entrar em um casal. '));
                 const link = elemento('a', '', 'Abrir Meu casal'); link.href = 'config.html'; $('status-tarefas').append(link);
                 $('resumo').textContent = 'Conecte as duas contas em Configurações para compartilhar tarefas.';
+                $('atualizar-tarefas').hidden = true;
+                CC.pageReady();
                 return;
             }
         } catch (erro) {
-            $('status-tarefas').textContent = 'Não foi possível carregar seu casal. Confira a conexão e clique em Atualizar.';
+            $('status-tarefas').textContent = 'Não foi possível carregar seu casal. Confira a conexão e tente novamente.';
+            $('atualizar-tarefas').hidden = false;
+            CC.pageReady();
             return;
         } finally { carregando = false; controles(); }
-        await atualizar();
+        await atualizar(membros);
         if (!canal) conectarRealtime();
     }
     window.addEventListener('perfil-atualizado', async () => {
         const { data, error } = await supabaseClient.rpc('get_couple_members');
         if (!error && data) { membros = data; opcoesMembros(); renderizar(); }
     });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden && casalId) void atualizar(); });
-    window.addEventListener('online', () => { void atualizar(); });
-    window.addEventListener('pagehide', () => {
-        encerrado = true; clearTimeout(timerRealtime);
-        if (canal) void supabaseClient.removeChannel(canal);
-        fotos.forEach(async promessa => { const url = await promessa; if (url) URL.revokeObjectURL(url); });
+    CC.refreshOnReturn(function () {
+        if (!document.querySelector('dialog[open]')) return atualizar();
     });
-    window.addEventListener('pageshow', e => { if (e.persisted) window.location.reload(); });
+    window.addEventListener('offline', estadoConexao);
+    window.addEventListener('pagehide', (event) => {
+        if (event.persisted) return;
+        clearTimeout(timerRealtime);
+        if (canal) void supabaseClient.removeChannel(canal);
+    });
     void iniciar();
 })();

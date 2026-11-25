@@ -74,6 +74,7 @@
     async function load() {
         if (!context?.couple) return;
         const token = ++generation; loading = true;
+        $('reload-moments').hidden = true;
         $('moments-status').textContent = 'Atualizando o espaço de vocês…';
         try {
             const responses = await Promise.all([
@@ -85,8 +86,8 @@
             const ideaSaved = dreams.some(function (r) { return r.kind === 'idea' && r.title === 'Noite de memórias'; });
             $('save-idea').disabled = ideaSaved; $('save-idea').textContent = ideaSaved ? 'Ideia guardada' : 'Guardar ideia';
             $('moments-status').textContent = 'Memórias e sonhos compartilhados com seu casal atual.';
-        } catch (error) { if (token !== generation) return; C.empty('memory-list', 'Consulta indisponível.'); C.empty('dream-list', 'Consulta indisponível.'); $('moments-status').textContent = C.error(error); }
-        finally { loading = false; }
+        } catch (error) { if (token !== generation) return; $('reload-moments').hidden = false; C.empty('memory-list', 'Consulta indisponível.'); C.empty('dream-list', 'Consulta indisponível.'); $('moments-status').textContent = C.error(error); }
+        finally { if (token === generation) { loading = false; C.pageReady(); } }
     }
     C.form($('memory-form'), async function () {
         const title = $('memory-title').value.trim(); if (!title) throw new Error('Informe o título desta memória.');
@@ -119,12 +120,13 @@
         try { C.result(await supabaseClient.from('couple_dreams').insert({ couple_id: context.couple, title: 'Noite de memórias', kind: 'idea' }).select('id').single()); C.notify('Ideia guardada!'); await load(); }
         catch (e) { $('idea-status').textContent = C.error(e); this.disabled = false; }
     });
-    $('reload-moments').addEventListener('click', load);
+    $('reload-moments').addEventListener('click', function () { if (context) void load(); else window.location.reload(); });
+    C.refreshOnReturn(function () { if (!loading && !document.querySelector('dialog[open]')) return load(); });
     $('more-memories').addEventListener('click', function () { if (!loading) { limit += 12; load(); } });
     ['new-memory','new-dream','save-idea'].forEach(function (id) { $(id).disabled = true; });
     C.ready.then(function (c) {
         context = c;
-        if (!c.couple) { $('moments-status').textContent = 'Conecte seu casal em Configurações para guardar memórias e sonhos.'; C.empty('memory-list', 'Nenhum casal conectado.'); C.empty('dream-list', 'Nenhum casal conectado.'); return; }
+        if (!c.couple) { C.pageReady(); $('moments-status').textContent = 'Conecte seu casal em Configurações para guardar memórias e sonhos.'; C.empty('memory-list', 'Nenhum casal conectado.'); C.empty('dream-list', 'Nenhum casal conectado.'); return; }
         ['new-memory','new-dream','save-idea'].forEach(function (id) { $(id).disabled = false; }); load();
-    }).catch(function (e) { $('moments-status').textContent = C.error(e); });
+    }).catch(function (e) { C.pageReady(); $('reload-moments').hidden = false; $('moments-status').textContent = C.error(e); });
 })();

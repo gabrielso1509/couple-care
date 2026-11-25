@@ -48,7 +48,7 @@
         });
     }
 
-    function tasks(rows) {
+    function tasks(rows, members) {
         const pending = rows.filter(function (task) { return task.status === 'pending'; });
         $('dashboard-pendentes').textContent = pending.length + (pending.length === 1 ? ' pendente' : ' pendentes');
         const summary = $('dashboard-task-summary');
@@ -75,7 +75,7 @@
             list.querySelector('[data-destaque]')?.scrollIntoView({ block: 'nearest' });
         }
 
-        all.addEventListener('click', function () { open(all); });
+        all.onclick = function () { open(all); };
         if (!pending.length) {
             note('dashboard-tarefas', 'Nenhuma tarefa pendente agora.');
             return;
@@ -88,6 +88,8 @@
             const title = C.el('span', 'dashboard-event-details');
             title.append(C.el('strong', '', task.title));
             if (task.description) title.append(C.el('small', 'mobile-only', task.description));
+            const assignment = C.taskAssignment(task, members);
+            if (assignment) title.append(assignment);
             button.append(C.el('span', 'mobile-only dashboard-task-mark'), title, C.el('small', '', due(task.due_date)));
             button.addEventListener('click', function () { open(button, task.id); });
             return button;
@@ -102,6 +104,7 @@
 
     function cycle(rows, userId) {
         const pms = rows.find(function (row) { return row.kind === 'pms_estimate' && row.user_id === userId; });
+        $('dashboard-tpm-nota').hidden = true;
         if (!pms) {
             $('dashboard-tpm').textContent = 'Sem estimativa disponível';
             return;
@@ -136,10 +139,8 @@
     // Cada consulta falha de forma independente. Um erro no ciclo não esconde tarefas ou finanças.
     async function show(request, render, onError) {
         try { render(await request); }
-        catch (error) { onError(C.error(error)); }
+        catch (error) { $('retry-dashboard').hidden = false; onError(C.error(error)); }
     }
-
-    window.addEventListener('pageshow', function (event) { if (event.persisted) window.location.reload(); });
 
     C.ready.then(async function (context) {
         const own = context.profile.gender === 'feminino';
@@ -150,72 +151,82 @@
             $('dashboard-humor-titulo').textContent = 'Como me sinto hoje';
         }
 
-        const loads = [];
-        if (!context.couple) {
-            note('dashboard-eventos', 'Conecte seu casal em Configurações para ver a agenda.');
-            note('dashboard-tarefas', 'Nenhum casal conectado.');
-            $('dashboard-finance-status').textContent = 'Nenhum casal conectado.';
-            $('dashboard-aniversario-casal').textContent = 'Data ainda não configurada.';
-            $('dashboard-aniversario-parceiro').textContent = 'Nenhum parceiro conectado.';
-        } else {
-            const first = A.key(new Date(date.getFullYear(), date.getMonth(), 1));
-            const last = A.key(new Date(date.getFullYear(), date.getMonth() + 1, 0));
-            loads.push(
-                show(A.events(context.couple, today, today), events, function (e) { note('dashboard-eventos', e); }),
-                show(C.all(function () {
-                    return supabaseClient.from('tasks').select('id,title,description,due_date,status')
-                        .eq('couple_id', context.couple).order('due_date', { nullsFirst: false }).order('id');
-                }), tasks, function (e) { note('dashboard-tarefas', e); }),
-                show(supabaseClient.rpc('finance_period_summary', { p_from: first, p_to: last }).then(C.result),
-                    finance, function (e) { $('dashboard-finance-status').textContent = e; }),
-                show(C.relationship(), function (row) {
-                    anniversary('dashboard-aniversario-casal', row?.relationship_date, 'Data ainda não configurada.');
-                }, function (e) { $('dashboard-aniversario-casal').textContent = e; }),
-                show(supabaseClient.rpc('get_partner_birthday').then(C.result), function (rows) {
-                    const row = rows[0];
-                    const value = row ? '2000-' + String(row.birthday_month).padStart(2, '0') + '-' +
-                        String(row.birthday_day).padStart(2, '0') : null;
-                    if (partner) $('dashboard-aniversario-titulo').textContent = 'Aniversário de ' + partner.display_name.split(' ')[0];
-                    anniversary('dashboard-aniversario-parceiro', value, 'Data ainda não compartilhada.');
-                }, function (e) { $('dashboard-aniversario-parceiro').textContent = e; })
-            );
+        let refreshing = false;
+        async function refresh() {
+            if (refreshing) return;
+            if (today !== C.today()) {
+                window.location.reload();
+                return;
+            }
+            refreshing = true;
+            $('retry-dashboard').hidden = true;
+            try { await loadWidgets(); }
+            finally { refreshing = false; C.pageReady(); }
         }
 
-        if (!cycleOwner) {
-            $('dashboard-tpm').textContent = 'Sem estimativa compartilhada';
-            note('dashboard-humor', 'Conecte seu casal para ver os check-ins compartilhados.');
-        } else {
-            let cycleRequest = 0;
-            async function updateCycle() {
-                const id = ++cycleRequest;
-                $('dashboard-tpm').textContent = 'Carregando…';
-                $('dashboard-tpm-nota').hidden = true;
-                note('dashboard-humor', 'Carregando check-in…');
+        async function loadWidgets() {
+            const loads = [];
+            if (!context.couple) {
+                note('dashboard-eventos', 'Conecte seu casal em Configurações para ver a agenda.');
+                note('dashboard-tarefas', 'Nenhum casal conectado.');
+                $('dashboard-finance-status').textContent = 'Nenhum casal conectado.';
+                $('dashboard-aniversario-casal').textContent = 'Data ainda não configurada.';
+                $('dashboard-aniversario-parceiro').textContent = 'Nenhum parceiro conectado.';
+            } else {
+                const first = A.key(new Date(date.getFullYear(), date.getMonth(), 1));
+                const last = A.key(new Date(date.getFullYear(), date.getMonth() + 1, 0));
+                loads.push(
+                    show(A.events(context.couple, today, today), events, function (e) { note('dashboard-eventos', e); }),
+                    show(C.all(function () {
+                        return supabaseClient.from('tasks').select('id,title,description,due_date,status,assigned_to,assigned_to_both')
+                            .eq('couple_id', context.couple).order('due_date', { nullsFirst: false }).order('id');
+                    }), function (rows) { tasks(rows, context.members); }, function (e) { note('dashboard-tarefas', e); }),
+                    show(C.financeSummary(first, last),
+                        finance, function (e) { $('dashboard-finance-status').textContent = e; }),
+                    show(C.relationship(), function (row) {
+                        anniversary('dashboard-aniversario-casal', row?.relationship_date, 'Data ainda não configurada.');
+                    }, function (e) { $('dashboard-aniversario-casal').textContent = e; }),
+                    show(supabaseClient.rpc('get_partner_birthday').then(C.result), function (rows) {
+                        const row = rows[0];
+                        const value = row ? '2000-' + String(row.birthday_month).padStart(2, '0') + '-' +
+                            String(row.birthday_day).padStart(2, '0') : null;
+                        if (partner) $('dashboard-aniversario-titulo').textContent = 'Aniversário de ' + partner.display_name.split(' ')[0];
+                        anniversary('dashboard-aniversario-parceiro', value, 'Data ainda não compartilhada.');
+                    }, function (e) { $('dashboard-aniversario-parceiro').textContent = e; })
+                );
+            }
 
+            if (context.couple) window.dispatchEvent(new Event('dashboard-refresh'));
+
+            if (!cycleOwner) {
+                $('dashboard-tpm').textContent = 'Sem estimativa compartilhada';
+                note('dashboard-humor', 'Conecte seu casal para ver os check-ins compartilhados.');
+            } else {
+                if (!own) {
+                    $('dashboard-tpm').textContent = 'Carregando…';
+                    $('dashboard-tpm-nota').hidden = true;
+                    note('dashboard-humor', 'Carregando check-in…');
+                }
                 let checkin = supabaseClient.from('daily_wellbeing').select('feelings,note')
                     .eq('user_id', cycleOwner).eq('entry_date', today);
                 if (!own) checkin = checkin.eq('shared_with_couple_id', context.couple);
-                const current = function (render) {
-                    return function (value) { if (id === cycleRequest) render(value); };
-                };
-                await Promise.all([
-                    show(checkin.maybeSingle().then(C.result), current(function (row) { mood(row, own); }),
-                        current(function (e) { note('dashboard-humor', e); })),
+                loads.push(
+                    show(checkin.maybeSingle().then(C.result), function (row) { mood(row, own); },
+                        function (e) { note('dashboard-humor', e); }),
                     show(A.cycle(A.plusDays(today, -5), A.plusDays(today, 40)),
-                        current(function (rows) { cycle(rows, cycleOwner); }),
-                        current(function (e) { $('dashboard-tpm').textContent = e; }))
-                ]);
+                        function (rows) { cycle(rows, cycleOwner); },
+                        function (e) { $('dashboard-tpm-nota').hidden = true; $('dashboard-tpm').textContent = e; })
+                );
             }
-
-            document.addEventListener('visibilitychange', function () {
-                if (document.hidden) return;
-                if (today !== C.today()) window.location.reload();
-                else void updateCycle();
-            });
-            loads.push(updateCycle());
+            await Promise.all(loads);
         }
-        await Promise.all(loads);
+        $('retry-dashboard').addEventListener('click', refresh);
+        C.refreshOnReturn(function () { if (!dialog.open) return refresh(); });
+        await refresh();
     }).catch(function (error) {
+        C.pageReady();
+        $('retry-dashboard').hidden = false;
+        $('retry-dashboard').onclick = function () { window.location.reload(); };
         const message = C.error(error);
         note('dashboard-eventos', message);
         note('dashboard-tarefas', message);
