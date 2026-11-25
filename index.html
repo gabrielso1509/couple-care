@@ -9,7 +9,7 @@
   <title>CoupleCare | Organizem a vida a dois</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="/src/css/figma-theme.css">
-  <link rel="stylesheet" href="/src/css/landing.css?v=tour">
+  <link rel="stylesheet" href="/src/css/landing.css?v=demo-mobile">
   <script defer src="/src/js/analytics.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="/src/js/supabase-client.js"></script>
@@ -18,7 +18,7 @@
   <script defer src="/src/js/couple-brand.js"></script>
   <script defer src="/src/js/landing.js?v=menu-conta"></script>
   <link rel="prefetch" href="/dashboard">
-  <script defer src="/src/js/landing-tour.js"></script>
+  <script defer src="/src/js/landing-tour.js?v=demo-mobile"></script>
 </head>
 <body class="landing">
   <header class="site-header wrap">
@@ -59,17 +59,20 @@
       <figure class="app-preview app-tour" aria-labelledby="tour-caption">
         <div class="preview-frame">
           <div class="preview-menu">
-            <strong class="brand"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</strong>
-            <div class="tour-tabs" role="tablist" aria-label="Páginas do CoupleCare">
-              <button type="button" id="tour-tab-inicio" role="tab" aria-controls="tour-inicio" aria-selected="false" tabindex="-1">Página inicial</button>
-              <button type="button" id="tour-tab-dashboard" role="tab" aria-controls="tour-dashboard" aria-selected="false" tabindex="-1">Dashboard</button>
-              <button type="button" id="tour-tab-tarefas" role="tab" aria-controls="tour-tarefas" aria-selected="false" tabindex="-1">Tarefas</button>
-              <button type="button" id="tour-tab-calendario" role="tab" aria-controls="tour-calendario" aria-selected="false" tabindex="-1">Calendário</button>
-              <button type="button" id="tour-tab-menstruacao" role="tab" aria-controls="tour-menstruacao" aria-selected="false" tabindex="-1">Menstruação</button>
-              <button type="button" id="tour-tab-financas" role="tab" aria-controls="tour-financas" aria-selected="true" tabindex="0">Finanças</button>
+            <div class="tour-heading">
+              <strong class="brand"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</strong>
+              <button class="tour-more" type="button" id="tour-more" aria-expanded="false" aria-controls="tour-tabs" aria-label="Mais páginas da demonstração"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            </div>
+            <div class="tour-tabs" id="tour-tabs" role="tablist" aria-label="Páginas do CoupleCare">
+              <button type="button" id="tour-tab-inicio" data-tour-extra role="tab" aria-controls="tour-inicio" aria-selected="false" tabindex="-1">Página inicial</button>
+              <button type="button" id="tour-tab-dashboard" role="tab" aria-controls="tour-dashboard" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v10h14V10M9 20v-6h6v6"/></svg><span class="tour-label-desktop">Dashboard</span><span class="tour-label-mobile">Início</span></button>
+              <button type="button" id="tour-tab-tarefas" role="tab" aria-controls="tour-tarefas" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 12 2.2 2.2L16 8.5"/></svg>Tarefas</button>
+              <button type="button" id="tour-tab-calendario" role="tab" aria-controls="tour-calendario" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4m8-4v4M3 10h18"/></svg>Calendário</button>
+              <button type="button" id="tour-tab-menstruacao" role="tab" aria-controls="tour-menstruacao" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span class="tour-label-desktop">Menstruação</span><span class="tour-label-mobile">Bem-estar</span></button>
+              <button type="button" id="tour-tab-financas" role="tab" aria-controls="tour-financas" aria-selected="true" tabindex="0"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h14a2 2 0 0 1 2 2v10H5a3 3 0 0 1-3-3v-10a3 3 0 0 1 3-3h12M16 12h6v4h-6a2 2 0 0 1 0-4Z"/></svg>Finanças</button>
               <small class="tour-group" aria-hidden="true">CONECTAR</small>
-              <button type="button" id="tour-tab-espaco" role="tab" aria-controls="tour-espaco" aria-selected="false" tabindex="-1">Nosso espaço</button>
-              <button type="button" id="tour-tab-config" role="tab" aria-controls="tour-config" aria-selected="false" tabindex="-1">Configurações</button>
+              <button type="button" id="tour-tab-espaco" data-tour-extra role="tab" aria-controls="tour-espaco" aria-selected="false" tabindex="-1">Nosso espaço</button>
+              <button type="button" id="tour-tab-config" data-tour-extra role="tab" aria-controls="tour-config" aria-selected="false" tabindex="-1">Configurações</button>
             </div>
           </div>
           <div class="preview-content">

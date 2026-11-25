@@ -7,45 +7,79 @@
     const tablist = tour.querySelector('[role="tablist"]');
     const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
     const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
-    const wide = window.matchMedia('(min-width: 561px)');
+    const mobile = window.matchMedia('(max-width: 560px)');
+    const more = tour.querySelector('#tour-more');
+    const mainTabs = tabs.filter(tab => !tab.hasAttribute('data-tour-extra'));
+    const extraTabs = tabs.filter(tab => tab.hasAttribute('data-tour-extra'));
 
-    function adjustTablist() {
-        tablist.setAttribute('aria-orientation', wide.matches ? 'vertical' : 'horizontal');
-        if (!wide.matches) {
-            const selected = tablist.querySelector('[aria-selected="true"]');
-            tablist.scrollLeft = selected.offsetLeft - (tablist.clientWidth - selected.offsetWidth) / 2;
-        }
+    function visibleTabs() {
+        if (!mobile.matches) return tabs;
+        return tour.hasAttribute('data-tour-menu-open') ? [...mainTabs, ...extraTabs] : mainTabs;
     }
 
-    function select(index, focus) {
-        tabs.forEach((tab, position) => {
-            const active = position === index;
-            tab.setAttribute('aria-selected', String(active));
-            tab.tabIndex = active ? 0 : -1;
-            panels[position].hidden = !active;
-        });
-        if (focus) tabs[index].focus({ preventScroll: true });
+    function adjustTablist() {
+        tablist.setAttribute('aria-orientation', mobile.matches ? 'horizontal' : 'vertical');
+        const available = visibleTabs();
+        const focusable = available.find(tab => tab.getAttribute('aria-selected') === 'true') || available[0];
+        tabs.forEach(tab => { tab.tabIndex = tab === focusable ? 0 : -1; });
+    }
+
+    function showMore(open) {
+        tour.toggleAttribute('data-tour-menu-open', open);
+        more.setAttribute('aria-expanded', String(open));
         adjustTablist();
     }
 
-    tabs.forEach((tab, index) => tab.addEventListener('click', () => select(index, false)));
+    function select(tab) {
+        tabs.forEach((item, position) => {
+            const active = item === tab;
+            item.setAttribute('aria-selected', String(active));
+            panels[position].hidden = !active;
+        });
+        if (mobile.matches && mainTabs.includes(tab)) showMore(false);
+        else adjustTablist();
+    }
+
+    tabs.forEach(tab => tab.addEventListener('click', () => select(tab)));
+    more.addEventListener('click', function () {
+        const open = !tour.hasAttribute('data-tour-menu-open');
+        showMore(open);
+        if (open) {
+            const selected = extraTabs.find(tab => tab.getAttribute('aria-selected') === 'true');
+            (selected || extraTabs[0]).focus();
+        }
+    });
+
+    tour.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && mobile.matches && tour.hasAttribute('data-tour-menu-open')) {
+            event.preventDefault();
+            showMore(false);
+            more.focus();
+        }
+    });
+
     tablist.addEventListener('keydown', function (event) {
-        const index = tabs.indexOf(event.target);
+        const available = visibleTabs();
+        const index = available.indexOf(event.target);
         if (index === -1) return;
-        const nextKey = wide.matches ? 'ArrowDown' : 'ArrowRight';
-        const previousKey = wide.matches ? 'ArrowUp' : 'ArrowLeft';
+        const nextKey = mobile.matches ? 'ArrowRight' : 'ArrowDown';
+        const previousKey = mobile.matches ? 'ArrowLeft' : 'ArrowUp';
         let next;
         switch (event.key) {
-            case nextKey: next = (index + 1) % tabs.length; break;
-            case previousKey: next = (index + tabs.length - 1) % tabs.length; break;
+            case nextKey: next = (index + 1) % available.length; break;
+            case previousKey: next = (index + available.length - 1) % available.length; break;
             case 'Home': next = 0; break;
-            case 'End': next = tabs.length - 1; break;
+            case 'End': next = available.length - 1; break;
             default: return;
         }
         event.preventDefault();
-        select(next, true);
+        select(available[next]);
+        available[next].focus({ preventScroll: true });
     });
-    wide.addEventListener('change', adjustTablist);
+
+    mobile.addEventListener('change', function () {
+        showMore(mobile.matches && extraTabs.some(tab => tab.getAttribute('aria-selected') === 'true'));
+    });
     adjustTablist();
 
     const periods = Array.from(tour.querySelectorAll('[data-tour-period]'));

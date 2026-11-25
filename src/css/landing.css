@@ -204,12 +204,79 @@
 }
 .app-tour .demo-details p { margin-top: 3px; }
 .app-tour [role=tabpanel]:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+.app-tour :is(.tour-more, .tour-icon, .tour-label-mobile) { display: none; }
+
 @media (max-width: 560px) {
-    .app-tour .preview-frame { grid-template-columns: minmax(0, 1fr); }
-    .app-tour .preview-menu { min-width: 0; padding: 5px; }
-    .app-tour .tour-tabs { display: flex; overflow-x: auto; scrollbar-width: thin; padding: 3px; }
-    .app-tour .tour-tabs button { flex: 0 0 auto; min-height: 44px; padding-inline: 10px; white-space: nowrap; }
-    .app-tour .tour-group { display: none; }
+    .app-tour .preview-frame {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "heading" "content" "navigation";
+        gap: 12px;
+        padding: 12px;
+    }
+    .app-tour .preview-menu { display: contents; }
+    .app-tour .tour-heading {
+        grid-area: heading;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .app-tour .tour-heading .brand { margin: 0; font-size: 14px; }
+    .app-tour .tour-heading .marca-icone { width: 22px; height: 22px; }
+    .app-tour .preview-content { grid-area: content; min-height: 15rem; }
+    .app-tour .tour-tabs {
+        grid-area: navigation;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 2px;
+        padding: 4px;
+        border: 1px solid #456183;
+        border-radius: 17px;
+        background: #10243b;
+    }
+    .app-tour .tour-tabs button {
+        display: grid;
+        place-items: center;
+        align-content: center;
+        gap: 3px;
+        min-width: 0;
+        min-height: 49px;
+        padding: 4px 0;
+        border-radius: 12px;
+        color: #adbed4;
+        font-size: clamp(8px, 2.55vw, 11px);
+        text-align: center;
+    }
+    .app-tour .tour-tabs button[aria-selected=true],
+    .app-tour .tour-more[aria-expanded=true],
+    .app-tour:has([data-tour-extra][aria-selected=true]) .tour-more {
+        background: #ffb88220;
+        color: var(--orange-soft);
+    }
+    .app-tour .tour-icon { display: block; width: 20px; height: 20px; }
+    .app-tour .tour-label-mobile { display: inline; }
+    .app-tour :is(.tour-group, .tour-label-desktop) { display: none; }
+    .app-tour .tour-more {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--panel);
+        color: #adbed4;
+        cursor: pointer;
+    }
+    .app-tour .tour-tabs [data-tour-extra] {
+        grid-column: 1 / -1;
+        min-height: 44px;
+        order: 1;
+        padding-inline: 6px;
+        font-size: 12px;
+    }
+    .app-tour:not([data-tour-menu-open]) .tour-tabs [data-tour-extra] { display: none; }
+    .app-tour :is(.tour-tabs button, .tour-more):focus-visible {
+        outline: 2px solid var(--purple);
+        outline-offset: -2px;
+    }
     .app-tour .demo-period button { min-height: 44px; }
-    .app-tour .demo-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
