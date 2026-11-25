@@ -1,0 +1,22 @@
+.tarefas-compromissos {
+    display: grid;
+    gap: 14px;
+    padding: clamp(16px, 2vw, 24px);
+}
+
+.tarefas-compromissos-cabecalho,
+.tarefas-compromisso {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.tarefas-compromissos-cabecalho h2 { margin: 0; font-size: 23px; }
+.tarefas-compromissos-mes { width: min(230px, 100%); }
+.tarefas-compromissos-lista { display: grid; gap: 8px; }
+.tarefas-compromisso { padding: 10px 12px; border-radius: 9px; background: #0c192b4d; }
+.tarefas-compromisso > div:first-child { min-width: 0; }
+.tarefas-compromisso p { margin: 2px 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.tarefas-compromissos :is(.cc-status, .tarefas-compromissos-lista):empty { display: none; }

@@ -13,6 +13,7 @@
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
 <link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/menstruacao.js"></script><script defer="" src="js/wellbeing-extra.js"></script><script>document.documentElement.classList.add('cc-figma');</script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
+<script defer src="js/agenda-preferencias.js"></script>
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -100,6 +101,17 @@
                         Carregando seus registros…
                     </p><div hidden="" id="individual"><div class="wellness-grid"><section class="card cycle-card"><div class="card-title"><div><span>CICLO ATUAL</span><h3 id="cc-cycle-title">Carregando seu ciclo…</h3></div><span class="status-pill" id="cc-cycle-state">Seus registros</span></div><div class="cycle-visual" id="cc-cycle-ring"><div><strong id="cc-cycle-day">—</strong><span>dia do ciclo</span></div></div><div class="cycle-info"><span id="cc-cycle-next">Sem estimativa</span></div><a class="soft-button" href="#cc-cycle-history" id="abrir-historico-ciclo">Ver calendário do ciclo</a></section><section class="card checkin-card"><span class="section-label">CHECK-IN PESSOAL</span><h3>Como você está hoje?</h3><p>Este registro é privado até você decidir compartilhar.</p><form id="cc-checkin"><fieldset disabled="" id="cc-checkin-fields"><details class="checkin-date-panel"><summary id="checkin-date-caption">Registro de hoje · Alterar data</summary><label class="cc-field checkin-date-field">Data<input id="cc-checkin-date" required="" type="date"/></label></details><div class="feeling-grid" id="cc-feelings"></div><label class="cc-field checkin-note-field">Observação<textarea id="cc-checkin-note" maxlength="1000" placeholder="Quer registrar alguma observação?"></textarea></label><label class="check-row"><input id="cc-checkin-share" type="checkbox"/> Compartilhar com meu casal atual</label><button class="primary-button" type="submit">Salvar check-in</button></fieldset><p aria-live="polite" id="cc-checkin-status" role="status"></p></form></section></div><section class="card support-card"><div><span>PARA QUEM CUIDA JUNTO</span><h3>Como apoiar no dia a dia</h3></div><ul><li>✓ Pergunte como ela prefere ser apoiada</li><li>✓ Dividam os cuidados da rotina</li><li>✓ Respeite o espaço e as escolhas de compartilhamento</li></ul></section>
 <!-- Atalho para informar o término do período atual. -->
+<section class="card checkin-card agenda-preferencias" aria-labelledby="titulo-compartilhar-previsao">
+    <h3 id="titulo-compartilhar-previsao">Compartilhar estimativas do ciclo</h3>
+    <p>Autorize seu casal atual a ver as estimativas de TPM e janela fértil. As datas podem variar e não devem ser usadas como método contraceptivo.</p>
+    <form class="form-app" id="form-previsao">
+        <fieldset disabled id="campos-previsao">
+            <label class="check-row"><input id="compartilhar-previsao" type="checkbox"> Mostrar estimativas para meu casal atual</label>
+            <button class="soft-button" type="submit">Salvar preferência</button>
+        </fieldset>
+        <p class="feedback-app" id="status-previsao" role="status"></p>
+    </form>
+</section>
 <details class="cc-cycle-history" id="cc-cycle-history"><summary><span>Histórico e registros do ciclo</span><small>Consultar meses, informar início ou término e ajustar minhas preferências</small></summary><div class="cc-cycle-history-content"><section class="painel" id="historico-ciclo">
 <h2>Histórico mensal</h2>
 <div class="campo-app">

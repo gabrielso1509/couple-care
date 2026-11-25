@@ -34,10 +34,9 @@
     line-height: 1.2;
 }
 
-.calendario-mensal #mes::first-letter,
-.calendario-agenda #selecionado::first-letter { text-transform: uppercase; }
+.calendario-mensal #mes::first-letter { text-transform: uppercase; }
 
-.cc-figma .calendario-real :is(.soft-button, .calendario-novo) {
+.cc-figma .calendario-real .soft-button {
     min-height: 44px;
     padding: 8px 13px;
     border-radius: 10px;
@@ -49,15 +48,6 @@
     width: 44px;
     padding: 0;
     font-size: 22px;
-}
-
-.cc-figma .calendario-real .calendario-novo {
-    background: var(--cc-apricot);
-}
-
-.calendario-novo span {
-    margin-right: 4px;
-    font-size: 17px;
 }
 
 .calendario-mensal-grade {
@@ -187,116 +177,13 @@
     content: '';
 }
 
-.calendario-lembrete { padding: 18px 22px; }
-.calendario-lembrete h3 { font-size: 17px; }
-.calendario-lembrete p { font-size: 13px; }
-.calendario-lembrete .text-button { font-size: 12px; }
-
-/* Diálogo nativo: a lista pode rolar com a data e o botão de fechar à vista. */
-.cc-figma .calendario-agenda {
-    width: min(536px, calc(100% - 24px));
-    padding: 0;
-    background: #15233a;
-}
-
-.cc-figma .calendario-agenda .calendario-agenda-barra {
-    position: sticky;
-    z-index: 1;
-    top: 0;
-    align-items: flex-start;
-    margin: 0;
-    padding: 20px 24px 14px;
-    border-bottom: 1px solid var(--cal-linha);
-    background: #15233a;
-}
-
-.calendario-agenda #selecionado {
-    margin: 0 0 4px;
-    color: #c7b8ff;
-    font-size: 13px;
-}
-
-.calendario-agenda .lista-app {
-    display: grid;
-    gap: 10px;
-    padding: 16px 24px 0;
-}
-
-.cc-figma .calendario-agenda .registro-app {
-    min-width: 0;
-    padding: 12px 14px;
-    border: 1px solid var(--cal-linha);
-    border-inline-start: 3px solid var(--cal-cor-item);
-    border-radius: 11px;
-    background: #ffffff06;
-    overflow-wrap: anywhere;
-}
-
-.calendario-registro-tipo {
-    color: var(--cal-cor-item);
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.calendario-agenda .registro-app h3 {
-    margin: 2px 0 4px;
-    font: 600 17px/1.3 var(--font-display);
-}
-
-.calendario-agenda .registro-app p,
 .calendario-agenda-vazia {
     margin: 0;
     color: var(--cal-texto-suave);
-    font-size: 13px;
-    white-space: pre-wrap;
+    font-size: 14px;
 }
 
-.calendario-agenda .registro-app p + p { margin-top: 6px; }
-.calendario-agenda .registro-app small { color: var(--cal-texto-suave); }
-.calendario-agenda .registro-app .acoes-app { margin-top: 9px; }
-.cc-figma .calendario-agenda .registro-app button { min-height: 44px; }
-.calendario-agenda :is(.registro-app, .texto-suave) a { color: #c7b8ff; }
-
-.calendario-agenda-acoes {
-    display: flex;
-    justify-content: flex-end;
-    padding: 16px 24px;
-}
-
-.calendario-agenda .cc-advanced {
-    margin: 0 24px 12px;
-    border-top: 1px solid var(--cal-linha);
-}
-
-.calendario-agenda .painel details { margin-top: 12px; }
-.calendario-agenda .painel form { margin-top: 10px; }
-.calendario-agenda .opcoes-sentimentos {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(145px, 100%), 1fr));
-    gap: 8px;
-}
-
-.calendario-agenda .opcoes-sentimentos label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-height: 44px;
-    padding: 6px 8px;
-    border: 1px solid var(--cal-linha);
-    border-radius: 8px;
-    cursor: pointer;
-}
-.calendario-agenda .calendario-compartilhar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.calendario-real #dialogo-evento .calendario-linha {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-}
+.calendario-agenda-vazia + .calendario-agenda-vazia { margin-top: 8px; }
 
 @container (max-width: 680px) {
     .calendario-dia, .calendario-dia-vazio { min-height: 62px; }
@@ -319,16 +206,4 @@
         background: var(--cal-cor-item);
     }
     .calendario-marcador > span { display: none; }
-}
-
-@container (max-width: 390px) {
-    .calendario-mensal-acoes {
-        width: 100%;
-        gap: 6px;
-    }
-    .cc-figma .calendario-real .calendario-seta { width: 32px; }
-    .cc-figma .calendario-mensal-acoes .calendario-novo {
-        margin-inline-start: auto;
-        padding-inline: 9px;
-    }
 }

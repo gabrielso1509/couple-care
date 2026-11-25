@@ -6,15 +6,17 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
 <base href="/src/"/>
-<title>Visão geral | CoupleCare</title>
+<title>Dashboard | CoupleCare</title>
 <!-- 1. Fontes e estilos compartilhados. O login tem seu CSS separado. -->
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
-<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/dashboard-real.js"></script><script>document.documentElement.classList.add('cc-figma');</script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
+<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer src="js/agenda-dados.js"></script><script defer src="js/modal-consulta.js"></script><script defer src="js/dashboard-real.js?v=painel-casal"></script><script>document.documentElement.classList.add('cc-figma');</script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
+<link rel="stylesheet" href="css/modal-consulta.css">
+<link rel="stylesheet" href="css/dashboard-casal.css">
 </head>
-<body class="pagina-orbital">
+<body class="pagina-orbital pagina-dashboard">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
 <p aria-live="polite" id="status-sessao" role="status" hidden></p>
 <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
@@ -89,51 +91,80 @@
 <div class="conteudo-principal">
 <header class="cabecalho">
 <div>
-<span class="texto-destaque">SEU ESPAÇO A DOIS</span>
-<h1>Visão geral</h1>
-<p>Um espaço para o que importa.</p>
+<h1>Dashboard</h1>
+<p>Visão geral do casal</p>
 </div>
-<span class="selo-tarefas">Feito para construir juntos</span>
 </header>
-<!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-<main class="conteudo" id="conteudo-pagina" tabindex="-1"><div class="cc-dashboard">
-<section class="welcome-banner">
-<div><span class="today-label" id="cc-hoje"></span><h2 id="cc-boas-vindas">Que bom ter você aqui.</h2><p>Um espaço para organizar a rotina e cuidar do que é de vocês.</p></div>
-<div class="mini-quote"><span aria-hidden="true">♡</span><p>Amor também mora<br/>nas pequenas coisas.</p></div>
-</section>
-<div class="dashboard-grid">
-<section class="card week-card">
-<div class="card-title"><div><span>UM PASSO DE CADA VEZ</span><h3>A rotina de vocês</h3></div><span class="stat-icon orange"><span aria-hidden="true">☑</span></span></div>
-<div class="week-content">
-<div class="progress-ring" id="cc-progresso" style="--progress:0deg"><div><strong id="cc-percentual">—</strong><span>concluídas</span></div></div>
-<div class="week-stats">
-<div><span class="stat-icon purple"><span aria-hidden="true">☑</span></span><p><strong id="cc-pendentes">—</strong><small>Tarefas pendentes</small></p></div>
-<div><span class="stat-icon mint"><span aria-hidden="true">✓</span></span><p><strong id="cc-concluidas">—</strong><small>Tarefas concluídas</small></p></div>
-<div><span class="stat-icon orange"><span aria-hidden="true">◷</span></span><p><strong id="cc-atrasadas">—</strong><small>Pendentes com prazo vencido</small></p></div>
-</div>
-</div>
-<p aria-live="polite" class="cc-dashboard-status" id="cc-status-tarefas" role="status">Carregando a rotina do casal…</p>
-</section>
-<section class="card next-event-card">
-<div class="card-title"><div><span>TEMPO PARA VOCÊS</span><h3>Na agenda</h3></div><span class="stat-icon purple"><span aria-hidden="true">▦</span></span></div>
-<div aria-hidden="true" class="event-art"><span class="event-glow"></span><span aria-hidden="true">♡</span></div>
-<div id="cc-eventos"><p class="cc-empty">Carregando compromissos…</p></div>
-<a class="soft-button" href="/src/calendario.html">Abrir calendário <span aria-hidden="true">→</span></a>
-</section>
-<section class="card today-card">
-<div class="card-title"><div><span>PEQUENOS CUIDADOS</span><h3>Próximas tarefas</h3></div><a class="text-button" href="/src/tarefas.html">Ver todas <span aria-hidden="true">→</span></a></div>
-<div class="compact-tasks" id="cc-tarefas"><p class="cc-empty">Carregando tarefas…</p></div>
-</section>
-<section class="card finance-mini">
-<div class="card-title"><div><span>PLANOS EM CONJUNTO</span><h3>Finanças</h3></div><span class="stat-icon mint"><span aria-hidden="true">◈</span></span></div>
-<strong class="money-value" id="dashboard-balance">—</strong><p class="cc-empty" id="dashboard-finance-status">Carregando resumo financeiro…</p>
-<a class="text-button" href="/src/financas.html">Abrir finanças <span aria-hidden="true">→</span></a>
-</section>
-<section class="card mood-card">
-<div><span class="section-label">CUIDADO E ACOLHIMENTO</span><h3>Como você esta hoje?</h3><p>Um registro é privado até você decidir compartilhá-lo.</p></div>
-<div class="mood-options"><a href="/src/menstruacao.html">Registrar seus sentimentos <span aria-hidden="true">→</span></a></div>
-</section>
-</div></div><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+<main class="conteudo dashboard-casal" id="conteudo-pagina" tabindex="-1">
+    <div class="dashboard-casal-topo">
+        <section class="card dashboard-widget" aria-labelledby="widget-calendario">
+            <h2 id="widget-calendario"><span aria-hidden="true">▦</span> Calendário</h2>
+            <div class="dashboard-hoje">
+                <time class="dashboard-data" id="dashboard-data"></time>
+                <div>
+                    <p class="dashboard-rotulo" id="dashboard-hoje">Hoje</p>
+                    <div id="dashboard-eventos" class="dashboard-rolagem" role="region" aria-labelledby="dashboard-hoje" tabindex="0">
+                        <p class="dashboard-vazio">Carregando agenda…</p>
+                    </div>
+                </div>
+            </div>
+            <a class="dashboard-widget-link" href="calendario.html">Abrir calendário <span aria-hidden="true">›</span></a>
+        </section>
+        <section class="card dashboard-widget" aria-labelledby="widget-tarefas">
+            <h2 id="widget-tarefas"><span aria-hidden="true">☑</span> Tarefas</h2>
+            <p class="dashboard-pendentes" id="dashboard-pendentes" aria-live="polite"></p>
+            <div id="dashboard-tarefas" class="dashboard-rolagem" role="region" aria-labelledby="widget-tarefas" tabindex="0">
+                <p class="dashboard-vazio">Carregando tarefas…</p>
+            </div>
+            <button class="dashboard-widget-link" type="button" id="dashboard-todas-tarefas" aria-haspopup="dialog" aria-controls="dashboard-modal-tarefas" disabled>Ver todas as tarefas <span aria-hidden="true">›</span></button>
+        </section>
+    </div>
+    <div class="dashboard-casal-base">
+        <section class="card dashboard-widget" aria-labelledby="widget-financas">
+            <h2 id="widget-financas"><span aria-hidden="true">◈</span> Finanças</h2>
+            <dl class="dashboard-financas">
+                <div><dt>Saldo do mês</dt><dd id="dashboard-balance">—</dd></div>
+                <div><dt>Receitas</dt><dd id="dashboard-income">—</dd></div>
+                <div><dt>Gastos no mês</dt><dd id="dashboard-expense">—</dd></div>
+            </dl>
+            <p class="dashboard-vazio" id="dashboard-finance-status" role="status">Carregando resumo…</p>
+            <a class="dashboard-widget-link" href="financas.html">Abrir finanças <span aria-hidden="true">›</span></a>
+        </section>
+        <section class="card dashboard-widget" aria-labelledby="widget-ciclo">
+            <h2 id="widget-ciclo"><span aria-hidden="true">♧</span> <a href="menstruacao.html" id="dashboard-ciclo-titulo">Ciclo compartilhado</a></h2>
+            <div class="dashboard-ciclo">
+                <p>TPM estimada</p>
+                <strong id="dashboard-tpm">Carregando…</strong>
+                <p class="dashboard-vazio" id="dashboard-tpm-nota" hidden>Estimativa do ciclo. As datas podem variar.</p>
+            </div>
+            <div class="dashboard-separador">
+                <h3 id="dashboard-humor-titulo">Como ela se sente hoje</h3>
+                <div id="dashboard-humor"><p class="dashboard-vazio">Carregando check-in…</p></div>
+            </div>
+        </section>
+        <section class="card dashboard-widget" aria-labelledby="widget-espaco">
+            <h2 id="widget-espaco"><span aria-hidden="true">♡</span> <a href="espaco.html">Nosso espaço</a></h2>
+            <div class="dashboard-data-especial">
+                <span aria-hidden="true">♡</span>
+                <div><h3>Aniversário de vocês</h3><p id="dashboard-aniversario-casal">Carregando…</p></div>
+            </div>
+            <div class="dashboard-data-especial dashboard-separador">
+                <span aria-hidden="true">✧</span>
+                <div><h3 id="dashboard-aniversario-titulo">Aniversário do parceiro</h3><p id="dashboard-aniversario-parceiro">Carregando…</p></div>
+            </div>
+        </section>
+    </div>
+    <dialog class="cc-modal modal-consulta" id="dashboard-modal-tarefas" aria-labelledby="dashboard-modal-titulo">
+        <header>
+            <h2 id="dashboard-modal-titulo">Tarefas do casal</h2>
+            <button data-close type="button" aria-label="Fechar tarefas"></button>
+        </header>
+        <div class="modal-consulta-corpo">
+            <div class="modal-consulta-grade" id="dashboard-modal-lista"></div>
+            <a class="dashboard-widget-link" href="tarefas.html">Abrir Tarefas <span aria-hidden="true">›</span></a>
+        </div>
+    </dialog>
+</main>
 </div>
 </div>
 </body>

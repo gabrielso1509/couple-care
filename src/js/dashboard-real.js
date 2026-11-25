@@ -1,54 +1,217 @@
-/* Resumo real do casal. Contagens agregadas não dependem do limite de linhas da API. */
+/* O painel só consulta dados. Cada link abre o menu responsável pelo registro. */
 (function () {
     'use strict';
-    const C = CC, $ = C.$;
-    function empty(id, text) { C.empty(id, text); }
-    $('cc-hoje').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
-    C.ready.then(async function (c) {
-        const people = c.members.length ? c.members : [{ display_name: c.profile.display_name }];
-        const hour = new Date().getHours();
-        $('cc-boas-vindas').textContent = (hour < 12 ? 'Bom dia, ' : hour < 18 ? 'Boa tarde, ' : 'Boa noite, ') + people.map(function (p) { return p.display_name.split(' ')[0]; }).join(' e ') + '.';
-        if (!c.couple) {
-            $('cc-status-tarefas').textContent = 'Crie um casal ou aceite um convite em Configurações para começar.';
-            ['cc-tarefas','cc-eventos'].forEach(function (id) { empty(id, 'Conecte seu casal para compartilhar sua rotina.'); });
-            $('dashboard-finance-status').textContent = 'Nenhum casal conectado.'; return;
+    const C = CC, A = C.agenda, $ = C.$;
+    const dialog = $('dashboard-modal-tarefas');
+    const today = C.today();
+    const date = A.local(today);
+    const badge = $('dashboard-data');
+    badge.dateTime = today;
+    badge.append(C.el('strong', '', String(date.getDate())),
+        C.el('span', '', date.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '')));
+
+    // Reutiliza os ícones do menu para manter a mesma linguagem visual.
+    const icons = { calendario: 'calendario', tarefas: 'tarefas', financas: 'financas', ciclo: 'menstruacao', espaco: 'espaco' };
+    Object.entries(icons).forEach(function ([widget, page]) {
+        const icon = document.querySelector('.menu-lateral a[href="/src/' + page + '.html"] svg');
+        if (icon) $('widget-' + widget).firstElementChild.replaceChildren(icon.cloneNode(true));
+    });
+
+    function note(id, message) {
+        $(id).replaceChildren(C.el('p', 'dashboard-vazio', message));
+    }
+
+    function renderRows(container, rows, makeRow) {
+        const fragment = document.createDocumentFragment();
+        rows.forEach(function (row) { fragment.append(makeRow(row)); });
+        container.replaceChildren(fragment);
+    }
+
+    function due(day) {
+        if (day === today) return 'Hoje';
+        if (day === A.plusDays(today, 1)) return 'Amanhã';
+        return day ? C.date(day) : 'Sem prazo';
+    }
+
+    function events(rows) {
+        if (!rows.length) {
+            note('dashboard-eventos', 'Nenhum compromisso para hoje.');
+            return;
         }
-        const query = function () { return supabaseClient.from('tasks').select('id', { count: 'exact', head: true }).eq('couple_id', c.couple); };
-        const results = await Promise.allSettled([
-            query().eq('status', 'pending'), query().eq('status', 'completed'), query().eq('status', 'pending').lt('due_date', C.today()),
-            supabaseClient.from('tasks').select('id,title,due_date,priority').eq('couple_id', c.couple).eq('status', 'pending').order('due_date', { ascending: true, nullsFirst: false }).order('created_at', { ascending: false }).limit(4),
-            supabaseClient.from('calendar_events').select('id,title,event_date,start_time').eq('couple_id', c.couple).gte('event_date', C.today()).order('event_date').order('start_time', { nullsFirst: true }).limit(3),
-            supabaseClient.rpc('finance_month_summary', { p_month: C.today().slice(0, 7) + '-01' })
-        ]);
-        function r(i) { return results[i].status === 'fulfilled' && !results[i].value.error ? results[i].value : null; }
-        const pending = r(0), completed = r(1), overdue = r(2);
-        $('cc-pendentes').textContent = pending ? pending.count : '—'; $('cc-concluidas').textContent = completed ? completed.count : '—'; $('cc-atrasadas').textContent = overdue ? overdue.count : '—';
-        if (pending && completed) {
-            const total = pending.count + completed.count, ratio = total ? Math.round(completed.count / total * 100) : 0;
-            $('cc-percentual').textContent = total ? ratio + '%' : '—'; $('cc-progresso').style.setProperty('--progress', ratio * 3.6 + 'deg');
-            $('cc-progresso').setAttribute('aria-label', total ? ratio + '% das tarefas concluídas' : 'Nenhuma tarefa registrada');
-        }
-        $('cc-status-tarefas').textContent = pending && completed && overdue ? 'Resumo das tarefas cadastradas. Atualizado ao abrir esta página.' : 'Parte do resumo está indisponível. Recarregue para tentar novamente.';
-        const tasks = r(3)?.data;
-        if (!tasks) empty('cc-tarefas', 'Consulta indisponível.');
-        else if (!tasks.length) empty('cc-tarefas', 'Nenhuma tarefa pendente. Que tal combinar o próximo cuidado?');
-        else {
-            $('cc-tarefas').replaceChildren(); tasks.forEach(function (task) {
-                const a = C.el('a'); a.href = '/src/tarefas.html';
-                const p = C.el('p'); p.append(C.el('b', '', task.title), C.el('small', '', task.due_date ? C.date(task.due_date) : 'Sem prazo definido'));
-                a.append(C.el('span', 'stat-icon ' + (task.priority === 'high' ? 'orange' : 'purple'), '✓'), p); $('cc-tarefas').append(a);
+        renderRows($('dashboard-eventos'), rows, function (event) {
+            const row = C.el('div', 'dashboard-linha');
+            row.append(C.el('span', '', event.title), C.el('small', '', A.clock(event)));
+            return row;
+        });
+    }
+
+    function tasks(rows) {
+        const pending = rows.filter(function (task) { return task.status === 'pending'; });
+        $('dashboard-pendentes').textContent = pending.length + (pending.length === 1 ? ' pendente' : ' pendentes');
+        const all = $('dashboard-todas-tarefas');
+        all.disabled = !rows.length;
+
+        function open(trigger, selected) {
+            const list = $('dashboard-modal-lista');
+            renderRows(list, rows, function (task) {
+                const card = C.el('article', 'modal-consulta-item');
+                const complete = task.status === 'completed';
+                card.append(C.el('small', '', complete ? 'Concluída' : 'Pendente'),
+                    C.el('h3', '', task.title), C.el('p', '', due(task.due_date)));
+                if (task.description) card.append(C.el('p', '', task.description));
+                if (task.id === selected) card.dataset.destaque = '';
+                return card;
             });
+            dialog.scrollTop = 0;
+            C.openOverview(dialog, trigger);
+            list.querySelector('[data-destaque]')?.scrollIntoView({ block: 'nearest' });
         }
-        const events = r(4)?.data;
-        if (!events) empty('cc-eventos', 'Consulta indisponível.');
-        else if (!events.length) empty('cc-eventos', 'Nenhum compromisso futuro. Reservem um momento para vocês.');
-        else {
-            $('cc-eventos').replaceChildren(); events.forEach(function (event) {
-                const d = C.el('div', 'cc-event'); d.append(C.el('b', '', event.title), C.el('span', '', C.date(event.event_date) + (event.start_time ? ' · ' + event.start_time.slice(0, 5) : ' · Dia inteiro'))); $('cc-eventos').append(d);
+
+        all.addEventListener('click', function () { open(all); });
+        if (!pending.length) {
+            note('dashboard-tarefas', 'Nenhuma tarefa pendente agora.');
+            return;
+        }
+        renderRows($('dashboard-tarefas'), pending, function (task) {
+            const button = C.el('button', 'dashboard-linha');
+            button.type = 'button';
+            button.setAttribute('aria-haspopup', 'dialog');
+            button.setAttribute('aria-controls', dialog.id);
+            button.append(C.el('span', '', task.title), C.el('small', '', due(task.due_date)));
+            button.addEventListener('click', function () { open(button, task.id); });
+            return button;
+        });
+    }
+
+    function anniversary(id, dateValue, empty) {
+        const result = C.anniversary(dateValue);
+        $(id).textContent = !result ? empty : result.days === 0 ? 'É hoje!' :
+            result.days === 1 ? 'Falta 1 dia' : 'Faltam ' + result.days + ' dias';
+    }
+
+    function cycle(rows, userId) {
+        const pms = rows.find(function (row) { return row.kind === 'pms_estimate' && row.user_id === userId; });
+        if (!pms) {
+            $('dashboard-tpm').textContent = 'Sem estimativa disponível';
+            return;
+        }
+        const days = A.dayCount(today, pms.entry_date);
+        $('dashboard-tpm').textContent = days < 0 ? 'Janela estimada em andamento' :
+            days === 0 ? 'Pode começar hoje' : 'Em cerca de ' + days + (days === 1 ? ' dia' : ' dias');
+        $('dashboard-tpm-nota').hidden = false;
+    }
+
+    function mood(record, own) {
+        if (!record) {
+            note('dashboard-humor', own ? 'Como foi teu dia? Teu check-in fica na aba Menstruação. ♡' :
+                'Ela ainda não compartilhou como se sente hoje. Um carinho sempre cabe. ♡');
+            return;
+        }
+        const area = $('dashboard-humor');
+        area.replaceChildren();
+        const names = A.feelings(record);
+        if (names.length) area.append(C.el('p', 'dashboard-humor-nota', names.join(' · ')));
+        if (record.note) area.append(C.el('p', 'dashboard-humor-nota', record.note));
+    }
+
+    function finance(data) {
+        $('dashboard-balance').textContent = C.money(data.balance);
+        $('dashboard-balance').toggleAttribute('data-negative', Number(data.balance) < 0);
+        $('dashboard-income').textContent = C.money(data.income);
+        $('dashboard-expense').textContent = C.money(data.expense);
+        $('dashboard-finance-status').textContent = '';
+    }
+
+    // Cada consulta falha de forma independente. Um erro no ciclo não esconde tarefas ou finanças.
+    async function show(request, render, onError) {
+        try { render(await request); }
+        catch (error) { onError(C.error(error)); }
+    }
+
+    window.addEventListener('pageshow', function (event) { if (event.persisted) window.location.reload(); });
+
+    C.ready.then(async function (context) {
+        const own = context.profile.gender === 'feminino';
+        const partner = context.members.find(function (person) { return person.user_id !== context.user.id; });
+        const cycleOwner = own ? context.user.id : partner?.user_id;
+        if (own) {
+            $('dashboard-ciclo-titulo').textContent = 'Meu ciclo';
+            $('dashboard-humor-titulo').textContent = 'Como me sinto hoje';
+        }
+
+        const loads = [];
+        if (!context.couple) {
+            note('dashboard-eventos', 'Conecte seu casal em Configurações para ver a agenda.');
+            note('dashboard-tarefas', 'Nenhum casal conectado.');
+            $('dashboard-finance-status').textContent = 'Nenhum casal conectado.';
+            $('dashboard-aniversario-casal').textContent = 'Data ainda não configurada.';
+            $('dashboard-aniversario-parceiro').textContent = 'Nenhum parceiro conectado.';
+        } else {
+            const first = A.key(new Date(date.getFullYear(), date.getMonth(), 1));
+            const last = A.key(new Date(date.getFullYear(), date.getMonth() + 1, 0));
+            loads.push(
+                show(A.events(context.couple, today, today), events, function (e) { note('dashboard-eventos', e); }),
+                show(C.all(function () {
+                    return supabaseClient.from('tasks').select('id,title,description,due_date,status')
+                        .eq('couple_id', context.couple).order('due_date', { nullsFirst: false }).order('id');
+                }), tasks, function (e) { note('dashboard-tarefas', e); }),
+                show(supabaseClient.rpc('finance_period_summary', { p_from: first, p_to: last }).then(C.result),
+                    finance, function (e) { $('dashboard-finance-status').textContent = e; }),
+                show(C.relationship(), function (row) {
+                    anniversary('dashboard-aniversario-casal', row?.relationship_date, 'Data ainda não configurada.');
+                }, function (e) { $('dashboard-aniversario-casal').textContent = e; }),
+                show(supabaseClient.rpc('get_partner_birthday').then(C.result), function (rows) {
+                    const row = rows[0];
+                    const value = row ? '2000-' + String(row.birthday_month).padStart(2, '0') + '-' +
+                        String(row.birthday_day).padStart(2, '0') : null;
+                    if (partner) $('dashboard-aniversario-titulo').textContent = 'Aniversário de ' + partner.display_name.split(' ')[0];
+                    anniversary('dashboard-aniversario-parceiro', value, 'Data ainda não compartilhada.');
+                }, function (e) { $('dashboard-aniversario-parceiro').textContent = e; })
+            );
+        }
+
+        if (!cycleOwner) {
+            $('dashboard-tpm').textContent = 'Sem estimativa compartilhada';
+            note('dashboard-humor', 'Conecte seu casal para ver os check-ins compartilhados.');
+        } else {
+            let cycleRequest = 0;
+            async function updateCycle() {
+                const id = ++cycleRequest;
+                $('dashboard-tpm').textContent = 'Carregando…';
+                $('dashboard-tpm-nota').hidden = true;
+                note('dashboard-humor', 'Carregando check-in…');
+
+                let checkin = supabaseClient.from('daily_wellbeing').select('feelings,note')
+                    .eq('user_id', cycleOwner).eq('entry_date', today);
+                if (!own) checkin = checkin.eq('shared_with_couple_id', context.couple);
+                const current = function (render) {
+                    return function (value) { if (id === cycleRequest) render(value); };
+                };
+                await Promise.all([
+                    show(checkin.maybeSingle().then(C.result), current(function (row) { mood(row, own); }),
+                        current(function (e) { note('dashboard-humor', e); })),
+                    show(A.cycle(A.plusDays(today, -5), A.plusDays(today, 40)),
+                        current(function (rows) { cycle(rows, cycleOwner); }),
+                        current(function (e) { $('dashboard-tpm').textContent = e; }))
+                ]);
+            }
+
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) return;
+                if (today !== C.today()) window.location.reload();
+                else void updateCycle();
             });
+            loads.push(updateCycle());
         }
-        const finance = r(5);
-        if (finance) { $('dashboard-balance').textContent = C.money(finance.data.balance); $('dashboard-finance-status').textContent = 'Saldo pelos registros do mês atual. Despesas: ' + C.money(finance.data.expense); }
-        else { $('dashboard-balance').textContent = '—'; $('dashboard-finance-status').textContent = finance === null && results[5].status === 'fulfilled' ? C.error(results[5].value.error) : 'Consulta financeira indisponível.'; }
-    }).catch(function (e) { $('cc-status-tarefas').textContent = C.error(e); });
+        await Promise.all(loads);
+    }).catch(function (error) {
+        const message = C.error(error);
+        note('dashboard-eventos', message);
+        note('dashboard-tarefas', message);
+        $('dashboard-finance-status').textContent = message;
+        $('dashboard-tpm').textContent = 'Resumo indisponível';
+        $('dashboard-aniversario-casal').textContent = 'Data indisponível';
+        $('dashboard-aniversario-parceiro').textContent = 'Data indisponível';
+        note('dashboard-humor', 'Check-in indisponível.');
+    });
 })();

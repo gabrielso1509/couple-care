@@ -1,1629 +1,223 @@
-/* ========================================
-   CALENDÁRIO CONECTADO AO SUPABASE
-
-   Mostra:
-   - Compromissos do casal.
-   - Prazos das tarefas.
-   - Sentimentos compartilhados.
-   - Dias de menstruação autorizados.
-======================================== */
+/* Calendário de consulta: compromissos, prazos, check-ins e ciclo autorizado. */
 (function () {
     'use strict';
-
-    /* ========================================
-       1. ELEMENTOS E ESTADO DA PÁGINA
-    ======================================== */
-
-    // Atalho para buscar um elemento pelo seu ID.
-    function $(id) {
-        return document.getElementById(id);
-    }
-
-    // Evita executar o JS novo com o HTML antigo.
-    const obrigatorios = [
-        'status-calendario',
-        'dias',
-        'mes',
-        'lista',
-        'dialogo-dia',
-        'dialogo-evento',
-        'form-evento',
-        'campos-evento',
-        'form-sentimentos',
-        'form-ciclo',
-        'cancelar-evento',
-        'atualizar-calendario',
-        'opcoes-sentimentos'
-    ];
-
-    const faltando = obrigatorios.filter(function (id) {
-        return !$(id);
-    });
-
-    if (faltando.length) {
-        const aviso = document.createElement('p');
-
-        aviso.setAttribute('role', 'alert');
-
-        aviso.textContent =
-            'Atualize o calendario.html completo junto com o calendario.js. ' +
-            'Faltam elementos da nova página.';
-
-        document.querySelector('main').prepend(aviso);
-
-        console.error(
-            'HTML do calendário desatualizado:',
-            faltando.join(', ')
-        );
-
-        return;
-    }
-
-    const dialogoDia = $('dialogo-dia');
-    const dialogoEvento = $('dialogo-evento');
-    let diaQueAbriuAgenda = null;
-
-    // Os códigos são os mesmos permitidos pela tabela daily_wellbeing.
-    const sentimentos = {
-        happy: ['😊', 'Feliz'],
-        affectionate: ['😍', 'Carinhosa'],
-        calm: ['😌', 'Tranquila'],
-        sad: ['😔', 'Triste'],
-        tearful: ['😢', 'Com vontade de chorar'],
-        sensitive: ['🥺', 'Sensível'],
-        irritated: ['😠', 'Irritada'],
-        anxious: ['😰', 'Ansiosa'],
-        overwhelmed: ['🤯', 'Sobrecarregada'],
-        sleepy: ['😴', 'Sonolenta'],
-        tired: ['🪫', 'Cansada'],
-        energetic: ['⚡', 'Com energia'],
-        pain: ['🤕', 'Com dor'],
-        nausea: ['🤢', 'Enjoada'],
-        bloated: ['🎈', 'Inchada'],
-        wants_affection: ['🤗', 'Quero carinho'],
-        wants_company: ['🫂', 'Quero companhia'],
-        wants_space: ['🌿', 'Quero um tempo para mim']
+    const C = CC, A = C.agenda, $ = C.$;
+    const dialog = $('dialogo-dia');
+    const monthTitle = $('mes');
+    const grid = $('dias');
+    const status = $('status-calendario');
+    const cycleLabels = {
+        period_start: 'Início da menstruação',
+        period_end: 'Fim da menstruação',
+        period_start_end: 'Início e fim da menstruação',
+        period_day: 'Dia de menstruação registrado',
+        fertility_estimate: 'Janela fértil estimada',
+        pms_estimate: 'Possível início da TPM'
     };
+    let month = A.local(C.today());
+    let context;
+    let grouped = new Map();
+    let viewing = null;
+    let requestId = 0;
+    let partial = false;
+    let loading = true;
 
-    const fluxos = {
-        light: 'Leve',
-        moderate: 'Moderado',
-        heavy: 'Intenso'
-    };
+    month.setDate(1);
 
-    const prioridades = {
-        low: 'Baixa',
-        normal: 'Normal',
-        high: 'Alta'
-    };
-
-    let selecionada = chave(new Date());
-
-    let usuarioId = null;
-    let casalId = null;
-    let feminino = false;
-    let membros = [];
-
-    let eventos = [];
-    let tarefas = [];
-    let humores = [];
-    let ciclos = [];
-    let compartilhados = [];
-    // Dias pertencentes aos períodos completos da própria conta.
-    let diasPeriodos = [];
-
-    let pronto = false;
-    let carregando = false;
-    let ocupado = false;
-    let repetirCarga = false;
-
-    // Guarda a versão do registro que está sendo editado.
-    let edicaoEvento = null;
-    let edicaoHumor = null;
-    let edicaoCiclo = null;
-
-    // Indica se existem alterações ainda não salvas.
-    let sujoEvento = false;
-    let sujoHumor = false;
-    let sujoCiclo = false;
-
-    let timer = null;
-    let encerrado = false;
-    let iniciando = false;
-
-    /* ========================================
-       2. FUNÇÕES AUXILIARES
-    ======================================== */
-
-    // Converte uma data local para YYYY-MM-DD.
-    function chave(data) {
-        return (
-            data.getFullYear() +
-            '-' +
-            String(data.getMonth() + 1).padStart(2, '0') +
-            '-' +
-            String(data.getDate()).padStart(2, '0')
-        );
+    function controls() {
+        const year = month.getFullYear();
+        const number = month.getMonth();
+        $('anterior').disabled = year === 1900 && number === 0;
+        $('seguinte').disabled = year === 2100 && number === 11;
+        $('atualizar-calendario').disabled = !context || loading;
     }
 
-    // Monta a data por partes para não mudar o dia por causa do fuso.
-    function dataLocal(texto) {
-        const partes = texto.split('-');
-
-        return new Date(
-            Number(partes[0]),
-            Number(partes[1]) - 1,
-            Number(partes[2])
-        );
+    function byPerson(personId) {
+        if (personId === context.user.id) return 'Seu registro';
+        const person = context.members.find(function (member) { return member.user_id === personId; });
+        return person ? person.display_name.split(' ')[0] : 'Compartilhado com você';
     }
 
-    function dataTexto(texto) {
-        return dataLocal(texto).toLocaleDateString('pt-BR', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
+    function makeCard(item) {
+        const card = C.el('article', 'modal-consulta-item cal-tipo-' + item.type);
+        card.append(C.el('small', '', item.label), C.el('h3', '', item.title));
+        item.lines.forEach(function (line) { if (line) card.append(C.el('p', '', line)); });
+        return card;
+    }
+
+    function drawAgenda(day) {
+        $('selecionado').textContent = A.local(day).toLocaleDateString('pt-BR', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
         });
+        const items = grouped.get(day) || [];
+        const cards = document.createDocumentFragment();
+        items.forEach(function (item) { cards.append(makeCard(item)); });
+        $('lista').replaceChildren(cards);
+        $('agenda-vazia').hidden = Boolean(items.length || loading || partial);
+        $('agenda-aviso').hidden = !loading && !partial;
+        $('agenda-aviso').textContent = loading ? 'Carregando os itens do dia…' : 'Parte da agenda está indisponível.';
     }
 
-    // textContent evita executar HTML digitado nos formulários.
-    function elemento(tag, classe, texto) {
-        const item = document.createElement(tag);
+    function drawMonth() {
+        monthTitle.textContent = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        const today = C.today();
+        const year = month.getFullYear();
+        const number = month.getMonth();
+        const offset = month.getDay();
+        const last = new Date(year, number + 1, 0).getDate();
+        const cells = Math.ceil((offset + last) / 7) * 7;
+        const activeDay = document.activeElement?.dataset.dia;
+        const days = document.createDocumentFragment();
 
-        if (classe) {
-            item.className = classe;
-        }
+        for (let i = 0; i < cells; i += 1) {
+            const day = i - offset + 1;
+            if (day < 1 || day > last) {
+                const blank = C.el('span', 'calendario-dia-vazio');
+                blank.setAttribute('aria-hidden', 'true');
+                days.append(blank);
+                continue;
+            }
 
-        if (texto !== undefined) {
-            item.textContent = texto;
-        }
-
-        return item;
-    }
-
-    function nome(id) {
-        const membro = membros.find(function (pessoa) {
-            return pessoa.user_id === id;
-        });
-
-        if (membro) {
-            return membro.display_name;
-        }
-
-        return id === usuarioId ? 'Você' : 'Parceira';
-    }
-
-    function recado(tipo, texto) {
-        $('feedback-' + tipo).textContent = texto;
-    }
-
-    function registroDoDia(linhas) {
-        return linhas.find(function (registro) {
-            return (
-                registro.entry_date === selecionada &&
-                registro.user_id === usuarioId
-            );
-        }) || null;
-    }
-
-    function linhaCopiada(linha) {
-        return linha ? structuredClone(linha) : null;
-    }
-
-    function controles() {
-        const bloqueado = ocupado || !pronto;
-
-        $('campos-evento').disabled = bloqueado || !casalId;
-        $('novo-evento').disabled = bloqueado || carregando;
-        $('novo-evento-dia').disabled = bloqueado || carregando;
-        dialogoEvento.querySelector('[data-close]').disabled = ocupado;
-        dialogoDia.querySelector('[data-close]').disabled = ocupado;
-        $('campos-sentimentos').disabled = bloqueado || !feminino;
-        $('campos-ciclo').disabled = bloqueado || !feminino;
-
-        $('compartilhar-sentimentos').disabled = !casalId;
-        $('compartilhar-ciclo').disabled = !casalId;
-
-        $('atualizar-calendario').disabled =
-            ocupado || carregando || iniciando;
-
-        const data = dataLocal(selecionada);
-
-        $('anterior').disabled =
-            ocupado ||
-            carregando ||
-            (data.getFullYear() === 1900 && data.getMonth() === 0);
-
-        $('seguinte').disabled =
-            ocupado ||
-            carregando ||
-            (data.getFullYear() === 2100 && data.getMonth() === 11);
-
-        $('hoje').disabled = ocupado || carregando;
-
-        document.querySelectorAll(
-            '#dias button, #lista button'
-        ).forEach(function (botao) {
-            botao.disabled = ocupado || carregando || !pronto;
-        });
-    }
-
-    /* ========================================
-       3. FORMULÁRIOS DOS REGISTROS PESSOAIS
-    ======================================== */
-
-    function criarOpcoes() {
-        $('opcoes-sentimentos').replaceChildren();
-
-        Object.keys(sentimentos).forEach(function (codigo) {
-            const label = elemento('label');
-            const input = elemento('input');
-
-            input.type = 'checkbox';
-            input.value = codigo;
-            input.name = 'sentimento';
-
-            label.append(
-                input,
-                elemento('span', '', sentimentos[codigo].join(' '))
-            );
-
-            $('opcoes-sentimentos').append(label);
-        });
-    }
-
-    function resumoPartilha(registro) {
-        if (!registro || !registro.shared_with_couple_id) {
-            return 'Privado: só você vê este registro.';
-        }
-
-        if (registro.shared_with_couple_id !== casalId) {
-            return 'Este registro não está compartilhado com seu casal atual.';
-        }
-
-        return (
-            'Compartilhado com seu parceiro atual. ' +
-            'Desmarque e salve para revogar.'
-        );
-    }
-
-    function preencherPessoais() {
-        $('dia-registro').textContent = dataTexto(selecionada);
-
-        // Não sobrescreve o que a pessoa está digitando.
-        if (!sujoHumor) {
-            edicaoHumor = linhaCopiada(registroDoDia(humores));
-
-            const codigos = edicaoHumor
-                ? edicaoHumor.feelings
-                : [];
-
-            document.querySelectorAll(
-                '[name="sentimento"]'
-            ).forEach(function (input) {
-                input.checked = codigos.includes(input.value);
+            const key = A.key(new Date(year, number, day));
+            const button = C.el('button', 'calendario-dia');
+            const markers = C.el('span', 'calendario-dia-resumo');
+            const byType = new Map();
+            (grouped.get(key) || []).forEach(function (item) {
+                if (!byType.has(item.type)) byType.set(item.type, []);
+                byType.get(item.type).push(item);
+            });
+            byType.forEach(function (items, type) {
+                const marker = C.el('span', 'calendario-marcador cal-tipo-' + type);
+                marker.append(C.el('span', 'calendario-marcador-titulo', items[0].title));
+                if (items.length > 1) marker.append(C.el('span', 'calendario-marcador-total', '+' + (items.length - 1)));
+                markers.append(marker);
             });
 
-            $('nota-sentimentos').value = edicaoHumor
-                ? edicaoHumor.note
-                : '';
-
-            $('compartilhar-sentimentos').checked = !!(
-                edicaoHumor &&
-                casalId &&
-                edicaoHumor.shared_with_couple_id === casalId
-            );
-
-            $('excluir-sentimentos').hidden = !edicaoHumor;
-
-            $('estado-sentimentos').textContent =
-                resumoPartilha(edicaoHumor);
+            button.type = 'button';
+            button.dataset.dia = key;
+            button.setAttribute('aria-haspopup', 'dialog');
+            button.setAttribute('aria-controls', dialog.id);
+            const total = (grouped.get(key) || []).length;
+            button.setAttribute('aria-label', C.date(key) + (total ? ', ' + total + (total === 1 ? ' item' : ' itens') : ''));
+            if (key === today) button.setAttribute('aria-current', 'date');
+            markers.setAttribute('aria-hidden', 'true');
+            button.append(C.el('span', 'calendario-dia-numero', String(day)), markers);
+            days.append(button);
         }
 
-        if (!sujoCiclo) {
-            edicaoCiclo = linhaCopiada(registroDoDia(ciclos));
-
-            $('fluxo').value = edicaoCiclo
-                ? edicaoCiclo.flow || ''
-                : '';
-
-            $('compartilhar-ciclo').checked = !!(
-                edicaoCiclo &&
-                casalId &&
-                edicaoCiclo.shared_with_couple_id === casalId
-            );
-
-            $('excluir-ciclo').hidden = !edicaoCiclo;
-
-            $('estado-ciclo').textContent =
-                resumoPartilha(edicaoCiclo);
-        }
+        grid.replaceChildren(days);
+        if (activeDay) grid.querySelector('[data-dia="' + activeDay + '"]')?.focus();
+        controls();
     }
 
-    /* ========================================
-       4. AGENDA DO DIA
-    ======================================== */
-
-    function acao(texto, codigo, id) {
-        const botao = elemento('button', 'botao-secundario', texto);
-
-        botao.type = 'button';
-        botao.dataset.acao = codigo;
-        botao.dataset.id = id;
-
-        return botao;
+    function record(day, type, label, title, lines) {
+        if (!grouped.has(day)) grouped.set(day, []);
+        grouped.get(day).push({ type: type, label: label, title: title, lines: lines });
     }
 
-    function cartao(titulo, texto, tipo, rotulo) {
-        const item = elemento('article', 'registro-app cal-tipo-' + tipo);
+    async function load() {
+        if (!context) return;
+        const id = ++requestId;
+        const start = A.key(month);
+        const end = A.key(new Date(month.getFullYear(), month.getMonth() + 1, 0));
+        const couple = context.couple;
+        loading = true;
+        controls();
+        status.textContent = 'Atualizando calendário…';
 
-        item.append(
-            elemento('span', 'calendario-registro-tipo', rotulo),
-            elemento('h3', '', titulo)
-        );
+        const results = await Promise.allSettled([
+            A.events(couple, start, end),
+            couple ? C.all(function () {
+                return supabaseClient.from('tasks').select('id,title,due_date,status').eq('couple_id', couple)
+                    .gte('due_date', start).lte('due_date', end).order('due_date').order('id');
+            }) : [],
+            C.all(function () {
+                return supabaseClient.from('daily_wellbeing').select('id,user_id,entry_date,feelings,note')
+                    .gte('entry_date', start).lte('entry_date', end).order('entry_date').order('id');
+            }),
+            A.cycle(start, end)
+        ]);
+        if (id !== requestId) return;
 
-        if (texto) {
-            item.append(elemento('p', 'texto-suave', texto));
-        }
+        grouped = new Map();
+        partial = results.some(function (result) { return result.status === 'rejected'; });
+        loading = false;
+        const rows = results.map(function (result) { return result.status === 'fulfilled' ? result.value : []; });
 
-        return item;
-    }
-
-    function agenda() {
-        $('selecionado').textContent = dataLocal(selecionada).toLocaleDateString(
-            'pt-BR',
-            { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
-        );
-
-        const lista = $('lista');
-        lista.replaceChildren();
-
-        // Compromissos do casal.
-        eventos.filter(function (evento) {
-            return evento.event_date === selecionada;
-        }).sort(function (a, b) {
-            return (
-                (a.start_time || '').localeCompare(b.start_time || '') ||
-                a.title.localeCompare(b.title)
-            );
-        }).forEach(function (evento) {
-            let horario = 'Dia inteiro';
-
-            if (evento.start_time) {
-                horario = evento.start_time.slice(0, 5);
-
-                if (evento.end_time) {
-                    horario += ' até ' + evento.end_time.slice(0, 5);
-                }
-            }
-
-            const item = cartao(evento.title, horario, 'evento', 'Compromisso');
-
-            if (evento.description) {
-                item.append(elemento('p', '', evento.description));
-            }
-
-            const botoes = elemento('div', 'acoes-app');
-
-            botoes.append(
-                acao('Editar', 'editar', evento.id),
-                acao('Excluir', 'excluir', evento.id)
-            );
-
-            item.append(botoes);
-            lista.append(item);
+        rows[0].forEach(function (event) {
+            record(event.event_date, 'evento', 'Compromisso · ' + A.clock(event), event.title, [event.description]);
+        });
+        rows[1].forEach(function (task) {
+            record(task.due_date, 'tarefa', 'Prazo de tarefa', task.title, [task.status === 'completed' ? 'Concluída' : 'Pendente']);
+        });
+        rows[2].forEach(function (mood) {
+            record(mood.entry_date, 'pessoal', 'Sentimentos · ' + byPerson(mood.user_id), 'Como se sentiu',
+                [A.feelings(mood).join(' · '), mood.note]);
+        });
+        rows[3].forEach(function (entry) {
+            const estimated = ['pms_estimate', 'fertility_estimate'].includes(entry.kind);
+            const line = entry.kind === 'fertility_estimate' ? 'Estimativa aproximada. Não use para evitar gravidez.' :
+                estimated ? 'Estimativa aproximada. Os sintomas podem variar.' : '';
+            record(entry.entry_date, 'pessoal', 'Ciclo · ' + byPerson(entry.user_id), cycleLabels[entry.kind], [line]);
         });
 
-        // Tarefas são consultadas diretamente na tabela existente.
-        tarefas.filter(function (tarefa) {
-            return tarefa.due_date === selecionada;
-        }).forEach(function (tarefa) {
-            const estado = tarefa.status === 'completed'
-                ? 'Concluída'
-                : 'Pendente';
+        // Mantém o botão de origem no DOM enquanto o modal estiver aberto.
+        if (dialog.open) {
+            drawAgenda(viewing);
+            controls();
+        } else drawMonth();
 
-            const item = cartao(
-                tarefa.title,
-                estado +
-                    ' · Prioridade ' +
-                    prioridades[tarefa.priority].toLowerCase(),
-                'tarefa',
-                'Prazo de tarefa'
-            );
-
-            if (tarefa.assigned_to_both) { const info = document.createElement('p'); info.textContent = 'Responsáveis: Nós dois'; item.append(info); }
-            else if (tarefa.assigned_to) {
-                item.append(
-                    elemento(
-                        'p',
-                        'texto-suave',
-                        'Responsável: ' + nome(tarefa.assigned_to)
-                    )
-                );
-            }
-
-            const link = elemento('a', '', 'Abrir Tarefas');
-            link.href = 'tarefas.html';
-
-            item.append(link);
-            lista.append(item);
-        });
-
-        // A RLS permite receber somente os sentimentos autorizados.
-        humores.filter(function (registro) {
-            return registro.entry_date === selecionada;
-        }).forEach(function (registro) {
-            const texto = registro.feelings.map(function (codigo) {
-                return sentimentos[codigo]
-                    ? sentimentos[codigo].join(' ')
-                    : codigo;
-            }).join(' · ');
-
-            const item = cartao(
-                nome(registro.user_id),
-                texto,
-                'pessoal',
-                'Sentimentos'
-            );
-
-            if (registro.note) {
-                item.append(elemento('p', '', registro.note));
-            }
-
-            if (registro.user_id === usuarioId) {
-                item.append(
-                    elemento('small', '', resumoPartilha(registro))
-                );
-            }
-
-            lista.append(item);
-        });
-
-        // Registros completos da própria usuária.
-        ciclos.filter(function (registro) {
-            return registro.entry_date === selecionada;
-        }).forEach(function (registro) {
-            const texto = registro.flow
-                ? 'Fluxo: ' + fluxos[registro.flow] + ' (só você vê)'
-                : 'Dia registrado por você.';
-
-            const item = cartao(
-                'Seu registro de menstruação',
-                texto,
-                'pessoal',
-                'Ciclo'
-            );
-
-            item.append(
-                elemento('small', '', resumoPartilha(registro))
-            );
-
-            lista.append(item);
-        });
-
-        // O parceiro recebe somente as datas, sem o fluxo.
-        compartilhados.filter(function (registro) {
-            return registro.entry_date === selecionada;
-        }).forEach(function (registro) {
-            lista.append(
-                cartao(
-                    'Menstruação · ' + nome(registro.user_id),
-                    'Data registrada e compartilhada por ela.',
-                    'pessoal',
-                    'Ciclo'
-                )
-            );
-        });
-
-        // Um período pode existir sem registro diário de fluxo.
-        const temPeriodo = pronto && diasPeriodos.some(function (registro) {
-            return (
-                registro.entry_date === selecionada &&
-                registro.user_id === usuarioId
-            );
-        });
-
-        const temDiario = ciclos.some(function (registro) {
-            return registro.entry_date === selecionada;
-        });
-
-        // Evita repetir o cartão quando já existe um diário neste dia.
-        if (temPeriodo && !temDiario) {
-            const item = cartao(
-                'Seu período de menstruação',
-                'Período registrado na página Menstruação.',
-                'pessoal',
-                'Ciclo'
-            );
-
-            const link = elemento('a', '', 'Ver meus períodos');
-            link.href = 'menstruacao.html';
-
-            item.append(link);
-            lista.append(item);
-        }
-        if (!lista.children.length) {
-            lista.append(
-                elemento(
-                    'p',
-                    'calendario-agenda-vazia',
-                    pronto
-                        ? 'Nenhum registro visível para este dia.'
-                        : 'Os registros aparecerão após o carregamento.'
-                )
-            );
-        }
-
-        preencherPessoais();
-        controles();
+        status.textContent = partial ? 'Parte do calendário está indisponível. Confira a conexão ou atualize.' : 'Calendário atualizado.';
     }
 
-    /* ========================================
-       5. DESENHO DO CALENDÁRIO MENSAL
-    ======================================== */
-
-    function renderizar() {
-        const atual = dataLocal(selecionada);
-        const ano = atual.getFullYear();
-        const mes = atual.getMonth();
-
-        $('mes').textContent = atual.toLocaleDateString('pt-BR', {
-            month: 'long',
-            year: 'numeric'
-        });
-
-        const tinhaFoco =
-            document.activeElement &&
-            document.activeElement.dataset.dia;
-
-        const grade = $('dias');
-        grade.replaceChildren();
-
-        // A primeira coluna é domingo. As células vazias completam a grade.
-        const espacos = new Date(ano, mes, 1).getDay();
-        const ultimo = new Date(ano, mes + 1, 0).getDate();
-        const hoje = chave(new Date());
-
-        function adicionarVazio() {
-            const vazio = elemento('span', 'calendario-dia-vazio');
-            vazio.setAttribute('aria-hidden', 'true');
-            grade.append(vazio);
-        }
-
-        for (let i = 0; i < espacos; i++) {
-            adicionarVazio();
-        }
-
-        for (let dia = 1; dia <= ultimo; dia++) {
-            const data = chave(new Date(ano, mes, dia));
-            const botao = elemento('button', 'calendario-dia');
-
-            botao.type = 'button';
-            botao.dataset.dia = data;
-            botao.setAttribute('aria-haspopup', 'dialog');
-            botao.setAttribute('aria-controls', 'dialogo-dia');
-            botao.classList.toggle('calendario-dia-selecionado', data === selecionada);
-
-            if (data === hoje) {
-                botao.setAttribute('aria-current', 'date');
-            }
-
-            const numero = elemento('span', 'calendario-dia-numero', String(dia));
-            const resumo = elemento('span', 'calendario-dia-resumo');
-            resumo.setAttribute('aria-hidden', 'true');
-
-            const compromissos = eventos.filter(function (evento) {
-                return evento.event_date === data;
-            });
-            const prazos = tarefas.filter(function (tarefa) {
-                return tarefa.due_date === data;
-            });
-            const temRegistroPessoal = ciclos
-                .concat(compartilhados, pronto ? diasPeriodos : [], humores)
-                .some(function (registro) {
-                    return registro.entry_date === data;
-                });
-
-            const tipos = [];
-            if (compromissos.length) {
-                tipos.push({
-                    tipo: 'evento',
-                    titulo: compromissos[0].title,
-                    quantidade: compromissos.length,
-                    singular: 'compromisso',
-                    plural: 'compromissos'
-                });
-            }
-            if (prazos.length) {
-                tipos.push({
-                    tipo: 'tarefa',
-                    titulo: prazos[0].title,
-                    quantidade: prazos.length,
-                    singular: 'prazo de tarefa',
-                    plural: 'prazos de tarefas'
-                });
-            }
-            if (temRegistroPessoal) {
-                // O mês indica a presença do registro. O conteúdo fica no modal.
-                tipos.push({
-                    tipo: 'pessoal',
-                    titulo: 'Registro pessoal',
-                    quantidade: 1,
-                    singular: 'com registros pessoais'
-                });
-            }
-
-            const textos = tipos.map(function (item) {
-                const marcador = elemento('span', 'calendario-marcador cal-tipo-' + item.tipo);
-                marcador.append(elemento('span', 'calendario-marcador-titulo', item.titulo));
-                if (item.quantidade > 1) {
-                    marcador.append(elemento('span', 'calendario-marcador-total', '+' + (item.quantidade - 1)));
-                }
-                resumo.append(marcador);
-
-                if (item.tipo === 'pessoal') {
-                    return item.singular;
-                }
-                return item.quantidade + ' ' + (item.quantidade === 1 ? item.singular : item.plural);
-            });
-
-            botao.setAttribute(
-                'aria-label',
-                dataTexto(data) + (textos.length ? ', ' + textos.join(', ') : '')
-            );
-
-            botao.append(numero, resumo);
-            grade.append(botao);
-        }
-
-        const finalDaSemana = (espacos + ultimo) % 7;
-        for (let i = finalDaSemana; i > 0 && i < 7; i++) {
-            adicionarVazio();
-        }
-
-        agenda();
-
-        // Mantém o foco do teclado ao atualizar os dias.
-        if (tinhaFoco) {
-            const alvo = grade.querySelector(
-                '[data-dia="' + tinhaFoco + '"]'
-            );
-
-            if (alvo) {
-                alvo.focus();
-            }
-        }
+    function go(target) {
+        month = target;
+        month.setDate(1);
+        grouped = new Map();
+        drawMonth();
+        void load();
     }
-
-    /* ========================================
-       6. LEITURA DOS DADOS NO SUPABASE
-    ======================================== */
-
-    // Busca em páginas para não cortar listas grandes no limite da API.
-    async function buscarTodos(fabrica) {
-        const linhas = [];
-
-        for (let inicio = 0; ; inicio += 500) {
-            const resposta = await fabrica()
-                .order('id')
-                .range(inicio, inicio + 499);
-
-            if (resposta.error) {
-                throw resposta.error;
-            }
-
-            linhas.push.apply(linhas, resposta.data);
-
-            if (resposta.data.length < 500) {
-                return linhas;
-            }
-        }
-    }
-
-    async function carregar() {
-        if (!usuarioId) {
-            return iniciar();
-        }
-
-        if (ocupado || carregando) {
-            repetirCarga = true;
-            return;
-        }
-
-        carregando = true;
-        repetirCarga = false;
-
-        controles();
-
-        $('status-calendario').textContent =
-            'Atualizando calendário…';
-
-        const data = dataLocal(selecionada);
-
-        const inicio = chave(
-            new Date(data.getFullYear(), data.getMonth(), 1)
-        );
-
-        const fim = chave(
-            new Date(data.getFullYear(), data.getMonth() + 1, 0)
-        );
-
-        try {
-            const respostaMembros = await supabaseClient.rpc(
-                'get_couple_members'
-            );
-
-            if (respostaMembros.error) {
-                throw respostaMembros.error;
-            }
-
-            membros = respostaMembros.data;
-
-            const casalAnterior = casalId;
-
-            const vinculo = membros.find(function (registro) {
-                return registro.user_id === usuarioId;
-            });
-
-            casalId = vinculo ? vinculo.couple_id : null;
-
-            // Um novo vínculo exige uma nova escolha de compartilhamento.
-            if (casalAnterior && casalAnterior !== casalId) {
-                $('compartilhar-sentimentos').checked = false;
-                $('compartilhar-ciclo').checked = false;
-
-                recado(
-                    'sentimentos',
-                    'Seu vínculo mudou. Confirme novamente antes de ' +
-                    'compartilhar com outro parceiro.'
-                );
-
-                recado(
-                    'ciclo',
-                    'Seu vínculo mudou. Confirme novamente antes de ' +
-                    'compartilhar com outro parceiro.'
-                );
-            }
-
-            $('aviso-casal').hidden = !!casalId;
-
-            // As consultas independentes são feitas em paralelo.
-            const resultados = await Promise.all([
-                casalId
-                    ? buscarTodos(function () {
-                        return supabaseClient
-                            .from('calendar_events')
-                            .select('*')
-                            .eq('couple_id', casalId)
-                            .gte('event_date', inicio)
-                            .lte('event_date', fim);
-                    })
-                    : [],
-
-                casalId
-                    ? buscarTodos(function () {
-                        return supabaseClient
-                            .from('tasks')
-                            .select(
-                                'id,title,due_date,status,priority,assigned_to,assigned_to_both'
-                            )
-                            .eq('couple_id', casalId)
-                            .gte('due_date', inicio)
-                            .lte('due_date', fim);
-                    })
-                    : [],
-
-                buscarTodos(function () {
-                    return supabaseClient
-                        .from('daily_wellbeing')
-                        .select('*')
-                        .gte('entry_date', inicio)
-                        .lte('entry_date', fim);
-                }),
-
-                buscarTodos(function () {
-                    return supabaseClient
-                        .from('cycle_logs')
-                        .select('*')
-                        .eq('user_id', usuarioId)
-                        .gte('entry_date', inicio)
-                        .lte('entry_date', fim);
-                }),
-
-                supabaseClient.rpc('get_shared_cycle_days', {
-                    p_start_date: inicio,
-                    p_end_date: fim
-                }),
-
-                // Consulta os próprios períodos completos.
-                supabaseClient.rpc('get_my_period_days', {
-                    p_start_date: inicio,
-                    p_end_date: fim,
-                    p_today: chave(new Date())
-                })
-                ]);
-
-                if (resultados[4].error) {
-                    throw resultados[4].error;
-                }
-
-                if (resultados[5].error) {
-                    throw resultados[5].error;
-                }
-
-                eventos = resultados[0];
-                tarefas = resultados[1];
-                humores = resultados[2];
-                ciclos = resultados[3];
-                compartilhados = resultados[4].data;
-                diasPeriodos = resultados[5].data;
-
-            pronto = true;
-            renderizar();
-
-            const horario = new Date().toLocaleTimeString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-
-            $('status-calendario').textContent =
-                'Atualizado às ' + horario +
-                ' · atualização automática a cada 30 segundos.';
-        } catch (erro) {
-            pronto = false;
-
-            eventos = [];
-            tarefas = [];
-            humores = [];
-            ciclos = [];
-            compartilhados = [];
-
-            // Remove também os dados compartilhados que estavam na tela.
-            renderizar();
-
-            $('status-calendario').textContent =
-                'Não foi possível carregar. ' +
-                'Confira a conexão e clique em Atualizar.';
-
-            console.error(
-                'Falha ao carregar calendário:',
-                erro.code || erro.name
-            );
-        } finally {
-            carregando = false;
-            controles();
-
-            if (repetirCarga && !encerrado) {
-                repetirCarga = false;
-                void carregar();
-            }
-        }
-    }
-
-    /* ========================================
-       7. NAVEGAÇÃO ENTRE DIAS E MESES
-    ======================================== */
-
-    function cancelarEvento() {
-        edicaoEvento = null;
-        sujoEvento = false;
-
-        $('form-evento').reset();
-        $('data').value = selecionada;
-
-        $('titulo-form-evento').textContent = 'Novo compromisso';
-        $('salvar-evento').textContent = 'Criar compromisso';
-        $('cancelar-evento').hidden = true;
-
-        $('titulo').setCustomValidity('');
-        $('hora-fim').setCustomValidity('');
-    }
-
-    function podeMudarDia() {
-        if (ocupado || carregando) {
-            return false;
-        }
-
-        const temAlteracoes = sujoEvento || sujoHumor || sujoCiclo;
-
-        if (
-            temAlteracoes &&
-            !window.confirm(
-                'Descartar as alterações não salvas antes de mudar de dia?'
-            )
-        ) {
-            return false;
-        }
-
-        sujoEvento = false;
-        sujoHumor = false;
-        sujoCiclo = false;
-
-        return true;
-    }
-
-    async function selecionar(data) {
-        if (!podeMudarDia()) {
-            return false;
-        }
-
-        const mudouMes =
-            data.slice(0, 7) !== selecionada.slice(0, 7);
-
-        selecionada = data;
-        cancelarEvento();
-
-        ['evento', 'sentimentos', 'ciclo'].forEach(function (tipo) {
-            recado(tipo, '');
-        });
-
-        if (mudouMes) {
-            pronto = false;
-
-            eventos = [];
-            tarefas = [];
-            humores = [];
-            ciclos = [];
-            compartilhados = [];
-
-            renderizar();
-            await carregar();
-        } else {
-            renderizar();
-        }
-
-        return true;
-    }
-
-    function mudarMes(passo) {
-        const data = dataLocal(selecionada);
-
-        const novo = new Date(
-            data.getFullYear(),
-            data.getMonth() + passo,
-            1
-        );
-
-        const dia = Math.min(
-            data.getDate(),
-            new Date(
-                novo.getFullYear(),
-                novo.getMonth() + 1,
-                0
-            ).getDate()
-        );
-
-        if (
-            novo.getFullYear() < 1900 ||
-            novo.getFullYear() > 2100
-        ) {
-            return;
-        }
-
-        void selecionar(
-            chave(new Date(novo.getFullYear(), novo.getMonth(), dia))
-        );
-    }
-
-    /* ========================================
-       8. GRAVAÇÃO E CONTROLE DE VERSÃO
-    ======================================== */
-
-    // A versão evita sobrescrever uma alteração feita em outra aba.
-    function editarRegistro(tabela, registro, valores) {
-        return supabaseClient
-            .from(tabela)
-            .update(valores)
-            .eq('id', registro.id)
-            .eq('version', registro.version)
-            .select('id')
-            .single();
-    }
-
-    function excluirRegistro(tabela, registro) {
-        return supabaseClient
-            .from(tabela)
-            .delete()
-            .eq('id', registro.id)
-            .eq('version', registro.version)
-            .select('id')
-            .single();
-    }
-
-    async function gravar(tipo, operacao, sucesso, finalizar) {
-        if (ocupado || !pronto) {
-            return;
-        }
-
-        if (carregando) {
-            recado(
-                tipo,
-                'Aguarde a atualização terminar e tente novamente.'
-            );
-
-            return;
-        }
-
-        ocupado = true;
-        controles();
-        recado(tipo, 'Salvando…');
-
-        try {
-            const resposta = await operacao();
-
-            if (resposta.error) {
-                throw resposta.error;
-            }
-
-            if (!resposta.data) {
-                throw new Error('Resposta sem confirmação.');
-            }
-
-            finalizar();
-            recado(tipo, sucesso);
-        } catch (erro) {
-            const conflito =
-                erro.code === 'PGRST116' ||
-                erro.code === '23505';
-
-            recado(
-                tipo,
-                conflito
-                    ? 'Este registro mudou em outra aba. Use Atualizar e ' +
-                      'descarte sua edição para abrir a versão atual.'
-                    : 'Não foi possível confirmar a alteração. Atualize e ' +
-                      'confira os dados antes de tentar novamente.'
-            );
-
-            console.error(
-                'Falha ao salvar calendário:',
-                erro.code || erro.name
-            );
-        } finally {
-            ocupado = false;
-
-            await carregar();
-            controles();
-        }
-    }
-
-    /* ========================================
-       9. CRIAR, EDITAR E EXCLUIR COMPROMISSOS
-    ======================================== */
-
-    $('form-evento').addEventListener('input', function () {
-        sujoEvento = true;
-
-        $('titulo').setCustomValidity('');
-        $('hora-fim').setCustomValidity('');
-    });
-
-    $('form-evento').addEventListener('submit', async function (evento) {
-        evento.preventDefault();
-
-        $('titulo').setCustomValidity(
-            $('titulo').value.trim() ? '' : 'Informe o compromisso.'
-        );
-
-        const hora = $('hora').value;
-        const fim = $('hora-fim').value;
-
-        $('hora-fim').setCustomValidity(
-            fim && (!hora || fim <= hora)
-                ? 'O fim precisa ser depois do início, no mesmo dia.'
-                : ''
-        );
-
-        if (!$('form-evento').reportValidity() || !casalId) {
-            return;
-        }
-
-        const valores = {
-            title: $('titulo').value.trim(),
-            description: $('descricao-evento').value.trim(),
-            event_date: $('data').value,
-            start_time: hora || null,
-            end_time: fim || null
-        };
-
-        const registro = edicaoEvento;
-
-        await gravar(
-            'evento',
-
-            function () {
-                if (registro) {
-                    return editarRegistro(
-                        'calendar_events',
-                        registro,
-                        valores
-                    );
-                }
-
-                return supabaseClient
-                    .from('calendar_events')
-                    .insert(
-                        Object.assign({ couple_id: casalId }, valores)
-                    )
-                    .select('id')
-                    .single();
-            },
-
-            registro
-                ? 'Compromisso atualizado!'
-                : 'Compromisso criado!',
-
-            function () {
-                // Preserva rascunhos dos outros formulários.
-                if (!sujoHumor && !sujoCiclo) {
-                    selecionada = valores.event_date;
-                }
-
-                cancelarEvento();
-                dialogoEvento.close();
-            }
-        );
-    });
-
-    $('cancelar-evento').addEventListener('click', function () {
-        cancelarEvento();
-        recado('evento', 'Edição cancelada.');
-    });
-
-    $('lista').addEventListener('click', async function (evento) {
-        const botao = evento.target.closest('button[data-acao]');
-
-        if (!botao || ocupado || carregando) {
-            return;
-        }
-
-        const registro = eventos.find(function (item) {
-            return item.id === botao.dataset.id;
-        });
-
-        if (!registro) {
-            return;
-        }
-
-        if (botao.dataset.acao === 'excluir') {
-            if (
-                !window.confirm(
-                    'Excluir o compromisso “' + registro.title + '”?'
-                )
-            ) {
-                return;
-            }
-
-            await gravar(
-                'evento',
-
-                function () {
-                    return excluirRegistro('calendar_events', registro);
-                },
-
-                'Compromisso excluído.',
-
-                function () {
-                    if (
-                        edicaoEvento &&
-                        edicaoEvento.id === registro.id
-                    ) {
-                        cancelarEvento();
-                    }
-                }
-            );
-        } else {
-            if (
-                sujoEvento &&
-                !window.confirm('Descartar a edição atual?')
-            ) {
-                return;
-            }
-
-            edicaoEvento = linhaCopiada(registro);
-            sujoEvento = true;
-
-            $('titulo').value = registro.title;
-            $('descricao-evento').value = registro.description;
-            $('data').value = registro.event_date;
-
-            $('hora').value = registro.start_time
-                ? registro.start_time.slice(0, 5)
-                : '';
-
-            $('hora-fim').value = registro.end_time
-                ? registro.end_time.slice(0, 5)
-                : '';
-
-            $('titulo-form-evento').textContent = 'Editar compromisso';
-            $('salvar-evento').textContent = 'Salvar alterações';
-            $('cancelar-evento').hidden = false;
-
-            $('titulo').setCustomValidity('');
-            $('hora-fim').setCustomValidity('');
-            recado('evento', '');
-            dialogoEvento.showModal();
-            $('titulo').focus();
-        }
-    });
-
-    /* ========================================
-       10. SENTIMENTOS E MENSTRUAÇÃO
-    ======================================== */
-
-    $('form-sentimentos').addEventListener('input', function () {
-        sujoHumor = true;
-        recado('sentimentos', '');
-    });
-
-    $('form-ciclo').addEventListener('input', function () {
-        sujoCiclo = true;
-        recado('ciclo', '');
-    });
-
-    $('form-sentimentos').addEventListener(
-        'submit',
-        async function (evento) {
-            evento.preventDefault();
-
-            if (!feminino) {
-                return;
-            }
-
-            const codigos = Array.from(
-                document.querySelectorAll(
-                    '[name="sentimento"]:checked'
-                )
-            ).map(function (input) {
-                return input.value;
-            });
-
-            const observacao = $('nota-sentimentos').value.trim();
-
-            if (!codigos.length && !observacao) {
-                recado(
-                    'sentimentos',
-                    'Escolha pelo menos um sentimento ou escreva uma observação.'
-                );
-
-                return;
-            }
-
-            const registro = edicaoHumor;
-
-            const valores = {
-                entry_date: selecionada,
-                feelings: codigos,
-                note: observacao,
-                shared_with_couple_id:
-                    $('compartilhar-sentimentos').checked
-                        ? casalId
-                        : null
-            };
-
-            await gravar(
-                'sentimentos',
-
-                function () {
-                    if (registro) {
-                        return editarRegistro(
-                            'daily_wellbeing',
-                            registro,
-                            valores
-                        );
-                    }
-
-                    return supabaseClient
-                        .from('daily_wellbeing')
-                        .insert(valores)
-                        .select('id')
-                        .single();
-                },
-
-                'Sentimentos salvos.',
-
-                function () {
-                    sujoHumor = false;
-                }
-            );
-        }
-    );
-
-    $('form-ciclo').addEventListener('submit', async function (evento) {
-        evento.preventDefault();
-
-        if (!feminino) {
-            return;
-        }
-
-        const registro = edicaoCiclo;
-
-        const valores = {
-            entry_date: selecionada,
-            flow: $('fluxo').value || null,
-            shared_with_couple_id:
-                $('compartilhar-ciclo').checked ? casalId : null
-        };
-
-        await gravar(
-            'ciclo',
-
-            function () {
-                if (registro) {
-                    return editarRegistro('cycle_logs', registro, valores);
-                }
-
-                return supabaseClient
-                    .from('cycle_logs')
-                    .insert(valores)
-                    .select('id')
-                    .single();
-            },
-
-            'Dia de menstruação salvo.',
-
-            function () {
-                sujoCiclo = false;
-            }
-        );
-    });
-
-    $('excluir-sentimentos').addEventListener(
-        'click',
-        async function () {
-            if (
-                !edicaoHumor ||
-                !window.confirm('Apagar seus sentimentos deste dia?')
-            ) {
-                return;
-            }
-
-            const registro = edicaoHumor;
-
-            await gravar(
-                'sentimentos',
-
-                function () {
-                    return excluirRegistro('daily_wellbeing', registro);
-                },
-
-                'Registro apagado.',
-
-                function () {
-                    sujoHumor = false;
-                }
-            );
-        }
-    );
-
-    $('excluir-ciclo').addEventListener('click', async function () {
-        if (
-            !edicaoCiclo ||
-            !window.confirm(
-                'Remover seu registro de menstruação deste dia?'
-            )
-        ) {
-            return;
-        }
-
-        const registro = edicaoCiclo;
-
-        await gravar(
-            'ciclo',
-
-            function () {
-                return excluirRegistro('cycle_logs', registro);
-            },
-
-            'Dia removido.',
-
-            function () {
-                sujoCiclo = false;
-            }
-        );
-    });
-
-    /* ========================================
-       11. BOTÕES DE NAVEGAÇÃO E ATUALIZAÇÃO
-    ======================================== */
-
-    $('atualizar-calendario').addEventListener('click', function () {
-        const temAlteracoes = sujoEvento || sujoHumor || sujoCiclo;
-
-        if (
-            temAlteracoes &&
-            !window.confirm(
-                'Descartar alterações não salvas e carregar os registros atuais?'
-            )
-        ) {
-            return;
-        }
-
-        sujoHumor = false;
-        sujoCiclo = false;
-
-        cancelarEvento();
-        void carregar();
-    });
-
-    function abrirNovoCompromisso() {
-        cancelarEvento();
-        recado('evento', '');
-        dialogoEvento.showModal();
-        if (casalId) $('titulo').focus();
-    }
-
-    function fecharFormulario(evento) {
-        evento.preventDefault();
-        if (ocupado || (sujoEvento && !window.confirm('Descartar a edição atual?'))) {
-            return;
-        }
-
-        cancelarEvento();
-        recado('evento', '');
-        dialogoEvento.close();
-    }
-
-    $('novo-evento').addEventListener('click', abrirNovoCompromisso);
-    $('novo-evento-dia').addEventListener('click', abrirNovoCompromisso);
-    dialogoEvento.querySelector('[data-close]').addEventListener('click', fecharFormulario);
-    dialogoEvento.addEventListener('cancel', fecharFormulario);
-
-    dialogoDia.querySelector('[data-close]').addEventListener('click', function () {
-        if (!ocupado) dialogoDia.close();
-    });
-
-    dialogoDia.addEventListener('cancel', function (evento) {
-        if (ocupado) evento.preventDefault();
-    });
-
-    dialogoDia.addEventListener('close', function () {
-        // A grade é redesenhada quando os dados chegam. Busca o botão atual.
-        const alvo = $('dias').querySelector('[data-dia="' + diaQueAbriuAgenda + '"]')
-            || $('dias').querySelector('.calendario-dia-selecionado')
-            || $('atualizar-calendario');
-
-        alvo.focus();
-    });
-
-    $('dias').addEventListener('click', async function (evento) {
-        const botao = evento.target.closest('button[data-dia]');
-        if (!botao || botao.disabled) return;
-
-        const data = botao.dataset.dia;
-        if (data !== selecionada && !await selecionar(data)) return;
-        if (dialogoDia.open) return;
-
-        diaQueAbriuAgenda = data;
-        dialogoDia.showModal();
-    });
 
     $('anterior').addEventListener('click', function () {
-        mudarMes(-1);
+        go(new Date(month.getFullYear(), month.getMonth() - 1, 1));
     });
-
     $('seguinte').addEventListener('click', function () {
-        mudarMes(1);
+        go(new Date(month.getFullYear(), month.getMonth() + 1, 1));
     });
-
-    $('hoje').addEventListener('click', function () {
-        void selecionar(chave(new Date()));
+    $('hoje').addEventListener('click', function () { go(A.local(C.today())); });
+    $('atualizar-calendario').addEventListener('click', load);
+    grid.addEventListener('click', function (event) {
+        const button = event.target.closest('[data-dia]');
+        if (!button) return;
+        viewing = button.dataset.dia;
+        drawAgenda(viewing);
+        dialog.scrollTop = 0;
+        C.openOverview(dialog, button);
     });
-
-    /* ========================================
-       12. INICIALIZAÇÃO E ATUALIZAÇÃO AUTOMÁTICA
-    ======================================== */
-
-    async function iniciar() {
-        if (iniciando) {
-            return;
-        }
-
-        iniciando = true;
-        controles();
-
-        try {
-            const autenticacao = await supabaseClient.auth.getUser();
-
-            if (
-                autenticacao.error ||
-                !autenticacao.data.user
-            ) {
-                throw autenticacao.error || new Error('Sem sessão.');
-            }
-
-            const id = autenticacao.data.user.id;
-
-            const perfil = await supabaseClient
-                .from('profiles')
-                .select('gender')
-                .eq('id', id)
-                .single();
-
-            if (perfil.error) {
-                throw perfil.error;
-            }
-
-            usuarioId = id;
-            feminino = perfil.data.gender === 'feminino';
-
-            $('painel-pessoal').hidden = !feminino;
-            $('registros-pessoais').hidden = !feminino;
-
-            criarOpcoes();
-            cancelarEvento();
-        } catch (erro) {
-            $('status-calendario').textContent =
-                'Não foi possível carregar sua conta. ' +
-                'Confira a conexão e clique em Atualizar.';
-
-            return;
-        } finally {
-            iniciando = false;
-            controles();
-        }
-
-        await carregar();
-
-        // Atualiza a cada 30 segundos enquanto a página estiver visível.
-        if (!timer) {
-            timer = setInterval(function () {
-                if (
-                    !document.hidden &&
-                    !ocupado &&
-                    !carregando &&
-                    !encerrado
-                ) {
-                    void carregar();
-                }
-            }, 30000);
-        }
-    }
-
+    dialog.addEventListener('close', function () {
+        // Redesenha só depois que o foco voltar ao botão que abriu o modal.
+        queueMicrotask(drawMonth);
+    });
+    window.addEventListener('pageshow', function (event) { if (event.persisted) void load(); });
     document.addEventListener('visibilitychange', function () {
-        if (!document.hidden && usuarioId) {
-            void carregar();
-        }
+        if (document.hidden || !context) return;
+        // Evita exibir dados antigos após trocar de aba ou revogar compartilhamento.
+        grouped = new Map();
+        partial = false;
+        void load();
+        if (dialog.open) drawAgenda(viewing);
+        else drawMonth();
     });
 
-    window.addEventListener('online', function () {
-        void carregar();
+    drawMonth();
+    C.ready.then(function (value) {
+        context = value;
+        return load();
+    }).catch(function (error) {
+        loading = false;
+        partial = true;
+        status.textContent = C.error(error);
+        if (dialog.open) drawAgenda(viewing);
+        controls();
     });
-
-    window.addEventListener('offline', function () {
-        pronto = false;
-
-        eventos = [];
-        tarefas = [];
-        humores = [];
-        ciclos = [];
-        compartilhados = [];
-
-        renderizar();
-
-        $('status-calendario').textContent =
-            'Você está sem conexão. Reconecte e atualize ' +
-            'para consultar os registros.';
-    });
-
-    // Evita sair sem perceber que existem alterações não salvas.
-    window.addEventListener('beforeunload', function (evento) {
-        if (sujoEvento || sujoHumor || sujoCiclo) {
-            evento.preventDefault();
-            evento.returnValue = '';
-        }
-    });
-
-    window.addEventListener('pagehide', function () {
-        encerrado = true;
-        clearInterval(timer);
-    });
-
-    window.addEventListener('pageshow', function (evento) {
-        if (evento.persisted) {
-            window.location.reload();
-        }
-    });
-
-    renderizar();
-    void iniciar();
 })();

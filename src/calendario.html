@@ -23,8 +23,11 @@
 <script defer src="js/app-core.js?v=sessao-unificada"></script>
 <script defer src="js/figma-theme.js"></script>
 <script defer src="js/app-shell.js"></script>
-<script defer src="js/calendario.js"></script>
+<script defer src="js/agenda-dados.js"></script>
+<script defer src="js/modal-consulta.js"></script>
+<script defer src="js/calendario.js?v=agenda-consulta"></script>
 <script defer src="js/couple-brand.js"></script>
+<link rel="stylesheet" href="css/modal-consulta.css">
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -102,7 +105,7 @@
 <header class="cabecalho">
 <div>
 <h1>Calendário</h1>
-<p>Compromissos e prazos em um só lugar.</p>
+<p>Compromissos, prazos e registros do ciclo.</p>
 </div>
 </header>
 <main class="conteudo calendario-real" id="conteudo-pagina" tabindex="-1">
@@ -116,7 +119,6 @@
             <button class="soft-button calendario-seta" aria-label="Mês anterior" id="anterior" type="button">‹</button>
             <button class="soft-button" id="hoje" type="button">Hoje</button>
             <button class="soft-button calendario-seta" aria-label="Próximo mês" id="seguinte" type="button">›</button>
-            <button class="primary-button calendario-novo" id="novo-evento" type="button" aria-haspopup="dialog" aria-controls="dialogo-evento" disabled><span aria-hidden="true">+</span> Novo compromisso</button>
         </div>
     </div>
     <div class="calendario-mensal-grade">
@@ -129,172 +131,27 @@
         <ul aria-label="Legenda" class="calendario-legenda">
             <li class="cal-tipo-evento">Compromissos</li>
             <li class="cal-tipo-tarefa">Tarefas</li>
-            <li class="cal-tipo-pessoal">Registros pessoais</li>
+            <li class="cal-tipo-pessoal">Ciclo e sentimentos</li>
         </ul>
         <button class="soft-button" id="atualizar-calendario" type="button">Atualizar</button>
     </div>
     <p id="status-calendario" role="status">Carregando calendário…</p>
 </section>
-<section class="card reminder-card calendario-lembrete">
-    <span class="stat-icon purple" aria-hidden="true">✧</span>
-    <div>
-        <h3 id="cc-anniversary-title">Uma data de vocês</h3>
-        <p id="cc-anniversary-text">Carregando…</p>
-        <a class="text-button" href="config.html#data-casal">Configurar data →</a>
-    </div>
-</section>
-<dialog aria-labelledby="titulo-agenda" class="cc-modal calendario-agenda" id="dialogo-dia">
-    <header class="calendario-agenda-barra">
+<dialog aria-labelledby="titulo-agenda" class="cc-modal modal-consulta" id="dialogo-dia">
+    <header>
         <div>
             <p id="selecionado"></p>
             <h2 id="titulo-agenda">Agenda do dia</h2>
         </div>
-        <button aria-label="Fechar agenda" data-close type="button" autofocus></button>
+        <button aria-label="Fechar agenda" data-close type="button"></button>
     </header>
-    <div class="lista-app" id="lista"></div>
-    <div class="calendario-agenda-acoes">
-        <button class="primary-button calendario-novo" id="novo-evento-dia" type="button" aria-haspopup="dialog" aria-controls="dialogo-evento" disabled><span aria-hidden="true">+</span> Novo compromisso</button>
+    <div class="modal-consulta-corpo">
+        <div class="modal-consulta-grade" id="lista"></div>
+        <p class="calendario-agenda-vazia" id="agenda-vazia" hidden>Nenhum item para este dia.</p>
+        <p class="calendario-agenda-vazia" id="agenda-aviso" hidden>Parte da agenda está indisponível.</p>
     </div>
-<details class="cc-advanced" id="registros-pessoais" hidden>
-<summary>Sentimentos e registros pessoais do dia</summary>
-<div>
-<!-- O JavaScript mostra estes controles na conta feminina. -->
-<section aria-labelledby="titulo-pessoal" class="painel" hidden="" id="painel-pessoal">
-<h2 id="titulo-pessoal">Meu registro do dia</h2>
-<p class="texto-suave" id="dia-registro"></p>
-<!-- Sentimentos: emojis e observação opcionais. -->
-<details open="">
-<summary>💭 Como estou me sentindo?</summary>
-<form class="form-app" id="form-sentimentos">
-<fieldset disabled="" id="campos-sentimentos">
-<p class="calendario-ajuda">
-                                            Escolha quantos quiser. Os sentimentos são
-                                            informados por você, com ou sem TPM.
-                                        </p>
-<!-- O JavaScript cria as opções de emojis. -->
-<div aria-label="Como estou me sentindo" class="opcoes-sentimentos" id="opcoes-sentimentos" role="group"></div>
-<div class="campo-app">
-<label for="nota-sentimentos">
-                                                Quero dizer também… (opcional)
-                                            </label>
-<textarea id="nota-sentimentos" maxlength="1000" rows="3"></textarea>
-</div>
-<label class="calendario-compartilhar">
-<input id="compartilhar-sentimentos" type="checkbox"/>
-<span>
-                                                Compartilhar os emojis e esta observação
-                                                com meu parceiro atual
-                                            </span>
-</label>
-<p class="calendario-ajuda" id="estado-sentimentos"></p>
-<div class="acoes-app">
-<button class="botao-primario" type="submit">
-                                                Salvar sentimentos
-                                            </button>
-<button hidden="" id="excluir-sentimentos" type="button">
-                                                Apagar registro
-                                            </button>
-</div>
-</fieldset>
-<p aria-live="polite" class="feedback-app" id="feedback-sentimentos" role="status"></p>
-</form>
-</details>
-<!-- Menstruação: o parceiro recebe somente as datas autorizadas. -->
-<details>
-<summary>🩸 Registrar menstruação</summary>
-<form class="form-app" id="form-ciclo">
-<fieldset disabled="" id="campos-ciclo">
-<p class="calendario-ajuda">
-                                            Salvar marca o dia selecionado como um dia
-                                            de menstruação informado por você.
-                                        </p>
-<div class="campo-app">
-<label for="fluxo">
-                                                Fluxo (opcional, só você vê)
-                                            </label>
-<select id="fluxo">
-<option value="">Não informar</option>
-<option value="light">Leve</option>
-<option value="moderate">Moderado</option>
-<option value="heavy">Intenso</option>
-</select>
-</div>
-<label class="calendario-compartilhar">
-<input id="compartilhar-ciclo" type="checkbox"/>
-<span>
-                                                Mostrar ao meu parceiro atual que
-                                                menstruei neste dia
-                                            </span>
-</label>
-<p class="calendario-ajuda" id="estado-ciclo"></p>
-<div class="acoes-app">
-<button class="botao-primario" type="submit">
-                                                Salvar este dia
-                                            </button>
-<button hidden="" id="excluir-ciclo" type="button">
-                                                Remover este dia
-                                            </button>
-</div>
-</fieldset>
-<p aria-live="polite" class="feedback-app" id="feedback-ciclo" role="status"></p>
-</form>
-</details>
-</section>
-</div>
-</details>
 </dialog>
-<dialog aria-labelledby="titulo-form-evento" class="cc-modal" id="dialogo-evento"><button aria-label="Fechar formulário" data-close type="button"></button><section aria-labelledby="titulo-form-evento" class="card">
-<h2 id="titulo-form-evento">Novo compromisso</h2>
-<p class="texto-suave" hidden="" id="aviso-casal">
-                                Crie ou entre em um casal nas
-                                <a href="config.html">Configurações</a>
-                                para compartilhar compromissos e tarefas.
-                            </p>
-<form class="form-app" id="form-evento">
-<!-- Liberado pelo JavaScript após carregar os dados. -->
-<fieldset disabled="" id="campos-evento">
-<div class="campo-app">
-<label for="titulo">Compromisso</label>
-<input id="titulo" maxlength="150" required="" type="text"/>
-</div>
-<div class="campo-app">
-<label for="descricao-evento">
-                                            Descrição (opcional)
-                                        </label>
-<textarea id="descricao-evento" maxlength="3000" rows="3"></textarea>
-</div>
-<div class="campo-app">
-<label for="data">Data</label>
-<input id="data" max="2100-12-31" min="1900-01-01" required="" type="date"/>
-</div>
-<div class="calendario-linha">
-<div class="campo-app">
-<label for="hora">Início (opcional)</label>
-<input id="hora" type="time"/>
-</div>
-<div class="campo-app">
-<label for="hora-fim">Fim (opcional)</label>
-<input aria-describedby="ajuda-horarios" id="hora-fim" type="time"/>
-</div>
-</div>
-<small id="ajuda-horarios">
-                                        Sem início, o compromisso é de dia inteiro.
-                                        O fim deve ser depois do início, no mesmo dia.
-                                        Use os horários locais combinados pelo casal.
-                                    </small>
-<div class="acoes-app">
-<button class="botao-primario" id="salvar-evento" type="submit">
-                                            Criar compromisso
-                                        </button>
-<button hidden="" id="cancelar-evento" type="button">
-                                            Cancelar edição
-                                        </button>
-</div>
-</fieldset>
-<p aria-live="polite" class="feedback-app" id="feedback-evento" role="status"></p>
-</form>
-</section></dialog>
-<footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+</main>
 </div>
 </div>
 </body>

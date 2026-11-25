@@ -1,0 +1,65 @@
+.cc-figma .modal-consulta {
+    width: min(760px, calc(100% - 24px));
+    max-height: min(82dvh, 740px);
+    padding: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: #16243a;
+    border: 1px solid #a7bbdc2f;
+    box-shadow: 0 22px 70px #050a1580;
+}
+
+.cc-figma .modal-consulta::backdrop { animation: consulta-fundo 260ms ease-out; }
+.cc-figma .modal-consulta[data-closing]::backdrop { animation: consulta-fundo 190ms ease-in reverse both; }
+
+@keyframes consulta-fundo {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.cc-figma .modal-consulta > header {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    align-items: center;
+    margin: 0;
+    padding: 18px 24px;
+    background: #16243a;
+    border-bottom: 1px solid #a7bbdc28;
+}
+
+.modal-consulta header p { margin: 0 0 3px; color: #c7b8ff; font-size: 13px; }
+.modal-consulta header p::first-letter { text-transform: uppercase; }
+.modal-consulta-corpo { padding: 18px 24px 24px; }
+
+.modal-consulta-grade {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+}
+
+.modal-consulta-item {
+    min-width: 0;
+    padding: 13px 15px;
+    border: 1px solid #a7bbdc25;
+    border-inline-start: 3px solid var(--cal-cor-item, #b8a9f5);
+    border-radius: 12px;
+    background: #1d2c43;
+    overflow-wrap: anywhere;
+}
+
+.modal-consulta-item h3 { margin: 3px 0; font: 600 17px/1.25 var(--font-display); }
+.modal-consulta-item :is(p, small) { display: block; margin: 4px 0 0; }
+.modal-consulta-item p { white-space: pre-wrap; color: #d1dcef; }
+.modal-consulta-item small { color: var(--cal-cor-item, #c7b8ff); font-size: 12px; }
+.modal-consulta-item[data-destaque] { outline: 1px solid #c7b8ff; }
+
+@media (max-width: 560px) {
+    .modal-consulta-grade { grid-template-columns: minmax(0, 1fr); }
+    .cc-figma .modal-consulta > header, .modal-consulta-corpo { padding-inline: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-figma .modal-consulta::backdrop,
+    .cc-figma .modal-consulta[data-closing]::backdrop { animation: none; }
+}

@@ -13,6 +13,9 @@
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
 <link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/tarefas.js"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="js/tasks-extra.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
+<script defer src="js/agenda-dados.js"></script>
+<script defer src="js/tarefas-compromissos.js"></script>
+<link rel="stylesheet" href="css/tarefas-compromissos.css">
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -120,7 +123,18 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
 <p aria-live="polite" class="texto-suave" id="resumo" role="status"></p>
 <div class="lista-app tarefas-lista" id="lista"></div>
 <button hidden="" id="mais-tarefas" type="button">Mostrar mais tarefas</button>
-</section></div><details class="card cc-history activity-history" id="historico-atividades">
+</section></div><section class="card tarefas-compromissos" id="compromissos" aria-labelledby="titulo-compromissos">
+    <div class="tarefas-compromissos-cabecalho">
+        <h2 id="titulo-compromissos">Compromissos do casal</h2>
+        <button class="primary-button" type="button" id="novo-compromisso" aria-haspopup="dialog" disabled>Novo compromisso</button>
+    </div>
+    <label class="cc-field tarefas-compromissos-mes">Mês dos compromissos
+        <input type="month" id="mes-compromissos" min="1900-01" max="2100-12" pattern="[0-9]{4}-(0[1-9]|1[0-2])" placeholder="AAAA-MM" required disabled>
+    </label>
+    <p id="status-compromissos" class="cc-status" role="status">Carregando compromissos…</p>
+    <div id="lista-compromissos" class="tarefas-compromissos-lista"></div>
+</section>
+<details class="card cc-history activity-history" id="historico-atividades">
 <summary class="activity-history-toggle" id="titulo-historico">Histórico de atividades</summary>
 <div class="activity-history-scroll" id="rolagem-historico" role="region" aria-labelledby="titulo-historico" tabindex="0">
 <div class="activity-toolbar"><label class="cc-field">Agrupar por<select id="agrupar-atividades"><option value="week">Semana</option><option value="month">Mês</option><option value="year">Ano</option></select></label><p id="resumo-atividades" role="status"></p></div><ol id="historico-tarefas"></ol><button class="soft-button" hidden="" id="mais-atividades" type="button">Carregar atividades anteriores</button>

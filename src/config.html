@@ -13,6 +13,7 @@
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
 <link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/config.js"></script><script defer="" src="js/avatar.js"></script><script defer="" src="js/settings-real.js"></script><script>document.documentElement.classList.add('cc-figma');</script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
+<script defer src="js/agenda-preferencias.js"></script>
 </head>
 <body class="pagina-orbital">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -194,7 +195,24 @@
 <button class="botao-primario" id="atualizar-casal" type="button">
                             Atualizar
                         </button>
-</section><section class="card settings-card" id="data-casal"><h3>Uma data de vocês</h3><p>A data de início do relacionamento alimenta os lembretes do calendário.</p><form class="form-app" id="relationship-form"><label class="cc-field">Quando vocês começaram?<input id="relationship-date" required="" type="date"/></label><button class="soft-button" type="submit">Salvar data</button><p aria-live="polite" class="feedback-app" id="relationship-status" role="status"></p></form></section><section class="card settings-card"><div class="settings-title"><span class="stat-icon orange">♧</span><div><h3>Notificações</h3><p>Avisos dentro do CoupleCare. Não envia push com o site fechado.</p></div></div><div id="notification-settings"></div><p aria-live="polite" class="feedback-app" id="notification-settings-status" role="status"></p></section><section class="card settings-card"><div class="settings-title"><span class="stat-icon mint">♙</span><div><h3>Privacidade e segurança</h3><p>Senha da sua conta e preferências de compartilhamento.</p></div></div><form class="form-app" id="password-form"><label class="cc-field">Nova senha<input autocomplete="new-password" id="new-password" minlength="8" required="" type="password"/></label><label class="cc-field">Repita a nova senha<input autocomplete="new-password" id="repeat-password" minlength="8" required="" type="password"/></label><button class="soft-button" type="submit">Alterar senha</button><p aria-live="polite" class="feedback-app" id="password-status" role="status"></p></form><a class="text-button" href="menstruacao.html">Gerenciar meus registros privados →</a></section></div></section><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+</section><section class="card settings-card" id="data-casal"><h3>Uma data de vocês</h3><p>A data de início do relacionamento alimenta os lembretes do calendário.</p><form class="form-app" id="relationship-form"><label class="cc-field">Quando vocês começaram?<input id="relationship-date" required="" type="date"/></label><button class="soft-button" type="submit">Salvar data</button><p aria-live="polite" class="feedback-app" id="relationship-status" role="status"></p></form></section><section class="card settings-card" id="meu-aniversario">
+    <h3>Meu aniversário</h3>
+    <p>Compartilhe apenas o dia e o mês com seu casal atual.</p>
+    <form class="form-app" id="form-aniversario">
+        <fieldset id="campos-aniversario" disabled>
+            <div class="tarefas-linha">
+                <label class="cc-field">Dia <input id="aniversario-dia" type="number" min="1" max="31" step="1" inputmode="numeric" required></label>
+                <label class="cc-field">Mês <select id="aniversario-mes" required><option value="">Selecione</option></select></label>
+            </div>
+            <div class="acoes-app">
+                <button class="soft-button" type="submit">Compartilhar aniversário</button>
+                <button type="button" id="remover-aniversario" hidden>Parar de compartilhar</button>
+            </div>
+        </fieldset>
+        <p class="feedback-app" id="status-aniversario" role="status"></p>
+    </form>
+</section>
+<section class="card settings-card"><div class="settings-title"><span class="stat-icon orange">♧</span><div><h3>Notificações</h3><p>Avisos dentro do CoupleCare. Não envia push com o site fechado.</p></div></div><div id="notification-settings"></div><p aria-live="polite" class="feedback-app" id="notification-settings-status" role="status"></p></section><section class="card settings-card"><div class="settings-title"><span class="stat-icon mint">♙</span><div><h3>Privacidade e segurança</h3><p>Senha da sua conta e preferências de compartilhamento.</p></div></div><form class="form-app" id="password-form"><label class="cc-field">Nova senha<input autocomplete="new-password" id="new-password" minlength="8" required="" type="password"/></label><label class="cc-field">Repita a nova senha<input autocomplete="new-password" id="repeat-password" minlength="8" required="" type="password"/></label><button class="soft-button" type="submit">Alterar senha</button><p aria-live="polite" class="feedback-app" id="password-status" role="status"></p></form><a class="text-button" href="menstruacao.html">Gerenciar meus registros privados →</a></section></div></section><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
 </div>
 </div>
 </body>
