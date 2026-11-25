@@ -9,14 +9,14 @@
   <title>CoupleCare | Organizem a vida a dois</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="/src/css/figma-theme.css">
-  <link rel="stylesheet" href="/src/css/landing.css?v=header-auth">
+  <link rel="stylesheet" href="/src/css/landing.css?v=menu-conta">
   <script defer src="/src/js/analytics.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="/src/js/supabase-client.js"></script>
   <script defer src="/src/js/login.js"></script>
   <script defer src="/src/js/cadastro.js"></script>
   <script defer src="/src/js/couple-brand.js"></script>
-  <script defer src="/src/js/landing.js?v=header-auth"></script>
+  <script defer src="/src/js/landing.js?v=menu-conta"></script>
   <link rel="prefetch" href="/dashboard">
 </head>
 <body class="landing">
@@ -28,6 +28,19 @@
     <div class="header-auth">
       <button class="button outline" type="button" data-signup aria-haspopup="dialog">Cadastrar-se</button>
       <button class="button outline login-button" type="button" data-login aria-haspopup="dialog">Logar</button>
+      <details class="landing-account" id="landing-account" hidden>
+        <summary class="button outline">
+          <span class="landing-account-avatar" id="landing-account-avatar" aria-hidden="true"></span>
+          <span class="landing-account-name" id="landing-account-name">Minha conta</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="landing-account-panel">
+          <a href="/dashboard">Entrar no sistema</a>
+          <a href="/configuracoes">Configurações</a>
+          <button type="button" id="landing-sign-out">Sair da conta</button>
+          <p id="landing-account-status" role="status"></p>
+        </div>
+      </details>
     </div>
   </header>
 
@@ -38,6 +51,7 @@
         <p>Tarefas, calendário e finanças do casal em um só lugar.</p>
         <div class="actions">
           <button class="button primary" type="button" data-signup aria-haspopup="dialog">Criar conta</button>
+          <a class="button primary" id="landing-dashboard" href="/dashboard" hidden>Entrar no sistema</a>
           <a class="button outline" href="#planos">Ver planos</a>
         </div>
       </div>
@@ -45,7 +59,7 @@
         <div class="preview-frame" aria-hidden="true">
           <div class="preview-menu">
             <strong class="brand"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</strong>
-            <span>Dashboard</span><span>Tarefas</span><span>Calendário</span><span>Menstruação</span>
+            <span>Página inicial</span><span>Dashboard</span><span>Tarefas</span><span>Calendário</span><span>Menstruação</span>
             <span class="selected">Finanças</span><small>CONECTAR</small>
             <span>Nosso espaço</span><span>Configurações</span>
           </div>
@@ -171,4 +185,5 @@
 </dialog>
 </body>
 </html>
+
 

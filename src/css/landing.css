@@ -102,3 +102,61 @@
 @media (prefers-reduced-motion: reduce) {
     .landing .header-auth .login-button { transition: none; }
 }
+
+
+/* Conta autenticada na página pública. */
+.landing .header-auth [hidden], .landing .actions [hidden] { display: none !important; }
+.landing-account { position: relative; }
+.landing .landing-account summary {
+    display: flex;
+    list-style: none;
+    gap: 7px;
+    max-width: min(230px, 45vw);
+    padding-inline: 8px;
+}
+.landing-account summary::-webkit-details-marker { display: none; }
+.landing-account summary > svg { flex: 0 0 14px; width: 14px; height: 14px; }
+.landing-account[open] summary > svg { transform: rotate(180deg); }
+.landing-account-avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #ad9aff28;
+    color: #e6ddff;
+    font-size: 12px;
+}
+.landing-account-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.landing-account-panel {
+    position: absolute;
+    z-index: 5;
+    inset: calc(100% + 8px) 0 auto auto;
+    width: min(224px, calc(100vw - 32px));
+    padding: 6px;
+    border: 1px solid #7287aa59;
+    border-radius: 13px;
+    background: var(--panel);
+    box-shadow: 0 16px 32px #040a16a3;
+}
+.landing .landing-account-panel :is(a, button) {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    color: var(--text);
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+}
+.landing .landing-account-panel :is(a, button):is(:hover, :focus-visible) {
+    background: var(--panel-2);
+    color: var(--orange-soft);
+}
+.landing .landing-account-panel a:first-child { color: var(--orange-soft); font-weight: 700; }
+.landing-account-panel p { margin: 0; padding: 5px 10px; color: var(--orange-soft); font-size: 12px; }
+.landing-account-panel p:empty { display: none; }

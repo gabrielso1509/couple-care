@@ -81,6 +81,13 @@
         if (marca) marca.href = '/src/dashboard.html';
 
         nav.replaceChildren();
+        const paginaInicial = elemento('a', 'item-menu');
+        paginaInicial.href = '/';
+        paginaInicial.title = 'Página inicial';
+        paginaInicial.setAttribute('aria-label', 'Página inicial');
+        paginaInicial.innerHTML = icone('home');
+        paginaInicial.append(elemento('span', '', 'Página inicial'));
+        nav.append(paginaInicial);
         paginas.forEach(function (item, indice) {
             if (indice === 0 || indice === 5) {
                 const grupo = elemento('span', 'cc-nav-label', indice === 0 ? 'ORGANIZAR' : 'CONECTAR');
@@ -278,4 +285,5 @@
 
     prepararAplicacao();
 })();
+
 
