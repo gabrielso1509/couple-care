@@ -706,34 +706,6 @@ svg { width: 21px; height: 21px; }
 .cc-figma .cc-dashboard .cc-dashboard-status { color: #a9b7ce; font-size: 12px; }
 
 /* Login: mantém os IDs usados pelo login.js e pelo cadastro.js. */
-.cc-figma .cc-login { background: #0a1426; }
-.cc-figma .cc-login .login-grid { min-height: calc(100dvh - 92px); }
-.cc-figma .cc-login .login-copy { min-height: 650px; }
-.cc-figma .cc-login .login-copy h1 { font-size: clamp(44px, 5.2vw, 76px); }
-.cc-figma .cc-login .login-copy > p { font-size: 16px; }
-.cc-figma .cc-login .login-orbit { bottom: -4%; }
-.cc-figma .cc-login .login-panel { width: auto; max-width: none; display: block; }
-.cc-figma .cc-login .entrada-conteudo { width: 100%; max-width: none; margin: 0; }
-.cc-figma .cc-login .login-panel h1 { margin: 0 0 12px; font: 600 30px/1.15 'Outfit', sans-serif; letter-spacing: -.8px; }
-.cc-figma .cc-login .login-panel .subtitulo { margin: 0 0 26px; color: #a9b7ce; font-size: 14px; }
-.cc-figma .cc-login .formulario { display: grid; gap: 18px; }
-.cc-figma .cc-login .campo { display: grid; gap: 8px; }
-.cc-figma .cc-login .campo label { color: #dfe5ef; font-size: 12px; }
-.cc-figma .cc-login .campo :is(input, select) { width: 100%; min-height: 54px; padding: 14px 16px; border: 1px solid #ffffff19; border-radius: 14px; background: #ffffff0b; color: #f5f7fb; font-size: 15px; }
-.cc-figma .cc-login .campo-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.cc-figma .cc-login .futuro { color: #a9b7ce; font-size: 10px; }
-.cc-figma .cc-login .botao-entrar { min-height: 52px; width: 100%; border: 0; border-radius: 14px; color: #142037; background: linear-gradient(120deg, #ff914d, #ffab67); font-size: 13px; font-weight: 700; }
-.cc-figma .cc-login .cadastro { margin: 24px 0 0; text-align: center; color: #a9b7ce; font-size: 12px; }
-.cc-figma .cc-login .link-cadastro { color: #cbbfff; }
-.cc-figma .cc-login .cc-password { position: relative; display: block; }
-.cc-figma .cc-login .cc-password input { padding-right: 52px; }
-.cc-figma .cc-login .cc-password button { position: absolute; right: 5px; top: 5px; width: 44px; height: 44px; padding: 10px; color: #a9b7ce; border: 0; border-radius: 10px; background: transparent; }
-.cc-figma .cc-login .modal-cadastro { width: min(560px, calc(100% - 24px)); max-height: calc(100dvh - 24px); border: 1px solid #ffffff20; border-radius: 28px; background: linear-gradient(145deg, #182844, #0d1a30); color: #f5f7fb; }
-.cc-figma .cc-login .modal-cadastro[open] { margin: auto; }
-.cc-figma .cc-login .modal-conteudo { padding: 36px; }
-.cc-figma .cc-login .modal-cabecalho h2 { font-family: 'Outfit', sans-serif; }
-.cc-figma .cc-login .modal-cabecalho h2 span { color: #ff914d; }
-.cc-figma .cc-login .feedback { color: #ffbf90; font-size: 13px; }
 .cc-figma .cartao-confirmacao { background: linear-gradient(145deg, #182844, #0d1a30); border-color: #ffffff20; border-radius: 28px; }
 .cc-figma .cc-staged { position: relative; padding: 32px; border: 1px solid #ad9aff25; border-radius: 22px; background: linear-gradient(110deg, #1d2a49, #111f38); }
 .cc-figma .cc-staged h2 { margin: 12px 0; font: 600 32px/1.2 'Outfit', sans-serif; }
@@ -745,8 +717,6 @@ svg { width: 21px; height: 21px; }
 
 /* Movimento curto; desativado quando a pessoa prefere menos animações. */
 @keyframes cc-float { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(-1deg); } }
-.cc-figma .cc-login .note-one { animation: cc-float 7s ease-in-out 2; }
-.cc-figma .cc-login .note-two { animation: cc-float 8s ease-in-out 2 reverse; }
 @media (max-width: 1180px) {
     .cc-figma .tarefas-grade, .cc-figma .layout-calendario-app { grid-template-columns: 1fr; }
     .cc-figma .cc-dashboard .dashboard-grid { grid-template-columns: 1fr 1fr; }
@@ -754,7 +724,6 @@ svg { width: 21px; height: 21px; }
     .cc-figma .cc-dashboard .next-event-card { grid-row: auto; }
     .cc-figma .cc-dashboard .mood-card { flex-wrap: wrap; }
     .cc-figma .cc-date { display: none; }
-    .cc-figma .cc-login .login-grid { gap: 40px; grid-template-columns: minmax(0, 1fr) minmax(340px, .85fr); }
 }
 @media (max-width: 900px) {
     .cc-figma .aplicacao .menu-lateral { width: 270px; transform: translateX(calc(-100% - 20px)); }
@@ -769,12 +738,6 @@ svg { width: 21px; height: 21px; }
     .cc-figma .cc-bottom-nav :is(a, button) { min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 5px; border: 0; border-radius: 13px; background: transparent; color: #b1bfd5; font: 500 10px 'DM Sans', sans-serif; }
     .cc-figma .cc-bottom-nav .ativo { background: #ff914d14; color: #ffb47c; }
     .cc-figma .cc-bottom-nav svg { width: 19px; height: 19px; }
-    .cc-figma .cc-login .login-grid { padding: 15px 24px 50px; grid-template-columns: 1fr; max-width: 620px; gap: 30px; }
-    .cc-figma .cc-login .login-copy { min-height: 0; }
-    .cc-figma .cc-login .login-copy h1 { font-size: 48px; max-width: 560px; margin: 16px 0; }
-    .cc-figma .cc-login .login-orbit { display: none; }
-    .cc-figma .cc-login .login-topbar { height: 80px; padding: 0 24px; }
-    .cc-figma .cc-login .login-panel { padding: 30px; }
     .cc-figma .cc-stage-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
@@ -798,13 +761,6 @@ svg { width: 21px; height: 21px; }
     .cc-figma .cc-dashboard .week-content { gap: 24px; flex-wrap: wrap; }
     .cc-figma .cc-dashboard .progress-ring { width: 120px; height: 120px; }
     .cc-figma .cc-dashboard .week-stats { min-width: 120px; }
-    .cc-figma .cc-login .login-topbar .topbar-tag { display: none; }
-    .cc-figma .cc-login .login-copy h1 { font-size: 40px; }
-    .cc-figma .cc-login .login-copy > p { font-size: 14px; }
-    .cc-figma .cc-login .login-perks { flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-    .cc-figma .cc-login .login-panel { padding: 26px 22px; border-radius: 24px; }
-    .cc-figma .cc-login .modal-conteudo { padding: 28px 22px; }
-    .cc-figma .cc-login .cadastro-senhas { grid-template-columns: 1fr; }
     .cc-figma .calendario-real .dia-app { min-height: 50px; gap: 3px; }
     .cc-figma .calendario-legenda { font-size: 10px; }
 }
@@ -813,13 +769,7 @@ svg { width: 21px; height: 21px; }
 }
 
 /* A arte acompanha o texto e não cobre a descrição em telas menores. */
-.cc-figma .cc-login .login-orbit { position: relative; right: auto; bottom: auto; width: min(100%, 400px); height: 220px; min-height: 220px; margin: 28px 0 0 auto; }
-.cc-figma .cc-login .orbit-heart .cc-icon { width: 46px; height: 46px; }
-.cc-figma .cc-login .float-note > .cc-icon { width: 35px; height: 35px; }
-.cc-figma .cc-login .login-perks .cc-icon { width: 16px; height: 16px; }
 .cc-figma .cc-dashboard .event-art > .cc-icon { width: 55px; height: 55px; }
-.cc-figma .cc-login .marca-icone { background: transparent; border: 0; border-radius: 0; }
-@media (max-width: 900px) { .cc-figma .cc-login .login-orbit { display: none; } }
 
 .cc-figma .cc-dashboard .mood-card p { font-size: 12px; line-height: 1.7; }
 .cc-figma .cc-stage-grid .status-pill { display: inline-block; padding: 5px 10px; border: 1px solid #ad9aff30; border-radius: 20px; color: #cbbfff; font-size: 11px; }

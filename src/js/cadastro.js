@@ -160,8 +160,7 @@ formularioCadastro.addEventListener('submit', async function (evento) {
         confirmacaoCadastro.setCustomValidity('');
 
         if (data.session) {
-            feedbackCadastro.textContent =
-                'Conta criada e sessão iniciada. O acesso ao painel será implementado na próxima etapa.';
+            window.location.replace('/dashboard');
         } else {
             // Mensagem neutra: o Auth pode ocultar se um e-mail já está cadastrado.
             feedbackCadastro.textContent =

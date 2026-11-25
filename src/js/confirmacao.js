@@ -76,7 +76,7 @@ async function confirmarEmail() {
         // verifyOtp também pode iniciar a sessão.
         if (data.session) {
             acaoConfirmacao.textContent = 'Ir para meu espaço →';
-            acaoConfirmacao.href = '/src/index.html';
+            acaoConfirmacao.href = '/dashboard';
         } else {
             acaoConfirmacao.textContent = 'Entrar na minha conta →';
         }

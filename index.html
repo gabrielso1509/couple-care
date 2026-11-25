@@ -1,82 +1,121 @@
-<!DOCTYPE html>
-
-<html lang="pt-BR">
+<!doctype html>
+<html lang="pt-BR" class="cc-figma">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI" name="google-site-verification"/>
-<meta content="#101c33" name="theme-color"/>
-<title>Entrar | CoupleCare</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="src/css/login.css" rel="stylesheet"/>
-<script defer="" src="/src/js/analytics.js"></script>
-<!-- Biblioteca do Supabase. -->
-<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Configuração e criação do cliente. -->
-<script defer="" src="src/js/supabase-client.js"></script>
-<script defer="" src="src/js/login.js"></script>
-<!-- Comportamento do formulário de cadastro. -->
-<script defer="" src="src/js/cadastro.js"></script>
-<link href="/src/css/figma-theme.css" rel="stylesheet"/><script>document.documentElement.classList.add("cc-figma");</script><script defer="" src="/src/js/figma-theme.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI" name="google-site-verification"/>
+  <meta name="theme-color" content="#0a1426">
+  <meta name="description" content="Organizem tarefas, calendário, finanças e metas do casal em um só lugar.">
+  <title>CoupleCare | Organizem a vida a dois</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="/src/css/figma-theme.css">
+  <link rel="stylesheet" href="/src/css/landing.css">
+  <script defer src="/src/js/analytics.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="/src/js/supabase-client.js"></script>
+  <script defer src="/src/js/login.js"></script>
+  <script defer src="/src/js/cadastro.js"></script>
+  <script defer src="/src/js/couple-brand.js"></script>
+  <script defer src="/src/js/landing.js"></script>
 </head>
-<body>
-<!-- 1. Navegação compacta -->
-<header class="topbar">
-<a aria-label="CoupleCare, início" class="marca" href="index.html">
-<span aria-hidden="true" class="marca-icone">♡</span><span>Couple<span class="laranja">Care</span></span>
-</a>
-<span class="topbar-tag">Seu espaço a dois <span aria-hidden="true">✦</span></span>
-</header>
-<main class="layout">
-<!-- 2. Área de login: autenticação com Supabase -->
-<section aria-labelledby="titulo-login" class="entrada">
-<div class="entrada-conteudo">
-<div class="etiqueta"><span class="ponto"></span> ORGANIZE O QUE IMPORTA</div>
-<h1 id="titulo-login">A vida fica melhor <em>juntos.</em></h1>
-<p class="subtitulo">Sua rotina, seus planos e os pequenos momentos — tudo no mesmo lugar.</p>
-<form class="formulario" id="formulario-login">
+<body class="landing">
+  <header class="site-header wrap">
+    <a class="brand" href="/" aria-label="CoupleCare, início"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</a>
+    <nav aria-label="Navegação principal">
+      <a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a>
+    </nav>
+    <button class="button outline" type="button" data-login aria-haspopup="dialog">Entrar</button>
+  </header>
+
+  <main>
+    <section class="hero wrap">
+      <div>
+        <h1>Organizem a vida a dois<span>.</span></h1>
+        <p>Tarefas, calendário e finanças do casal em um só lugar.</p>
+        <div class="actions">
+          <button class="button primary" type="button" data-signup aria-haspopup="dialog">Criar conta</button>
+          <a class="button outline" href="#planos">Ver planos</a>
+        </div>
+      </div>
+      <figure class="app-preview" aria-label="Prévia ilustrativa de Finanças">
+        <div class="preview-frame" aria-hidden="true">
+          <div class="preview-menu">
+            <strong class="brand"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</strong>
+            <span>Dashboard</span><span>Tarefas</span><span>Calendário</span><span>Menstruação</span>
+            <span class="selected">Finanças</span><small>CONECTAR</small>
+            <span>Nosso espaço</span><span>Configurações</span><span class="demo-goals">Metas</span>
+          </div>
+          <div class="preview-content">
+            <strong>Finanças<span>.</span></strong>
+            <div class="demo-period"><span>Semana</span><span class="selected">Mês</span><span>Ano</span></div>
+            <div class="demo-metrics">
+              <div>Receitas<b>—</b></div><div>Despesas<b>—</b></div>
+              <div>Saldo<b>—</b></div><div>Contas e saldos<b>—</b></div>
+            </div>
+            <div class="demo-details">
+              <div><b>Gastos por categoria</b><p>Nenhuma despesa neste período.</p></div>
+              <div><b>Atividade recente</b><p>Nenhum lançamento neste período.</p></div>
+            </div>
+          </div>
+        </div>
+        <figcaption>Prévia ilustrativa de Finanças</figcaption>
+      </figure>
+    </section>
+
+    <section class="site-section wrap" id="recursos">
+      <h2>Um espaço para a rotina de vocês</h2>
+      <div class="feature-grid">
+        <article><h3>Tarefas</h3><p>Dividam o que precisa ser feito e acompanhem o andamento.</p></article>
+        <article><h3>Calendário</h3><p>Reúnam compromissos e datas importantes.</p></article>
+        <article><h3>Finanças</h3><p>Acompanhem receitas, despesas e contas do casal.</p></article>
+        <article><h3>Metas</h3><p>Planejem objetivos e registrem os aportes.</p></article>
+        <article><h3>Bem-estar</h3><p>Acompanhem registros com controle de compartilhamento.</p></article>
+      </div>
+    </section>
+
+    <section class="site-section wrap" id="planos">
+      <h2>Planos e preços</h2>
+      <article class="plan">
+        <div><h3>Plano Casal</h3><p>Um espaço compartilhado para duas pessoas.</p></div>
+        <strong>Preço a definir</strong>
+      </article>
+    </section>
+
+    <section class="site-section wrap faq" id="duvidas">
+      <h2>Dúvidas frequentes</h2>
+      <details><summary>Como funciona o CoupleCare?</summary><p>Crie sua conta e convide a outra pessoa para compartilhar tarefas, calendário, finanças e metas.</p></details>
+      <details><summary>Cada pessoa tem seu próprio login?</summary><p>Sim. O convite vincula as duas contas ao mesmo espaço.</p></details>
+      <details><summary>Preciso conectar um banco?</summary><p>A conexão é opcional. Vocês também podem cadastrar contas e lançamentos manualmente.</p></details>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap">
+    <a class="brand" href="/"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</a>
+    <a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a>
+  </footer>
+
+  <dialog class="auth-dialog" id="modal-login" aria-labelledby="titulo-login">
+    <div class="modal-conteudo">
+      <button class="modal-fechar" type="button" id="fechar-login" aria-label="Fechar login">×</button>
+      <header class="modal-cabecalho"><span class="marca-icone" aria-hidden="true">♡</span><h2 id="titulo-login">Entrar no CoupleCare</h2></header>
+      <form class="formulario" id="formulario-login">
 <div class="campo"><label for="email">E-mail</label><input autocomplete="email" id="email" name="email" placeholder="voce@exemplo.com" required="" type="email"/></div>
 <div class="campo"><div class="campo-cabecalho"><label for="senha">Senha</label><a href="/src/recuperar-senha.html">Esqueci minha senha</a></div><input autocomplete="current-password" id="senha" name="senha" placeholder="Sua senha" required="" type="password"/></div>
-<button class="botao-entrar" type="submit">Entrar na minha conta <span aria-hidden="true">↗</span></button>
+<button class="botao-entrar" type="submit">Entrar</button>
 <p aria-live="polite" class="feedback" id="feedback-login" role="status"></p>
 </form>
-<p class="cadastro">
-            Ainda não tem uma conta?
-            <button class="link-cadastro" id="abrir-cadastro" type="button">
-                Criar conta
-            </button>
-</p>
-</div>
-<div class="rodape">© 2026 CoupleCare <span>Feito para construir juntos.</span></div>
-</section>
-<!-- 3. Ilustração de produto: órbitas e logo animados apenas com CSS -->
-<section aria-label="Ilustração das funcionalidades do CoupleCare" class="universo">
-<div class="universo-fundo"></div>
-<div aria-hidden="true" class="orbitas"><div class="orbita orbita-um"></div><div class="orbita orbita-dois"></div><div class="orbita orbita-tres"></div><div class="centro-brilho"></div>
-<!-- Dois traços de coração representam duas pessoas conectadas -->
-<div class="coracao"><svg fill="none" viewbox="0 0 180 160" xmlns="http://www.w3.org/2000/svg"><path d="M90 136C65 114 28 88 28 55C28 36 41 23 59 23C73 23 83 30 90 42" stroke="#F28C45" stroke-linecap="round" stroke-width="14"></path><path d="M90 136C115 114 152 88 152 55C152 36 139 23 121 23C107 23 97 30 90 42" stroke="#B6A3FF" stroke-linecap="round" stroke-width="14"></path><path d="M90 42C83 30 73 23 59 23" stroke="#FFB17C" stroke-linecap="round" stroke-width="4"></path></svg><span>couple<span>care</span></span></div>
-<span class="estrela estrela-a">✦</span><span class="estrela estrela-b">✧</span><span class="estrela estrela-c">✦</span>
-</div>
-<div class="cartao-flutuante cartao-tarefas"><span class="cartao-icone lilas">✓</span><span><strong>Tarefas</strong><small>Rotina em sintonia</small></span></div>
-<div class="cartao-flutuante cartao-calendario"><span class="cartao-icone laranja-fundo">▦</span><span><strong>Calendário</strong><small>Momentos especiais</small></span></div>
-<div class="cartao-flutuante cartao-financas"><span class="cartao-icone lilas">◈</span><span><strong>Finanças</strong><small>Planos compartilhados</small></span></div>
-<div class="universo-legenda"><span class="linha"></span> UM LUGAR PARA O QUE É DE VOCÊS</div>
-</section>
-</main>
-<!-- Cadastro sobre a página de login. -->
-<dialog aria-describedby="descricao-cadastro" aria-labelledby="titulo-cadastro" class="modal-cadastro" id="modal-cadastro">
+      <button class="button outline auth-secondary" id="abrir-cadastro" type="button">Criar conta</button>
+    </div>
+  </dialog>
+  <dialog aria-describedby="descricao-cadastro" aria-labelledby="titulo-cadastro" class="auth-dialog" id="modal-cadastro">
 <div class="modal-conteudo">
 <button aria-label="Fechar cadastro" class="modal-fechar" id="fechar-cadastro" type="button">
 <span aria-hidden="true">×</span>
 </button>
 <header class="modal-cabecalho">
-<span aria-hidden="true" class="modal-simbolo">♡</span>
-<p class="modal-etiqueta">SEU ESPAÇO A DOIS</p>
-<h2 id="titulo-cadastro">
-                Tudo começa <span>com você.</span>
-</h2>
+<span class="marca-icone" aria-hidden="true">♡</span>
+
+<h2 id="titulo-cadastro">Criar conta no CoupleCare</h2>
 <p id="descricao-cadastro">
                 Crie sua conta para começar a organizar sua vida a dois.
             </p>
@@ -128,4 +167,3 @@
 </dialog>
 </body>
 </html>
-

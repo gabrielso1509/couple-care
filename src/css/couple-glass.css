@@ -182,8 +182,6 @@ body{background-color:var(--cc-ink)}
     .cc-figma .aplicacao .menu-lateral,
     .cc-figma .chart-bar-slot button.chart-bar { transition: none; }
 }
-.cc-figma .cc-login .orbit-heart .cc-brand-mark { width: 68%; height: 68%; }
-.cc-figma .cc-login .panel-icon .cc-brand-mark { width: 26px; height: 26px; }
 .cc-figma .cc-finances #finance-status:not(.is-error):not(:empty) {
     margin: 0; font-size: 12px; color: #acbed1;
 }

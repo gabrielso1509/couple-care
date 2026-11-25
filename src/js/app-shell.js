@@ -69,7 +69,7 @@
                     content.append(C.el('span','notification-state',n.read_at ? 'Lida' : 'Nova · não lida'));
                     a.append(icon,content);
                     // Somente rotas locais conhecidas são aceitas, mesmo se o banco mudar.
-                    a.href = /^\/src\/(tarefas|calendario|espaco|index|config)\.html$/.test(n.link) ? n.link : '/src/index.html';
+                    a.href = /^\/src\/(tarefas|calendario|espaco|index|dashboard|config)\.html$/.test(n.link) ? n.link : '/dashboard';
                     const date = C.el('time', '', new Date(n.created_at).toLocaleString('pt-BR', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})); date.dateTime = n.created_at; content.append(date);
                     a.addEventListener('click', async function (e) {
                         e.preventDefault();

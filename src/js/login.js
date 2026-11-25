@@ -78,7 +78,7 @@ formularioLogin.addEventListener('submit', async function (evento) {
         }
 
         // Abre o dashboard após autenticar e carregar o perfil.
-        window.location.replace('/src/index.html');
+        window.location.replace('/dashboard');
 
     } catch (erro) {
         feedbackLogin.textContent =

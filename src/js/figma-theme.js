@@ -50,7 +50,7 @@
     }
 
     const paginas = [
-        { arquivo: 'index.html', titulo: 'Dashboard', icone: 'home' },
+        { arquivo: 'dashboard.html', titulo: 'Dashboard', icone: 'home' },
         { arquivo: 'tarefas.html', titulo: 'Tarefas', icone: 'tasks' },
         { arquivo: 'calendario.html', titulo: 'Calendário', icone: 'calendar' },
         { arquivo: 'menstruacao.html', titulo: 'Menstruação', icone: 'heart' },
@@ -58,67 +58,6 @@
         { arquivo: 'espaco.html', titulo: 'Nosso espaço', icone: 'sparkles' },
         { arquivo: 'config.html', titulo: 'Configurações', icone: 'settings' }
     ];
-
-    /* 2. Login: reaproveita os campos e o modal que já enviam ao Supabase. */
-    function prepararLogin() {
-        const formulario = document.getElementById('formulario-login');
-        if (!formulario) return;
-        const grade = document.querySelector('main.layout');
-        const painel = document.querySelector('.entrada');
-        if (!grade || !painel) return;
-
-        document.body.classList.add('cc-login', 'login-page');
-        const topo = document.querySelector('header.topbar');
-        if (topo) topo.className = 'login-topbar';
-        grade.className = 'login-grid';
-        painel.className = 'login-panel';
-        const arteAnterior = document.querySelector('.universo');
-        if (arteAnterior) arteAnterior.remove();
-        const rodapeAnterior = painel.querySelector('.rodape');
-        if (rodapeAnterior) rodapeAnterior.remove();
-        const etiquetaAnterior = painel.querySelector('.etiqueta');
-        if (etiquetaAnterior) etiquetaAnterior.remove();
-
-        const chamada = elemento('section', 'login-copy');
-        chamada.setAttribute('aria-labelledby', 'cc-titulo-apresentacao');
-        // HTML fixo e local. Dados dos usuários são sempre escritos com textContent.
-        chamada.innerHTML = '<div class="eyebrow"><span></span> SEU ESPAÇO A DOIS</div>' +
-            '<h1 id="cc-titulo-apresentacao">Mais leveza para a vida que vocês <em>constroem juntos.</em></h1>' +
-            '<p>Organize a rotina, cuide dos planos e guarde os momentos que fazem a história de vocês.</p>' +
-            '<div class="login-perks"><span>' + icone('check') + 'Rotina compartilhada</span><span>' + icone('lock') + 'Você escolhe o que compartilhar</span></div>' +
-            '<div class="login-orbit" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>' +
-            '<div class="orbit-heart">' + icone('heart') + '</div>' +
-            '<div class="float-note note-one">' + icone('tasks') + '<span><b>Rotina em sintonia</b><small>Um passo de cada vez</small></span></div>' +
-            '<div class="float-note note-two">' + icone('calendar') + '<span><b>Tempo para vocês</b><small>Pequenos momentos importam</small></span></div></div>';
-        grade.prepend(chamada);
-
-        const titulo = document.getElementById('titulo-login');
-        if (titulo) titulo.textContent = 'Que bom ter você aqui.';
-        const subtitulo = painel.querySelector('.subtitulo');
-        if (subtitulo) subtitulo.textContent = 'Entre para continuar cuidando do que é de vocês.';
-        const simbolo = elemento('span', 'panel-icon');
-        simbolo.innerHTML = icone('heart');
-        painel.querySelector('.entrada-conteudo').prepend(simbolo);
-
-        const setaEntrar = formulario.querySelector('.botao-entrar span');
-        if (setaEntrar) setaEntrar.innerHTML = icone('arrow');
-        const senha = document.getElementById('senha');
-        if (senha) {
-            const caixa = elemento('span', 'cc-password');
-            senha.before(caixa);
-            caixa.append(senha);
-            const mostrar = botao('', 'Mostrar senha', 'eye');
-            mostrar.setAttribute('aria-controls', 'senha');
-            mostrar.setAttribute('aria-pressed', 'false');
-            mostrar.addEventListener('click', function () {
-                const visivel = senha.type === 'password';
-                senha.type = visivel ? 'text' : 'password';
-                mostrar.setAttribute('aria-pressed', String(visivel));
-                mostrar.setAttribute('aria-label', visivel ? 'Ocultar senha' : 'Mostrar senha');
-            });
-            caixa.append(mostrar);
-        }
-    }
 
     /* 3. Navegação: os links continuam sendo páginas reais, com sessão validada. */
     function prepararAplicacao() {
@@ -132,14 +71,14 @@
         const atual = nav.querySelector('[aria-current="page"]');
         let arquivoAtual = atual ? new URL(atual.href).pathname.split('/').pop() : '';
         if (document.getElementById('cc-nosso-espaco')) arquivoAtual = 'espaco.html';
-        if (!arquivoAtual) arquivoAtual = location.pathname.split('/').pop() || 'index.html';
+        if (!arquivoAtual) arquivoAtual = location.pathname.split('/').pop() || 'dashboard.html';
         const pagina = paginas.find(function (item) { return item.arquivo === arquivoAtual; });
         if (pagina) {
             cabecalho.querySelector('h1').textContent = pagina.titulo;
             document.title = pagina.titulo + ' | CoupleCare';
         }
         const marca = lateral.querySelector('.marca-tarefas');
-        if (marca) marca.href = '/src/index.html';
+        if (marca) marca.href = '/src/dashboard.html';
 
         nav.replaceChildren();
         paginas.forEach(function (item, indice) {
@@ -342,6 +281,6 @@
         });
     }
 
-    prepararLogin();
+
     prepararAplicacao();
 })();
