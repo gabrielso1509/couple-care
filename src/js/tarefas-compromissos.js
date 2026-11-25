@@ -24,6 +24,49 @@
             <p id="feedback-compromisso" role="status"></p>
         </form>`);
 
+    const monthButton = $('compromisso-mes-atual');
+    const previousMonth = $('compromisso-mes-anterior');
+    const nextMonth = $('compromisso-mes-seguinte');
+    const monthDialog = C.dialog('compromisso-mes-dialog', 'Consultar compromissos', `
+        <form class="form-app" id="compromisso-mes-form">
+            <label class="cc-field">Mês
+                <select id="compromisso-mes-numero" required></select>
+            </label>
+            <label class="cc-field">Ano
+                <input type="number" id="compromisso-mes-ano" min="1900" max="2100" step="1" required>
+            </label>
+            <button class="primary-button" type="submit">Consultar</button>
+        </form>`);
+    const monthSelect = $('compromisso-mes-numero');
+    const yearInput = $('compromisso-mes-ano');
+    for (let index = 0; index < 12; index += 1) {
+        const name = new Date(2000, index, 1).toLocaleDateString('pt-BR', { month: 'long' });
+        monthSelect.append(new Option(name, String(index + 1).padStart(2, '0')));
+    }
+
+    function setMonth(value) {
+        month.value = value;
+        void load();
+    }
+    monthButton.addEventListener('click', function () {
+        monthSelect.value = month.value.slice(5);
+        yearInput.value = month.value.slice(0, 4);
+        monthDialog.showModal();
+        monthSelect.focus();
+    });
+    $('compromisso-mes-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        setMonth(yearInput.value + '-' + monthSelect.value);
+        monthDialog.close();
+    });
+    [previousMonth, nextMonth].forEach(function (button, index) {
+        button.addEventListener('click', function () {
+            const date = A.local(month.value + '-01');
+            date.setMonth(date.getMonth() + (index === 0 ? -1 : 1));
+            setMonth(A.key(date).slice(0, 7));
+        });
+    });
+
     const form = $('form-compromisso');
     let editing = null;
 
@@ -81,6 +124,10 @@
         newEvent.disabled = false;
         const start = month.value + '-01';
         const date = A.local(start);
+        monthButton.textContent = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        monthButton.disabled = false;
+        previousMonth.disabled = month.value === '1900-01';
+        nextMonth.disabled = month.value === '2100-12';
         const end = A.key(new Date(date.getFullYear(), date.getMonth() + 1, 0));
         status.textContent = 'Atualizando compromissos…';
         list.replaceChildren();
@@ -118,15 +165,23 @@
     });
 
     newEvent.addEventListener('click', function () { open(); });
-    month.addEventListener('change', load);
-    C.ready.then(function (value) {
+    C.ready.then(async function (value) {
         context = value;
         month.value = C.today().slice(0, 7);
         if (!context.couple) {
             status.textContent = 'Conecte seu casal em Configurações para criar compromissos.';
             return;
         }
-        month.disabled = false;
-        return load();
+        await load();
+        const requested = new URLSearchParams(location.search).get('evento');
+        if (location.hash === '#compromissos' && /^\d{4}-\d{2}-\d{2}$/.test(requested || '')) {
+            const date = A.local(requested);
+            if (date.getTime() && A.key(date) === requested && requested >= '1900-01-01' && requested <= '2100-12-31') {
+                month.value = requested.slice(0, 7);
+                void load();
+                open();
+                $('compromisso-data').value = requested;
+            }
+        }
     }).catch(function (error) { status.textContent = C.error(error); });
 })();

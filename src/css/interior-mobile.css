@@ -340,3 +340,302 @@
     .cc-figma .menstruacao-real .partner-care-card h2 { font-size: 20px; }
     .cc-figma .menstruacao-real .cc-cycle-history { padding-inline: 14px; }
 }
+
+/* Indicadores de orçamento, categorias e recorrência usam valores do aplicativo. */
+.finance-budget {
+    display: grid;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #ffad7040;
+    border-radius: 13px;
+    background: #ffad7010;
+}
+
+.finance-budget-heading,
+.finance-category-title,
+.compromisso-semanal header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.finance-budget-heading > div { min-width: 0; flex: 1; }
+.finance-budget-heading small,
+.finance-budget-heading > div strong { display: block; }
+.finance-budget-heading small { color: #ffbc8a; font-size: 11px; }
+.finance-budget-heading strong { font-size: 13px; overflow-wrap: anywhere; }
+.finance-budget-heading .finance-budget-percent { color: #ffad70; font-size: 18px; }
+.finance-budget-heading p { margin: 0; }
+.finance-budget-heading button { flex-shrink: 0; }
+.finance-budget-progress,
+.finance-category-progress,
+.compromisso-progresso {
+    display: block;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #243d58;
+    color: var(--bar-color, #ffad70);
+}
+:is(.finance-budget-progress, .finance-category-progress, .compromisso-progresso)::-webkit-progress-bar { background: #243d58; }
+:is(.finance-budget-progress, .finance-category-progress, .compromisso-progresso)::-webkit-progress-value { background: var(--bar-fill, var(--bar-color, #ffad70)); border-radius: inherit; }
+:is(.finance-budget-progress, .finance-category-progress, .compromisso-progresso)::-moz-progress-bar { background: var(--bar-fill, var(--bar-color, #ffad70)); border-radius: inherit; }
+.finance-budget-progress { --bar-fill: linear-gradient(90deg, #ffad70, #b795ff); }
+.finance-category-progress[data-tone="1"] { --bar-color: #b795ff; }
+.finance-category-progress[data-tone="2"] { --bar-color: #9df0bf; }
+.finance-category-progress[data-tone="3"] { --bar-color: #83afe9; }
+
+#compromissos-recorrentes { display: grid; gap: 10px; }
+.cc-figma .compromisso-semanal { padding: 16px; }
+.compromisso-semanal h3 { margin: 6px 0; font-size: 20px; }
+.compromisso-semanal p { margin: 0 0 10px; color: #bed0e7; font-size: 13px; }
+.compromisso-semanal small { display: block; color: #d0baff; margin-top: 6px; font-size: 12px; }
+.compromisso-selo {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border: 1px solid #ffad7040;
+    border-radius: 999px;
+    background: #ffad7015;
+    color: #ffbc8a;
+    font-size: 11px;
+    font-weight: 700;
+}
+.compromisso-progresso { --bar-fill: linear-gradient(90deg, #b795ff, #ffad70); }
+.compromisso-periodo {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 6px;
+    width: min(292px, 100%);
+}
+.compromisso-periodo button.soft-button { min-height: 44px; padding: 5px; }
+#compromisso-mes-atual { text-transform: capitalize; }
+.mobile-kicker {
+    color: #b8cce5;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+    /* Dashboard */
+    .cc-figma .dashboard-casal-base {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        align-items: start;
+    }
+    .dashboard-casal-base .mobile-finance-widget { grid-column: 1 / -1; }
+    .cc-figma .dashboard-casal-base .mobile-quick-widget { min-width: 0; padding: 11px; }
+    .dashboard-casal-base .mobile-quick-widget h2 { font-size: 14px; gap: 6px; overflow-wrap: anywhere; }
+    .dashboard-casal-base .mobile-quick-widget h2 > span { flex: 0 0 auto; }
+    .dashboard-casal-base .mobile-quick-widget h2 svg { width: 16px; height: 16px; }
+    .dashboard-casal-base .mobile-quick-toggle { font-size: 12px; }
+
+    .dashboard-task-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .dashboard-task-heading h2 { flex: 1; }
+    .dashboard-widget .mobile-agenda-title { font: 600 20px/1.2 var(--font-display); }
+    .dashboard-casal .mobile-agenda { position: relative; }
+    .dashboard-casal .mobile-agenda h2 { padding-inline-end: 72px; }
+    .dashboard-casal .mobile-agenda .dashboard-widget-link {
+        position: absolute;
+        inset: 4px 12px auto auto;
+        min-height: 44px;
+        width: auto;
+        border: 0;
+        padding: 0;
+        font-size: 12px;
+    }
+    .dashboard-casal .mobile-agenda .dashboard-widget-link .mobile-only { font-size: 12px; }
+    .dashboard-casal #dashboard-eventos .dashboard-linha {
+        grid-template-columns: 55px minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+        padding: 9px 0;
+        border: 0;
+    }
+    .dashboard-casal .dashboard-event-details { display: grid; min-width: 0; gap: 2px; align-content: center; }
+    .dashboard-casal .dashboard-event-details small { display: block; color: var(--mobile-muted); line-height: 1.4; font-size: 11px; overflow-wrap: anywhere; }
+    .dashboard-casal #dashboard-eventos .dashboard-event-details { position: relative; padding-inline-start: 12px; border-inline-start: 1px solid #b795ff65; }
+    .dashboard-casal #dashboard-eventos .dashboard-event-details::before {
+        position: absolute;
+        inset: 6px auto auto -4px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--mobile-purple);
+        box-shadow: 0 0 0 4px #b795ff25;
+        content: '';
+    }
+    .dashboard-casal #dashboard-tarefas .dashboard-linha {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 9px;
+        margin-block: 4px;
+        padding: 9px;
+        border: 1px solid #7895b530;
+        border-radius: 11px;
+        background: #09182d65;
+    }
+    .dashboard-task-mark { width: 21px; height: 21px; border: 1px solid #7895b5; border-radius: 7px; }
+    .dashboard-budget { margin-top: 2px; }
+    .dashboard-budget .finance-budget-heading { margin-bottom: 6px; }
+
+    /* Tarefas */
+    .cc-figma .tarefas-pagina .mobile-task-progress {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: 12px;
+    }
+    .mobile-progress-ring {
+        display: grid;
+        width: 64px;
+        height: 64px;
+        place-content: center;
+        text-align: center;
+        border-radius: 50%;
+        background: radial-gradient(circle closest-side, #112740 76%, transparent 78%),
+            conic-gradient(var(--mobile-orange) var(--completion, 0%), #2c455f 0);
+    }
+    .mobile-progress-ring strong { font-size: 19px; line-height: 1.14; }
+    .mobile-progress-ring small { color: var(--mobile-muted); font-size: 10px; }
+    .cc-figma .tarefas-pagina > .stats-row { display: none; }
+    .cc-figma .conteudo.tarefas-pagina .card.task-list-card {
+        padding-inline: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    .cc-figma .tarefas-pagina .tarefas-filtros button { border-radius: 999px; }
+    .cc-figma .tarefas-pagina .tarefas-filtros button[aria-pressed="true"] { color: #18243a; background: var(--mobile-orange); }
+    .cc-figma .tarefas-pagina .tarefa-cartao {
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        column-gap: 9px;
+        row-gap: 3px;
+        align-items: center;
+        padding: 11px 10px 8px;
+        border: 1px solid var(--mobile-line);
+        border-radius: 14px;
+        background: #112740;
+    }
+    .cc-figma .tarefas-pagina .tarefa-cartao .cc-task-toggle {
+        display: grid;
+        width: 34px;
+        min-height: 42px;
+        place-items: center;
+        border: 0;
+        background: transparent;
+        color: #a8ebcd;
+        position: relative;
+        font-size: 15px;
+    }
+    .tarefas-pagina .cc-task-toggle::after {
+        content: '';
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border: 1px solid #88a0bd;
+        border-radius: 7px;
+    }
+    .cc-figma .tarefas-pagina .tarefa-cartao:not(.concluida) .cc-task-toggle { font-size: 0; }
+    .tarefas-pagina .concluida .cc-task-toggle::after { border-color: #73d5bd; background: #73d5bd18; }
+    .tarefas-pagina .tarefa-cartao-texto h3 { overflow-wrap: anywhere; margin: 0; }
+    .tarefas-pagina .tarefa-cartao-resumo {
+        color: var(--mobile-muted);
+        margin: 2px 0 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 11px;
+    }
+    .tarefas-pagina .tarefa-cartao-texto .tarefa-meta { font-size: 10px; }
+    .tarefas-pagina .tarefa-cartao-prazo { align-self: center; color: var(--mobile-purple); font-size: 11px; font-weight: 700; }
+    .cc-figma .tarefas-pagina .tarefa-pessoa { grid-column: 2 / -1; }
+    .cc-figma .tarefas-pagina .tarefa-details { grid-column: 2 / -1; }
+    .compromisso-periodo { width: 100%; }
+    .cc-figma .tarefas-compromissos-cabecalho { align-items: start; }
+
+    /* Calendário */
+    .cc-figma .conteudo.calendario-real :is(.card.calendario-mensal, .card.mobile-dia-agenda) {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+    .calendario-mensal #mes { display: none; }
+    .mobile-calendar-heading { margin: 3px 0 0; font-size: 22px; }
+    .mobile-calendar-label { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; }
+    .calendario-mensal-barra { align-items: center; gap: 7px; }
+    .calendario-mensal-acoes { gap: 4px; }
+    .cc-figma .calendario-real .calendario-mensal-acoes .soft-button { min-width: 34px; max-width: 48px; padding-inline: 5px; }
+    .cc-figma .calendario-real .calendario-seta { width: 34px; }
+    .cc-figma .calendario-mensal[data-week] .mobile-semana {
+        margin-top: 12px;
+        margin-bottom: 4px;
+        border: 1px solid var(--mobile-line);
+        background: #10243b;
+    }
+    .calendario-mensal-rodape .calendario-legenda { font-size: 10px; gap: 5px 9px; }
+    .cc-figma .calendario-real #atualizar-calendario { font-size: 11px; padding: 3px 8px; }
+    .mobile-dia-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 0; border-top: 1px solid #28415d; }
+    .mobile-dia-heading :is(h2, p) { margin: 0; }
+    .mobile-dia-heading p { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+    .cc-figma .mobile-dia-heading > a {
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 4px 10px;
+        background: var(--mobile-orange);
+        color: #17223a;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .mobile-day-row {
+        display: grid;
+        grid-template-columns: 56px minmax(0, 1fr);
+        align-items: center;
+        min-height: 69px;
+        padding: 11px 0;
+        gap: 10px;
+        border-bottom: 1px solid #28415d;
+    }
+    .mobile-day-row > div { border-inline-start: 3px solid var(--cal-cor-item, #b795ff); padding-inline-start: 10px; min-width: 0; }
+    .mobile-day-row h3 { margin: 0; font-size: 15px; }
+    .mobile-day-row p, .mobile-day-row small { margin: 0; color: var(--mobile-muted); font-size: 11px; overflow-wrap: anywhere; }
+    .mobile-day-time { color: #e0d2fc; font-weight: 700; font-size: 11px; }
+    .calendario-dia[aria-pressed="true"] { background: #b795ff40; }
+
+    /* Finanças */
+    .cc-figma .cc-finances #finance-chart { display: none; }
+    .cc-figma .cc-finances .finance-category-list {
+        display: grid;
+        gap: 13px;
+        margin-top: 12px;
+        padding: 13px;
+        border: 1px solid var(--mobile-line);
+        border-radius: 15px;
+        background: var(--mobile-panel);
+    }
+    .finance-category-title { font-size: 12px; margin-bottom: 4px; }
+    .finance-category-title span { color: var(--mobile-muted); text-align: end; }
+    .cc-figma .cc-finances .transactions-card #new-entry {
+        min-height: 42px;
+        margin: 0;
+        padding: 6px 9px;
+        background: var(--mobile-orange);
+        color: #17223a;
+        font-size: 11px;
+        box-shadow: none;
+    }
+    .cc-figma .cc-finances .transactions-card .card-title { flex-wrap: wrap; gap: 6px; }
+}

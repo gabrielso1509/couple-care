@@ -50,24 +50,29 @@
 
     const taskButton = document.querySelector('[data-task-editor]');
     if (!taskButton) return;
-    const done = document.getElementById('total-concluidas');
-    const pending = document.getElementById('total-pendentes');
     const progress = document.getElementById('mobile-task-progress-bar');
     const progressLabel = document.getElementById('mobile-task-progress-count');
+    const ring = document.getElementById('mobile-progress-ring');
 
     function updateProgress() {
-        const completed = Number(done.textContent);
-        const total = completed + Number(pending.textContent);
-        if (!Number.isFinite(total)) return;
-        progress.hidden = total === 0;
+        if (progress.dataset.total === undefined) return;
+        const completed = Number(progress.dataset.done);
+        const total = Number(progress.dataset.total);
+        ring.hidden = false;
         progress.max = total || 1;
         progress.value = completed;
-        progressLabel.textContent = total ? completed + ' de ' + total + ' concluídas' : 'Nenhuma tarefa cadastrada.';
+        ring.style.setProperty('--completion', (total ? completed / total * 100 : 0) + '%');
+        document.getElementById('mobile-progress-completed').textContent = String(completed);
+        document.getElementById('mobile-progress-total').textContent = 'de ' + total;
+        const pending = total - completed;
+        progressLabel.textContent = !total ? 'Nenhuma tarefa com prazo hoje.' :
+            !pending ? 'Todas as tarefas de hoje foram concluídas.' :
+            pending === 1 ? 'Falta 1 tarefa para hoje.' : 'Faltam ' + pending + ' tarefas para hoje.';
     }
 
-    const stats = new MutationObserver(updateProgress);
-    stats.observe(done, { childList: true, subtree: true, characterData: true });
-    stats.observe(pending, { childList: true, subtree: true, characterData: true });
+    new MutationObserver(updateProgress).observe(progress, {
+        attributes: true, attributeFilter: ['data-total', 'data-done']
+    });
     updateProgress();
 
     const editor = document.getElementById(taskButton.getAttribute('aria-controls'));

@@ -40,7 +40,10 @@
         }
         renderRows($('dashboard-eventos'), rows, function (event) {
             const row = C.el('div', 'dashboard-linha');
-            row.append(C.el('span', '', event.title), C.el('small', '', A.clock(event)));
+            const detail = C.el('span', 'dashboard-event-details');
+            detail.append(C.el('strong', '', event.title));
+            if (event.description) detail.append(C.el('small', 'mobile-only', event.description));
+            row.append(detail, C.el('small', 'dashboard-event-time', A.clock(event)));
             return row;
         });
     }
@@ -48,6 +51,11 @@
     function tasks(rows) {
         const pending = rows.filter(function (task) { return task.status === 'pending'; });
         $('dashboard-pendentes').textContent = pending.length + (pending.length === 1 ? ' pendente' : ' pendentes');
+        const summary = $('dashboard-task-summary');
+        summary.hidden = false;
+        const dueToday = pending.filter(function (task) { return task.due_date === today; }).length;
+        summary.textContent = dueToday === 1 ? 'Uma pendência hoje' : dueToday > 1 ? dueToday + ' pendências hoje' :
+            pending.length ? 'Próximas tarefas' : 'Tudo em dia';
         const all = $('dashboard-todas-tarefas');
         all.disabled = !rows.length;
 
@@ -77,7 +85,10 @@
             button.type = 'button';
             button.setAttribute('aria-haspopup', 'dialog');
             button.setAttribute('aria-controls', dialog.id);
-            button.append(C.el('span', '', task.title), C.el('small', '', due(task.due_date)));
+            const title = C.el('span', 'dashboard-event-details');
+            title.append(C.el('strong', '', task.title));
+            if (task.description) title.append(C.el('small', 'mobile-only', task.description));
+            button.append(C.el('span', 'mobile-only dashboard-task-mark'), title, C.el('small', '', due(task.due_date)));
             button.addEventListener('click', function () { open(button, task.id); });
             return button;
         });

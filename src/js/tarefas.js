@@ -83,12 +83,51 @@
         b.setAttribute('aria-label', texto + ': ' + tarefa.title);
         return b;
     }
+    function renderizarCompromissos() {
+        const list = $('compromissos-recorrentes');
+        const records = new Map(tarefas.map(function (task) { return [task.id, task]; }));
+        const current = tarefas.filter(function (task) {
+            return task.recurrence === 'weekly' && task.status === 'pending' && !task.recurrence_generated;
+        });
+        list.replaceChildren();
+        list.hidden = !current.length;
+
+        current.forEach(function (task) {
+            // Cada ocorrência aponta para a anterior. Uma semana ausente ou reaberta encerra a sequência.
+            let previous = records.get(task.recurrence_parent);
+            let expected = CC.agenda.plusDays(task.due_date, -7);
+            let streak = 0;
+            while (previous?.status === 'completed' && previous.due_date === expected) {
+                streak += 1;
+                expected = CC.agenda.plusDays(expected, -7);
+                previous = records.get(previous.recurrence_parent);
+            }
+
+            const card = elemento('article', 'card compromisso-semanal');
+            const heading = elemento('header');
+            heading.append(elemento('span', 'mobile-kicker', '♡ Compromisso do casal'), elemento('span', 'compromisso-selo', 'Semanal'));
+            const responsible = task.assigned_to_both ? 'Nós dois' : task.assigned_to ? nome(task.assigned_to) : 'Sem responsável';
+            const bar = elemento('progress', 'compromisso-progresso');
+            bar.max = 4;
+            bar.value = Math.min(streak, 4);
+            bar.setAttribute('aria-label', 'Progresso até 4 semanas seguidas');
+            const message = streak === 1 ? '1 semana seguida' : streak + ' semanas seguidas';
+            card.append(heading, elemento('h3', '', task.title), elemento('p', '', dataCurta(task.due_date) + ' · ' + responsible),
+                bar, elemento('small', '', streak ? message : 'A sequência começa ao concluir a primeira semana.'));
+            list.append(card);
+        });
+    }
+
     function renderizar() {
         const dia = hoje();
         const pendentes = tarefas.filter(t => t.status === 'pending');
         $('total-pendentes').textContent = pendentes.length;
         $('total-hoje').textContent = pendentes.filter(t => t.due_date === dia).length;
         $('total-concluidas').textContent = tarefas.filter(t => t.status === 'completed').length;
+        const tasksToday = tarefas.filter(function (task) { return task.due_date === dia; });
+        $('mobile-task-progress-bar').dataset.total = String(tasksToday.length);
+        $('mobile-task-progress-bar').dataset.done = String(tasksToday.filter(function (task) { return task.status === 'completed'; }).length);
+        renderizarCompromissos();
         $('total-atrasadas').textContent = pendentes.filter(t => t.due_date && t.due_date < dia).length;
         const busca = $('busca-tarefa').value.trim().toLocaleLowerCase('pt-BR');
         const pessoa = $('filtro-responsavel').value;
@@ -122,8 +161,11 @@
             const atrasada = !concluida && t.due_date && t.due_date < dia;
             const card = elemento('article', 'tarefa-cartao' + (concluida ? ' concluida' : atrasada ? ' atrasada' : t.due_date === dia ? ' para-hoje' : ''));
             const toggle = botao(concluida ? '✓' : '○', 'status', t); toggle.className = 'cc-task-toggle'; toggle.setAttribute('aria-label', (concluida ? 'Reabrir: ' : 'Concluir: ') + t.title);
-            const header = elemento('div'); header.append(elemento('h3', '', t.title), elemento('p', 'tarefa-meta', dataCurta(t.due_date) + ' · ' + categorias[t.category]));
-            card.append(toggle, header);
+            const header = elemento('div', 'tarefa-cartao-texto');
+            header.append(elemento('h3', '', t.title), elemento('p', 'tarefa-meta', dataCurta(t.due_date) + ' · ' + categorias[t.category]));
+            if (t.description) header.append(elemento('p', 'mobile-only tarefa-cartao-resumo', t.description));
+            card.append(toggle, header, elemento('span', 'mobile-only tarefa-cartao-prazo',
+                concluida ? 'Feita' : t.due_date === dia ? 'Hoje' : t.due_date === CC.agenda.plusDays(dia, 1) ? 'Amanhã' : t.due_date ? dataCurta(t.due_date).slice(0, 5) : ''));
             const details = elemento('details', 'tarefa-details'); details.append(elemento('summary', '', 'Detalhes e ações')); 
             const tags = elemento('div', 'tarefa-etiquetas');
             tags.append(elemento('span', 'tarefa-etiqueta', categorias[t.category]), elemento('span', 'tarefa-etiqueta' + (t.priority === 'high' ? ' alta' : ''), 'Prioridade ' + prioridades[t.priority].toLowerCase()));

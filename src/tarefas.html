@@ -12,8 +12,7 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
-<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer="" src="js/tarefas.js"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="js/tasks-extra.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
-<script defer src="js/agenda-dados.js"></script>
+<link href="css/figma-theme.css" rel="stylesheet"/><link href="css/app.css" rel="stylesheet"/><script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="js/supabase-client.js"></script><script defer="" src="js/sessao.js?v=sessao-unificada"></script><script defer="" src="js/app-core.js?v=sessao-unificada"></script><script defer="" src="js/figma-theme.js"></script><script defer="" src="js/app-shell.js"></script><script defer src="js/agenda-dados.js"></script><script defer="" src="js/tarefas.js"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="js/tasks-extra.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css"><script defer src="/src/js/couple-brand.js"></script>
 <script defer src="js/tarefas-compromissos.js"></script>
 <link rel="stylesheet" href="css/tarefas-compromissos.css">
 <link rel="stylesheet" href="css/interior-mobile.css">
@@ -101,7 +100,18 @@
 <span class="selo-tarefas">Feito para construir juntos</span>
 </header>
 <!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1"><section class="card mobile-only mobile-task-progress" aria-labelledby="mobile-task-progress-title"><div><h2 id="mobile-task-progress-title">Progresso das tarefas</h2><p id="mobile-task-progress-count">Carregando tarefas…</p></div><progress id="mobile-task-progress-bar" aria-labelledby="mobile-task-progress-title" hidden></progress></section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><div class="two-column"><button class="primary-button mobile-only" data-task-editor type="button" aria-expanded="false" aria-controls="editor-tarefa-mobile">+ Nova tarefa</button><section id="editor-tarefa-mobile" aria-labelledby="titulo-editor" class="card add-task-card"><span class="section-label">NOVA TAREFA</span>
+<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1"><section class="card mobile-only mobile-task-progress" aria-labelledby="mobile-task-progress-title">
+    <div class="mobile-progress-ring" id="mobile-progress-ring" hidden>
+        <strong id="mobile-progress-completed">0</strong>
+        <small id="mobile-progress-total"></small>
+        <progress class="cc-sr" id="mobile-task-progress-bar" aria-labelledby="mobile-task-progress-title"></progress>
+    </div>
+    <div>
+        <span class="mobile-kicker">Progresso de hoje</span>
+        <h2 id="mobile-task-progress-title">Um passo de cada vez</h2>
+        <p id="mobile-task-progress-count">Carregando tarefas…</p>
+    </div>
+</section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p><div class="two-column"><button class="primary-button mobile-only" data-task-editor type="button" aria-expanded="false" aria-controls="editor-tarefa-mobile">+ Nova tarefa</button><section id="editor-tarefa-mobile" aria-labelledby="titulo-editor" class="card add-task-card"><span class="section-label">NOVA TAREFA</span>
 <h2 id="titulo-editor">Nova tarefa</h2>
 <form class="form-app" id="form-tarefa">
 <fieldset disabled="" id="campos-tarefa">
@@ -113,7 +123,7 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
 </fieldset>
 <p aria-live="polite" class="feedback-app" id="feedback" role="status"></p>
 </form>
-</section><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="section-label">TAREFAS DO CASAL</span>
+</section><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="section-label">PRÓXIMOS PASSOS</span>
 <div class="tarefas-cabecalho"><h2 id="titulo-lista">O que vem por aí</h2><button id="atualizar-tarefas" type="button">Atualizar</button><div class="campo-app"><label for="busca-tarefa">Buscar tarefa</label><input id="busca-tarefa" placeholder="Título ou descrição" type="search"/></div></div>
 <div aria-label="Filtrar tarefas" class="acoes-app tarefas-filtros" role="group">
 <button aria-pressed="true" data-filtro="all" type="button">Todas</button><button aria-pressed="false" data-filtro="pending" type="button">Pendentes</button><button aria-pressed="false" data-filtro="completed" type="button">Concluídas</button><button aria-pressed="false" data-filtro="today" type="button">Hoje</button><button aria-pressed="false" data-filtro="upcoming" type="button">Próximas</button><button aria-pressed="false" data-filtro="overdue" type="button">Atrasadas</button>
@@ -125,14 +135,17 @@ Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. At�
 <p aria-live="polite" class="texto-suave" id="resumo" role="status"></p>
 <div class="lista-app tarefas-lista" id="lista"></div>
 <button hidden="" id="mais-tarefas" type="button">Mostrar mais tarefas</button>
-</section></div><section class="card tarefas-compromissos" id="compromissos" aria-labelledby="titulo-compromissos">
+</section></div><section id="compromissos-recorrentes" aria-label="Compromissos semanais do casal" hidden></section><section class="card tarefas-compromissos" id="compromissos" aria-labelledby="titulo-compromissos">
     <div class="tarefas-compromissos-cabecalho">
         <h2 id="titulo-compromissos">Compromissos do casal</h2>
         <button class="primary-button" type="button" id="novo-compromisso" aria-haspopup="dialog" disabled>Novo compromisso</button>
     </div>
-    <label class="cc-field tarefas-compromissos-mes">Mês dos compromissos
-        <input type="month" id="mes-compromissos" min="1900-01" max="2100-12" pattern="[0-9]{4}-(0[1-9]|1[0-2])" placeholder="AAAA-MM" required disabled>
-    </label>
+    <div class="compromisso-periodo" role="group" aria-label="Mês dos compromissos">
+        <button class="soft-button" id="compromisso-mes-anterior" type="button" aria-label="Mês anterior" disabled>‹</button>
+        <button class="soft-button" id="compromisso-mes-atual" type="button" aria-label="Escolher mês dos compromissos" aria-haspopup="dialog" disabled>Este mês</button>
+        <button class="soft-button" id="compromisso-mes-seguinte" type="button" aria-label="Próximo mês" disabled>›</button>
+    </div>
+    <input type="hidden" id="mes-compromissos">
     <p id="status-compromissos" class="cc-status" role="status">Carregando compromissos…</p>
     <div id="lista-compromissos" class="tarefas-compromissos-lista"></div>
 </section>

@@ -569,3 +569,18 @@
 .cc-figma .tarefas-pagina :is(input,select,textarea){min-width:0;max-width:100%;width:100%}
 .cc-figma .tarefas-pagina input[type=checkbox]{width:18px}
 @media(max-width:600px){.cc-figma .tarefas-linha{grid-template-columns:minmax(0,1fr)}.cc-figma .cc-bottom-nav :is(a,button){min-width:0;padding-inline:2px}}
+
+/* Notificações: indica o alvo tanto no mouse quanto na navegação por teclado. */
+.cc-figma .cc-notification-button {
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.cc-figma .cc-notification-button:not(:disabled):is(:hover, :focus-visible) {
+    color: #ffe1c9;
+    background: #ffad7025;
+    border-color: #ffad7080;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cc-figma .cc-notification-button { transition: none; }
+}

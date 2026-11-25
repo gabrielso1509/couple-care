@@ -114,11 +114,12 @@
 <!-- Layout inspirado em Event Calendar, de Parviz (CC BY 4.0).
      https://www.figma.com/community/file/1521809352066199654/event-calendar
      https://creativecommons.org/licenses/by/4.0/ -->
-<section class="card calendario-mensal" aria-labelledby="mes">
+<section class="card calendario-mensal" aria-label="Navegação do calendário">
     <div class="calendario-mensal-barra">
         <div>
-        <p class="mobile-only mobile-calendar-label" id="mobile-calendar-label">Esta semana</p>
-        <h2 id="mes" aria-live="polite">Calendário mensal</h2>
+            <p class="mobile-only mobile-calendar-label" id="mobile-calendar-label" aria-live="polite"></p>
+            <h2 class="mobile-only mobile-calendar-heading" id="mobile-calendar-heading">Esta semana</h2>
+            <h2 id="mes" aria-live="polite">Calendário mensal</h2>
         </div>
         <div class="calendario-mensal-acoes" aria-label="Controles do calendário" role="group">
             <button class="soft-button calendario-seta" aria-label="Mês anterior" id="anterior" type="button">‹</button>
@@ -145,7 +146,10 @@
     <p id="status-calendario" role="status">Carregando calendário…</p>
 </section>
 <section class="card mobile-only mobile-dia-agenda" id="mobile-dia-agenda" aria-labelledby="mobile-dia-titulo">
-    <h2 id="mobile-dia-titulo">Agenda do dia</h2>
+    <div class="mobile-dia-heading">
+        <div><p class="mobile-kicker" id="mobile-dia-semana"></p><h2 id="mobile-dia-titulo">Agenda do dia</h2></div>
+        <a class="soft-button" href="tarefas.html#compromissos">＋ Novo evento</a>
+    </div>
     <div id="mobile-dia-itens"></div>
 </section>
 <dialog aria-labelledby="titulo-agenda" class="cc-modal modal-consulta" id="dialogo-dia">

@@ -212,14 +212,17 @@
 
     const entry = one('#new-entry');
     const desktopSlot = document.createComment('Novo lançamento no desktop');
-    const mobileSlot = document.createElement('div');
-    mobileSlot.className = 'finance-mobile-entry';
     entry.before(desktopSlot);
-    one('.finance-grid').after(mobileSlot);
     const mobile = matchMedia('(max-width: 900px)');
     function positionEntry() {
-        if (mobile.matches) mobileSlot.append(entry);
-        else desktopSlot.after(entry);
+        if (mobile.matches) {
+            const title = movements.querySelector('.card-title');
+            title.append(entry);
+            entry.textContent = '+ Novo';
+        } else {
+            desktopSlot.after(entry);
+            entry.textContent = 'Novo lançamento';
+        }
     }
     mobile.addEventListener('change', positionEntry);
     positionEntry();

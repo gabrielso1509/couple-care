@@ -38,7 +38,8 @@
         calendar.toggleAttribute('data-week', weekMode);
         toggle.setAttribute('aria-pressed', String(!weekMode));
         toggle.textContent = weekMode ? 'Ver mês' : 'Ver semana';
-        $('mobile-calendar-label').textContent = weekMode ? 'Semana selecionada' : 'Mês selecionado';
+        $('mobile-calendar-label').textContent = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        $('mobile-calendar-heading').textContent = weekMode ? 'Esta semana' : 'Visão mensal';
         $('anterior').setAttribute('aria-label', weekMode ? 'Semana anterior' : 'Mês anterior');
         $('seguinte').setAttribute('aria-label', weekMode ? 'Próxima semana' : 'Próximo mês');
         if (!mobile.matches) return;
@@ -68,11 +69,22 @@
 
     function paintInline() {
         if (!mobile.matches) return;
-        $('mobile-dia-titulo').textContent = A.local(selected).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+        const date = A.local(selected);
+        $('mobile-dia-semana').textContent = date.toLocaleDateString('pt-BR', { weekday: 'long' });
+        const action = document.querySelector('.mobile-dia-heading a');
+        action.href = 'tarefas.html?evento=' + selected + '#compromissos';
+        $('mobile-dia-titulo').textContent = date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
         const items = grouped.get(selected) || [];
         const list = $('mobile-dia-itens');
         list.replaceChildren();
-        items.forEach(function (item) { list.append(makeCard(item)); });
+        items.forEach(function (item) {
+            const row = C.el('article', 'mobile-day-row cal-tipo-' + item.type);
+            const detail = C.el('div');
+            detail.append(C.el('h3', '', item.title), C.el('small', '', item.label));
+            item.lines.forEach(function (line) { if (line) detail.append(C.el('p', '', line)); });
+            row.append(C.el('span', 'mobile-day-time', item.time || '—'), detail);
+            list.append(row);
+        });
         if (loading || partial || !items.length) list.append(C.el('p', 'calendario-agenda-vazia',
             loading ? 'Carregando agenda…' : partial ? 'Parte da agenda está indisponível.' : 'Nenhum item para este dia.'));
     }
@@ -93,7 +105,7 @@
 
     function makeCard(item) {
         const card = C.el('article', 'modal-consulta-item cal-tipo-' + item.type);
-        card.append(C.el('small', '', item.label), C.el('h3', '', item.title));
+        card.append(C.el('small', '', item.time ? item.label + ' · ' + item.time : item.label), C.el('h3', '', item.title));
         item.lines.forEach(function (line) { if (line) card.append(C.el('p', '', line)); });
         return card;
     }
@@ -148,8 +160,13 @@
 
             button.type = 'button';
             button.dataset.dia = key;
-            button.setAttribute('aria-haspopup', 'dialog');
-            button.setAttribute('aria-controls', dialog.id);
+            if (mobile.matches) {
+                button.setAttribute('aria-controls', 'mobile-dia-agenda');
+                button.setAttribute('aria-pressed', String(key === selected));
+            } else {
+                button.setAttribute('aria-haspopup', 'dialog');
+                button.setAttribute('aria-controls', dialog.id);
+            }
             const total = (grouped.get(key) || []).length;
             button.setAttribute('aria-label', C.date(key) + (total ? ', ' + total + (total === 1 ? ' item' : ' itens') : ''));
             if (key === today) button.setAttribute('aria-current', 'date');
@@ -165,9 +182,9 @@
         controls();
     }
 
-    function record(day, type, label, title, lines) {
+    function record(day, type, label, title, lines, time) {
         if (!grouped.has(day)) grouped.set(day, []);
-        grouped.get(day).push({ type: type, label: label, title: title, lines: lines });
+        grouped.get(day).push({ type: type, label: label, title: title, lines: lines, time: time });
     }
 
     async function load() {
@@ -203,7 +220,7 @@
         const rows = results.map(function (result) { return result.status === 'fulfilled' ? result.value : []; });
 
         rows[0].forEach(function (event) {
-            record(event.event_date, 'evento', 'Compromisso · ' + A.clock(event), event.title, [event.description]);
+            record(event.event_date, 'evento', 'Compromisso', event.title, [event.description], A.clock(event));
         });
         rows[1].forEach(function (task) {
             record(task.due_date, 'tarefa', 'Prazo de tarefa', task.title, [task.status === 'completed' ? 'Concluída' : 'Pendente']);
@@ -226,7 +243,7 @@
             controls();
         } else drawMonth();
 
-        status.textContent = partial ? 'Parte do calendário está indisponível. Confira a conexão ou atualize.' : 'Calendário atualizado.';
+        status.textContent = partial ? 'Parte do calendário está indisponível. Confira a conexão ou atualize.' : 'Atualizado.';
     }
 
     function go(target) {
@@ -276,6 +293,11 @@
         viewing = button.dataset.dia;
         selected = viewing;
         paintInline();
+        if (mobile.matches) {
+            grid.querySelector('[aria-pressed="true"]')?.removeAttribute('aria-pressed');
+            button.setAttribute('aria-pressed', 'true');
+            return;
+        }
         drawAgenda(viewing);
         dialog.scrollTop = 0;
         C.openOverview(dialog, button);

@@ -209,11 +209,35 @@
         if (event.key === 'Escape') dismissChart();
     });
 
+    function categoryBars(data) {
+        const box = $('finance-categories-mobile');
+        box.replaceChildren();
+        const total = data.reduce(function (sum, row) { return sum + Number(row.amount); }, 0);
+        if (!total) {
+            box.append(C.el('p', 'cc-status', 'Nenhuma despesa neste período.'));
+            return;
+        }
+        data.forEach(function (row, index) {
+            const item = C.el('div', 'finance-category-row');
+            const heading = C.el('div', 'finance-category-title');
+            const label = row.name || categories[row.category] || 'Categoria do casal';
+            heading.append(C.el('strong', '', label), C.el('span', '', C.money(row.amount)));
+            const bar = C.el('progress', 'finance-category-progress');
+            bar.max = total;
+            bar.value = Number(row.amount);
+            bar.dataset.tone = String(index % 4);
+            bar.setAttribute('aria-label', label + ' · proporção das despesas');
+            item.append(heading, bar);
+            box.append(item);
+        });
+    }
+
     /* Eixos e marcas em reais; a altura das barras usa a mesma escala do eixo Y. */
     function chart(summary) {
         const box = $('finance-chart'); box.replaceChildren();
         dismissChart = function () {};
         const data = (summary.categories || []).filter(row => Number(row.amount) > 0);
+        categoryBars(data);
         if (!data.length) { box.append(C.el('p', 'empty-state', 'Nenhuma despesa registrada neste período.')); return; }
         const max = Math.max.apply(null, data.map(function (r) { return Number(r.amount); }));
         const raw = max / 5, power = Math.pow(10, Math.floor(Math.log10(raw)));
@@ -381,11 +405,12 @@
             syncCategories(); syncAccountOptions(); syncBillOptions(); summaryState(summary);
             $('finance-balance').textContent = C.money(summary.balance); $('finance-income').textContent = C.money(summary.income); $('finance-expense').textContent = C.money(summary.expense);
             chart(summary); renderEntries(); renderAccounts(); renderBills();
+            window.dispatchEvent(new Event('finance-summary-updated'));
             $('finance-status').textContent = 'Resumo de ' + bounds.label + ' atualizado.';
         } catch (error) {
             if (token !== generation) return;
             ['finance-balance','finance-income','finance-expense'].forEach(function (id) { $(id).textContent = '—'; });
-            ['finance-chart','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
+            ['finance-chart','finance-categories-mobile','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
             $('finance-status').textContent = C.error(error); $('finance-status').classList.add('is-error'); $('finance-status').classList.remove('cc-sr');
             $('balance-card').classList.remove('is-positive','is-negative'); $('balance-card').classList.add('is-neutral');
             $('finance-balance').removeAttribute('aria-label');
@@ -431,7 +456,7 @@
     window.addEventListener('cc-finance-bank-synced', function () { load(); });
     $('reload-finance').addEventListener('click', load);
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });
-    C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });
+    C.ready.then(function (c) { context = c; if (!c.couple) { $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-categories-mobile','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { $('finance-status').textContent = C.error(e); });
 })();
 
 

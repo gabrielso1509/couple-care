@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="css/dashboard-casal.css">
 <link rel="stylesheet" href="css/interior-mobile.css">
 <script defer src="js/interior-mobile.js"></script>
+<script defer src="js/finance-budget.js"></script>
 </head>
 <body class="pagina-orbital pagina-dashboard">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
@@ -101,6 +102,7 @@
     <div class="dashboard-casal-topo">
         <section class="card dashboard-widget mobile-agenda" aria-labelledby="widget-calendario">
             <h2 id="widget-calendario"><span aria-hidden="true">▦</span> <span class="mobile-desktop">Calendário</span><span class="mobile-only">Agenda de hoje</span></h2>
+            <p class="mobile-only mobile-agenda-title">O que vem por aí</p>
             <div class="dashboard-hoje">
                 <time class="dashboard-data" id="dashboard-data"></time>
                 <div>
@@ -110,11 +112,14 @@
                     </div>
                 </div>
             </div>
-            <a class="dashboard-widget-link" href="calendario.html">Abrir calendário <span aria-hidden="true">›</span></a>
+            <a class="dashboard-widget-link" href="calendario.html"><span class="mobile-desktop">Abrir calendário</span><span class="mobile-only">Ver tudo</span> <span aria-hidden="true">›</span></a>
         </section>
         <section class="card dashboard-widget" aria-labelledby="widget-tarefas">
+            <div class="dashboard-task-heading">
             <h2 id="widget-tarefas"><span aria-hidden="true">☑</span> Tarefas</h2>
             <p class="dashboard-pendentes" id="dashboard-pendentes" aria-live="polite"></p>
+            </div>
+            <p class="mobile-only mobile-agenda-title" id="dashboard-task-summary" hidden></p>
             <div id="dashboard-tarefas" class="dashboard-rolagem" role="region" aria-labelledby="widget-tarefas" tabindex="0">
                 <p class="dashboard-vazio">Carregando tarefas…</p>
             </div>
@@ -131,6 +136,7 @@
                 <div><dt>Gastos no mês</dt><dd id="dashboard-expense">—</dd></div>
             </dl>
             <p class="dashboard-vazio" id="dashboard-finance-status" role="status">Carregando resumo…</p>
+            <div class="mobile-only dashboard-budget" data-budget hidden></div>
             <a class="dashboard-widget-link" href="financas.html">Abrir finanças <span aria-hidden="true">›</span></a>
         </section>
         <section class="card dashboard-widget mobile-quick-widget" aria-labelledby="widget-ciclo">
