@@ -9,7 +9,7 @@
   <title>CoupleCare | Organizem a vida a dois</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap">
   <link rel="stylesheet" href="/src/css/figma-theme.css">
-  <link rel="stylesheet" href="/src/css/landing.css?v=plano-casal">
+  <link rel="stylesheet" href="/src/css/landing.css?v=vitrine">
   <script defer src="/src/js/analytics.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="/src/js/supabase-client.js"></script>
@@ -18,17 +18,18 @@
   <script defer src="/src/js/couple-brand.js"></script>
   <script defer src="/src/js/landing.js?v=plano-casal"></script>
   <link rel="prefetch" href="/dashboard">
-  <script defer src="/src/js/landing-tour.js?v=demo-mobile"></script>
+  <link rel="stylesheet" href="/src/css/landing-showcase.css?v=1">
+  <script defer src="/src/js/landing-tour.js?v=vitrine"></script>
 </head>
 <body class="landing">
   <header class="site-header wrap">
     <a class="brand" href="/" aria-label="CoupleCare, início"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</a>
-    <nav aria-label="Navegação principal">
+    <nav class="desktop-site-nav" aria-label="Navegação principal">
       <a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a>
     </nav>
     <div class="header-auth">
       <button class="button outline" type="button" data-signup aria-haspopup="dialog">Cadastrar-se</button>
-      <button class="button outline login-button" type="button" data-login aria-haspopup="dialog">Logar</button>
+      <button class="button outline login-button" type="button" data-login aria-haspopup="dialog">Entrar</button>
       <details class="landing-account" id="landing-account" hidden>
         <summary class="button outline">
           <span class="landing-account-avatar" id="landing-account-avatar" aria-hidden="true"></span>
@@ -42,129 +43,66 @@
           <p id="landing-account-status" role="status"></p>
         </div>
       </details>
+      <details class="mobile-site-menu">
+        <summary class="button outline" aria-label="Navegação principal">☰</summary>
+        <nav aria-label="Links da página">
+          <a href="#demo">Ver a demo</a>
+          <a href="#recursos">Recursos</a>
+          <a href="#planos">Planos</a>
+          <a href="#duvidas">Dúvidas</a>
+        </nav>
+      </details>
     </div>
   </header>
 
   <main>
     <section class="hero wrap">
-      <div>
+      <div class="hero-copy">
         <h1>Organizem a vida a dois<span>.</span></h1>
-        <p>Tarefas, calendário e finanças do casal em um só lugar.</p>
+        <p>Tarefas, calendário e finanças em um só lugar.</p>
         <div class="actions">
           <button class="button primary" type="button" data-signup aria-haspopup="dialog">Criar conta</button>
           <a class="button primary" id="landing-dashboard" data-enter-app href="/dashboard" hidden>Entrar no sistema</a>
-          <a class="button outline" href="#planos">Ver planos</a>
+          <a class="button outline" href="#demo">Ver a demo</a>
         </div>
       </div>
-      <figure class="app-preview app-tour" aria-labelledby="tour-caption">
-        <div class="preview-frame">
-          <div class="preview-menu">
-            <div class="tour-heading">
-              <strong class="brand"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</strong>
-              <button class="tour-more" type="button" id="tour-more" aria-expanded="false" aria-controls="tour-tabs" aria-label="Mais páginas da demonstração"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-            </div>
-            <div class="tour-tabs" id="tour-tabs" role="tablist" aria-label="Páginas do CoupleCare">
-              <button type="button" id="tour-tab-inicio" data-tour-extra role="tab" aria-controls="tour-inicio" aria-selected="false" tabindex="-1">Página inicial</button>
-              <button type="button" id="tour-tab-dashboard" role="tab" aria-controls="tour-dashboard" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v10h14V10M9 20v-6h6v6"/></svg><span class="tour-label-desktop">Dashboard</span><span class="tour-label-mobile">Início</span></button>
-              <button type="button" id="tour-tab-tarefas" role="tab" aria-controls="tour-tarefas" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 12 2.2 2.2L16 8.5"/></svg>Tarefas</button>
-              <button type="button" id="tour-tab-calendario" role="tab" aria-controls="tour-calendario" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4m8-4v4M3 10h18"/></svg>Calendário</button>
-              <button type="button" id="tour-tab-menstruacao" role="tab" aria-controls="tour-menstruacao" aria-selected="false" tabindex="-1"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg><span class="tour-label-desktop">Menstruação</span><span class="tour-label-mobile">Bem-estar</span></button>
-              <button type="button" id="tour-tab-financas" role="tab" aria-controls="tour-financas" aria-selected="true" tabindex="0"><svg class="tour-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h14a2 2 0 0 1 2 2v10H5a3 3 0 0 1-3-3v-10a3 3 0 0 1 3-3h12M16 12h6v4h-6a2 2 0 0 1 0-4Z"/></svg>Finanças</button>
-              <small class="tour-group" aria-hidden="true">CONECTAR</small>
-              <button type="button" id="tour-tab-espaco" data-tour-extra role="tab" aria-controls="tour-espaco" aria-selected="false" tabindex="-1">Nosso espaço</button>
-              <button type="button" id="tour-tab-config" data-tour-extra role="tab" aria-controls="tour-config" aria-selected="false" tabindex="-1">Configurações</button>
-            </div>
-          </div>
-          <div class="preview-content">
-            <section id="tour-inicio" role="tabpanel" aria-labelledby="tour-tab-inicio" tabindex="0" hidden>
-              <h2 class="tour-title">Página inicial<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Conheça o app e veja como ele pode ajudar na rotina de vocês.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Recursos</strong><p>Explore o que o CoupleCare oferece.</p></li>
-                <li><strong>Planos e preços</strong><p>Veja as informações do Plano Casal.</p></li>
-                <li><strong>Sua conta</strong><p>Crie uma conta ou entre para abrir o painel.</p></li>
-              </ul>
-            </section>
-            <section id="tour-dashboard" role="tabpanel" aria-labelledby="tour-tab-dashboard" tabindex="0" hidden>
-              <h2 class="tour-title">Dashboard<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Acompanhe o dia de vocês em um só lugar.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Na agenda</strong><p>Compromissos e datas do casal.</p></li>
-                <li><strong>Próximas tarefas</strong><p>O que está por fazer e merece atenção.</p></li>
-                <li><strong>Finanças</strong><p>Um resumo das entradas e saídas.</p></li>
-              </ul>
-            </section>
-            <section id="tour-tarefas" role="tabpanel" aria-labelledby="tour-tab-tarefas" tabindex="0" hidden>
-              <h2 class="tour-title">Tarefas<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Dividam a rotina e acompanhem o que já foi feito.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Criar tarefas</strong><p>Registre o que precisa ser feito.</p></li>
-                <li><strong>Atribuir responsáveis</strong><p>Definam quem fica com cada tarefa.</p></li>
-                <li><strong>Acompanhar prazos</strong><p>Vejam o que vem por aí e marquem o que foi concluído.</p></li>
-              </ul>
-            </section>
-            <section id="tour-calendario" role="tabpanel" aria-labelledby="tour-tab-calendario" tabindex="0" hidden>
-              <h2 class="tour-title">Calendário<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Organizem os compromissos do casal por dia.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Visão mensal</strong><p>Escolha uma data para ver os compromissos.</p></li>
-                <li><strong>Agenda do dia</strong><p>Confira o que está marcado para o dia escolhido.</p></li>
-                <li><strong>Novo compromisso</strong><p>Cadastrem eventos e datas importantes.</p></li>
-              </ul>
-            </section>
-            <section id="tour-menstruacao" role="tabpanel" aria-labelledby="tour-tab-menstruacao" tabindex="0" hidden>
-              <h2 class="tour-title">Menstruação<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Registre informações do ciclo e escolha o que compartilhar.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Meu ciclo</strong><p>Registre menstruações e consulte o histórico.</p></li>
-                <li><strong>Meu diário</strong><p>Guarde seus registros de bem-estar.</p></li>
-                <li><strong>Seu casal</strong><p>Compartilhe apenas os resumos autorizados.</p></li>
-              </ul>
-            </section>
-            <section id="tour-financas" role="tabpanel" aria-labelledby="tour-tab-financas" tabindex="0">
-              <h2 class="tour-title">Finanças<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Acompanhem receitas, despesas, saldo e contas compartilhadas.</p>
-            <div class="demo-period" role="group" aria-label="Período da prévia">
-              <button type="button" data-tour-period="Semana" aria-pressed="false">Semana</button>
-              <button type="button" data-tour-period="Mês" aria-pressed="true">Mês</button>
-              <button type="button" data-tour-period="Ano" aria-pressed="false">Ano</button>
-            </div>
-            <div class="demo-metrics">
-              <div>Receitas<b>—</b></div><div>Despesas<b>—</b></div>
-              <div>Saldo<b>—</b></div><div>Contas e saldos<b>—</b></div>
-            </div>
-            <div class="demo-details">
-              <div><b>Gastos por categoria</b><p>Totais agrupados por categoria.</p></div>
-              <div><b>Atividade recente</b><p>Extrato importado e lançamentos manuais.</p></div>
-            </div>
-            <p class="tour-period-note" id="tour-period-note" role="status">Veja o resumo do mês atual.</p>
-            </section>
-            <section id="tour-espaco" role="tabpanel" aria-labelledby="tour-tab-espaco" tabindex="0" hidden>
-              <h2 class="tour-title">Nosso espaço<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Guardem lembranças e planejem o que querem viver juntos.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Memórias</strong><p>Guardem fotos e momentos importantes.</p></li>
-                <li><strong>Lista de sonhos</strong><p>Anotem ideias e planos que querem realizar.</p></li>
-                <li><strong>Metas do casal</strong><p>Definam valores e acompanhem os aportes.</p></li>
-              </ul>
-            </section>
-            <section id="tour-config" role="tabpanel" aria-labelledby="tour-tab-config" tabindex="0" hidden>
-              <h2 class="tour-title">Configurações<span aria-hidden="true">.</span></h2>
-              <p class="tour-summary">Ajuste sua conta e as preferências do casal.</p>
-              <ul class="tour-feature-list">
-                <li><strong>Perfil</strong><p>Atualize nome e foto da sua conta.</p></li>
-                <li><strong>Meu casal</strong><p>Gerencie o vínculo e a data do relacionamento.</p></li>
-                <li><strong>Privacidade e notificações</strong><p>Escolha preferências de avisos e compartilhamento.</p></li>
-              </ul>
-            </section>
-          </div>
+      <img class="hero-photo" src="/src/img/couplecare-rotina.webp" width="1536" height="1024" alt="Casal organizando a rotina no celular à mesa" fetchpriority="high">
+    </section>
+
+    <section class="site-section wrap showcase" id="demo" aria-labelledby="showcase-title">
+      <div class="showcase-intro">
+        <h2 id="showcase-title">A rotina de vocês,<br>em um só lugar.</h2>
+        <p>Toquem na tela do celular para experimentar o CoupleCare com dados de exemplo.</p>
+      </div>
+      <div class="showcase-tabs" role="group" aria-label="Telas da demonstração">
+        <button type="button" data-demo-page="tasks" aria-controls="demo-screen" aria-pressed="false">Tarefas</button>
+        <button type="button" data-demo-page="calendar" aria-controls="demo-screen" aria-pressed="true">Calendário</button>
+        <button type="button" data-demo-page="finances" aria-controls="demo-screen" aria-pressed="false">Finanças</button>
+      </div>
+      <div class="device-stage">
+        <div class="device device-preview device-left" aria-hidden="true" id="demo-left"></div>
+        <div class="device device-main">
+          <div class="device-status" aria-hidden="true"><span>09:41</span><span class="device-camera"></span><span>▰ ▪</span></div>
+          <div class="device-brand"><span class="marca-icone" aria-hidden="true">♡</span><strong>CoupleCare</strong></div>
+          <div id="demo-screen" class="device-screen" tabindex="0" role="region" aria-label="Tela da demonstração"></div>
+          <nav class="device-nav" aria-label="Menu do aplicativo de demonstração"></nav>
         </div>
-        <figcaption id="tour-caption">Selecione uma página para explorar o CoupleCare.</figcaption>
-      </figure>
+        <div class="device device-preview device-right" aria-hidden="true" id="demo-right"></div>
+      </div>
+      <div class="showcase-pager" aria-label="Navegar pelas telas">
+        <button type="button" data-demo-slide="-1" aria-label="Tela anterior">‹</button>
+        <span class="showcase-dots" aria-hidden="true"></span>
+        <button type="button" data-demo-slide="1" aria-label="Próxima tela">›</button>
+      </div>
+      <div class="showcase-description" aria-live="polite">
+        <h3 id="demo-feature-title">Planejem a semana juntos</h3>
+        <p id="demo-feature-description">Reúnam compromissos e vejam o que está marcado para cada dia.</p>
+      </div>
+      <noscript><p>Ative o JavaScript para experimentar as telas interativas.</p></noscript>
     </section>
 
     <section class="site-section wrap" id="recursos">
-      <h2>Um espaço para a rotina de vocês</h2>
+      <h2>Cuidem do dia a dia juntos</h2>
       <div class="feature-grid">
         <article>
           <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 12 2 2 6-6"/></svg>
@@ -192,6 +130,14 @@
           <p>Acompanhem registros com controle de compartilhamento.</p>
         </article>
       </div>
+    </section>
+
+    <section class="wrap showcase-checklist" aria-labelledby="demo-checklist-title">
+      <div>
+        <h2 id="demo-checklist-title">A lista de vocês, sempre à mão</h2>
+        <p>Marquem uma tarefa de exemplo e vejam a mudança também na tela de Tarefas.</p>
+      </div>
+      <div id="demo-checklist" class="device-list" role="group" aria-label="Checklist de exemplo"></div>
     </section>
 
     <div class="site-section wrap pricing-and-faq">
