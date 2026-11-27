@@ -8,9 +8,17 @@
     if (!heading || !main) return;
 
     const intro = CC.el('div', 'mobile-only mobile-intro');
-    const title = CC.el('span', 'mobile-intro-title', main.classList.contains('menstruacao-real') ? 'Bem-estar' : heading.textContent);
+    const title = CC.el('span', 'mobile-intro-title', heading.textContent);
     title.setAttribute('aria-hidden', 'true');
     intro.append(title);
+    const mobileDescriptions = {
+        financas:'Nossas finanças, em um só lugar.',
+        tarefas:'Casa, compras e rotina do casal.',
+        menstruacao:'Seu ciclo, sua saúde, no seu ritmo.',
+        espaco:'Nossa história, metas, álbuns e notas.'
+    };
+    const description=mobileDescriptions[document.body.dataset.ccPage];
+    if(description)intro.append(CC.el('p','mobile-module-description',description));
 
     if (main.classList.contains('dashboard-casal')) {
         const date = CC.el('time', 'mobile-intro-date');
@@ -60,13 +68,14 @@
         ring.hidden = false;
         progress.max = total || 1;
         progress.value = completed;
-        ring.style.setProperty('--completion', (total ? completed / total * 100 : 0) + '%');
-        document.getElementById('mobile-progress-completed').textContent = String(completed);
-        document.getElementById('mobile-progress-total').textContent = 'de ' + total;
+        const percent = total ? Math.round(completed / total * 100) : 0;
+        ring.style.setProperty('--completion', percent + '%');
+        document.getElementById('mobile-progress-completed').textContent = percent + '%';
+        document.getElementById('mobile-progress-total').textContent = completed + ' de ' + total;
         const pending = total - completed;
-        progressLabel.textContent = !total ? 'Nenhuma tarefa com prazo hoje.' :
-            !pending ? 'Todas as tarefas de hoje foram concluídas.' :
-            pending === 1 ? 'Falta 1 tarefa para hoje.' : 'Faltam ' + pending + ' tarefas para hoje.';
+        progressLabel.textContent = !total ? 'Nenhuma tarefa com prazo nesta semana.' :
+            !pending ? 'Todas as tarefas da semana foram concluídas.' :
+            completed+' de '+total+' tarefas concluídas nesta semana.';
     }
 
     new MutationObserver(updateProgress).observe(progress, {

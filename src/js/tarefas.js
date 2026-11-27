@@ -8,13 +8,33 @@
     const eventoForm = $('form-compromisso');
     const tipos = $('tarefas-tipos');
     const botaoNovo = $('novo-item');
+    const taskTab = $('show-task-list');
+    const appointmentTab = $('show-appointment-list');
+    let currentSection = 'tarefa';
+    function showSection(section) {
+        currentSection = section;
+        document.body.dataset.taskSection = section;
+        const tasks = section === 'tarefa';
+        taskTab.setAttribute('aria-pressed', String(tasks));
+        appointmentTab.setAttribute('aria-pressed', String(!tasks));
+        for (const id of ['task-list-view', 'task-view-bar', 'historico-atividades']) $(id).hidden = !tasks;
+        $('compromissos').hidden = tasks;
+    }
+    taskTab.addEventListener('click', () => showSection('tarefa'));
+    appointmentTab.addEventListener('click', () => showSection('compromisso'));
+    window.addEventListener('hashchange', () => {
+        if (location.hash === '#compromissos') showSection('compromisso');
+    });
+    showSection(location.hash === '#compromissos' ? 'compromisso' : 'tarefa');
+    $('task-create-slot').append(botaoNovo);
 
     function selecionarTipo(tipo, titulo) {
         const tarefa = tipo === 'tarefa';
+        tipos.dataset.selected = tipo;
         form.hidden = !tarefa;
         eventoForm.hidden = tarefa;
         tipos.hidden = Boolean(titulo);
-        $('titulo-editor').textContent = titulo || 'Novo item';
+        $('titulo-editor').textContent = titulo || (tarefa ? 'Nova tarefa' : 'Novo compromisso');
         tipos.querySelectorAll('[data-tarefa-tipo]').forEach(function (botao) {
             botao.setAttribute('aria-pressed', String(botao.dataset.tarefaTipo === tipo));
         });
@@ -23,6 +43,7 @@
     function editorOcupado() {
         return ocupado || Boolean(editor.dataset.busy);
     }
+    CC.dismissOutside(editor, editorOcupado);
 
     function abrirEditor(tipo, titulo) {
         if (editorOcupado()) return;
@@ -31,17 +52,20 @@
         $(tipo === 'tarefa' ? 'titulo' : 'compromisso-titulo').focus({ preventScroll: true });
     }
 
-    CC.tarefasEditor = { abrir: abrirEditor };
+    CC.tarefasEditor = { abrir: abrirEditor, mostrarSecao: showSection };
     botaoNovo.addEventListener('click', function () {
         limparEditor();
         mensagem('');
-        abrirEditor('tarefa');
+        abrirEditor(currentSection);
     });
     tipos.addEventListener('click', function (event) {
         const choice = event.target.closest('[data-tarefa-tipo]');
         if (choice && !editorOcupado()) selecionarTipo(choice.dataset.tarefaTipo);
     });
     $('fechar-editor-tarefas').addEventListener('click', function () {
+        if (!editorOcupado()) editor.close();
+    });
+    $('cancelar-nova-tarefa').addEventListener('click', function () {
         if (!editorOcupado()) editor.close();
     });
     editor.addEventListener('cancel', function (event) {
@@ -55,13 +79,13 @@
     });
 
     const categorias = { house: 'Casa', shopping: 'Compras', bills: 'Contas', care: 'Cuidados', leisure: 'Lazer', other: 'Outros' };
-    const prioridades = { high: 'Alta', normal: 'Normal', low: 'Baixa' };
+    const prioridades = { high: 'Alta', normal: 'Média', low: 'Baixa' };
     const repeticoes = { daily: 'Diária', weekly: 'Semanal', monthly: 'Mensal' };
     const acoes = { created: 'criou', edited: 'atualizou', completed: 'concluiu', reopened: 'reabriu', deleted: 'excluiu' };
     let tarefas = [], membros = [], eventos = [];
     let casalId = null, usuarioId = null, edicao = null;
     let ocupado = false, carregando = false, pronto = false, atualizarDepois = false;
-    let filtro = matchMedia('(max-width: 720px)').matches ? 'today' : 'all', limite = 30, canal = null, timerRealtime = null;
+    let filtro = 'pending', limite = 30, canal = null, timerRealtime = null;
     let ultimaAtualizacao = null;
     let historicoLimite = 50, temMaisHistorico = false;
     const periodosHistoricoAbertos = new Set();
@@ -159,12 +183,28 @@
     function renderizar() {
         const dia = hoje();
         const pendentes = tarefas.filter(t => t.status === 'pending');
-        $('total-pendentes').textContent = pendentes.length;
-        $('total-hoje').textContent = pendentes.filter(t => t.due_date === dia).length;
-        $('total-concluidas').textContent = tarefas.filter(t => t.status === 'completed').length;
-        const tasksToday = tarefas.filter(function (task) { return task.due_date === dia; });
-        $('mobile-task-progress-bar').dataset.total = String(tasksToday.length);
-        $('mobile-task-progress-bar').dataset.done = String(tasksToday.filter(function (task) { return task.status === 'completed'; }).length);
+        const counts = {
+            pending: pendentes.length,
+            overdue: pendentes.filter(t => t.due_date && t.due_date < dia).length,
+            today: pendentes.filter(t => t.due_date === dia).length,
+            upcoming: pendentes.filter(t => t.due_date && t.due_date > dia).length,
+            completed: tarefas.filter(t => t.status === 'completed').length
+        };
+        $('total-hoje').textContent = counts.today;
+        $('total-proximas').textContent = counts.upcoming;
+        $('total-concluidas').textContent = counts.completed;
+        botoesFiltro.forEach(button => {
+            button.querySelector('.task-filter-count').textContent = counts[button.dataset.filtro];
+        });
+        const categoryCounts = {}; tarefas.forEach(t => { const label = categorias[t.category] || 'Outros'; categoryCounts[label] = (categoryCounts[label] || 0) + 1; });
+        CC.mockTaskData = {categories:categoryCounts};
+        window.dispatchEvent(new CustomEvent('cc-task-summary', {detail:CC.mockTaskData}));
+        const weekday = CC.agenda.local(dia).getDay();
+        const first = CC.agenda.plusDays(dia, -(weekday + 6) % 7);
+        const last = CC.agenda.plusDays(first, 6);
+        const tasksWeek = tarefas.filter(task => task.due_date >= first && task.due_date <= last);
+        $('mobile-task-progress-bar').dataset.total = String(tasksWeek.length);
+        $('mobile-task-progress-bar').dataset.done = String(tasksWeek.filter(task => task.status === 'completed').length);
         renderizarCompromissos();
         $('total-atrasadas').textContent = pendentes.filter(t => t.due_date && t.due_date < dia).length;
         const busca = $('busca-tarefa').value.trim().toLocaleLowerCase('pt-BR');
@@ -191,7 +231,9 @@
             return (a.due_date || '9999').localeCompare(b.due_date || '9999') || peso[a.priority] - peso[b.priority] || b.created_at.localeCompare(a.created_at);
         });
         const lista = $('lista'); lista.replaceChildren();
-        $('resumo').textContent = `${visiveis.length} de ${tarefas.length} tarefa(s) neste filtro.`;
+        $('resumo').textContent = '';
+        const listLabel = {today:'Hoje',upcoming:'Próximas',completed:'Concluídas',pending:'Pendentes',overdue:'Atrasadas',all:'Tarefas do casal'}[filtro];
+        $('titulo-lista').textContent = listLabel+' · '+visiveis.length+(visiveis.length===1?' tarefa':' tarefas');
         $('mais-tarefas').hidden = visiveis.length <= limite;
         if (!visiveis.length) lista.append(elemento('p', 'texto-suave', 'Nenhuma tarefa para este filtro.'));
         visiveis.slice(0, limite).forEach(t => {
@@ -203,11 +245,18 @@
             header.append(elemento('h3', '', t.title), elemento('p', 'tarefa-meta', dataCurta(t.due_date) + ' · ' + categorias[t.category]));
             if (t.description) header.append(elemento('p', 'mobile-only tarefa-cartao-resumo', t.description));
             const lado = elemento('div', 'tarefa-cartao-lado');
-            const prazo = concluida ? 'Feita' : t.due_date === dia ? 'Hoje' :
+            const prazo = concluida ? 'Feita' : atrasada ? 'Atrasada' : t.due_date === dia ? 'Hoje' :
                 t.due_date === CC.agenda.plusDays(dia, 1) ? 'Amanhã' : t.due_date ? dataCurta(t.due_date).slice(0, 5) : '';
-            if (prazo) lado.append(elemento('span', 'mobile-only tarefa-cartao-prazo', prazo));
+            const prioridade = elemento('span', 'tarefa-prioridade', prioridades[t.priority]);
+            prioridade.dataset.priority = t.priority;
+            prioridade.setAttribute('aria-label', 'Prioridade ' + prioridades[t.priority].toLowerCase());
+            lado.append(prioridade);
+            if (prazo) lado.append(elemento('span', 'tarefa-cartao-prazo', prazo));
             card.append(toggle, header, lado);
-            const details = elemento('details', 'tarefa-details'); details.append(elemento('summary', '', 'Detalhes e ações')); 
+            const details = elemento('details', 'tarefa-details');
+            const detailToggle = elemento('summary');
+            detailToggle.append(elemento('span', 'cc-sr', 'Detalhes e ações de ' + t.title));
+            details.append(detailToggle);
             const tags = elemento('div', 'tarefa-etiquetas');
             tags.append(elemento('span', 'tarefa-etiqueta', categorias[t.category]), elemento('span', 'tarefa-etiqueta' + (t.priority === 'high' ? ' alta' : ''), 'Prioridade ' + prioridades[t.priority].toLowerCase()));
             tags.append(elemento('span', 'tarefa-etiqueta' + (atrasada ? ' atraso' : ''), (atrasada ? 'Atrasada · ' : !concluida && t.due_date === dia ? 'Hoje · ' : '') + dataCurta(t.due_date)));
@@ -219,7 +268,7 @@
                 t.assigned_to ? nome(t.assigned_to) : 'Sem responsável';
             details.append(elemento('p', 'tarefa-responsavel-texto', 'Responsável: ' + nomeResponsavel));
             const equipe = CC.taskAssignment(t, membros);
-            if (equipe) header.append(equipe);
+            if (equipe) lado.append(equipe);
             if (t.checklist.length) {
                 const feitos = t.checklist.filter(i => i.done).length;
                 details.append(elemento('small', '', `Checklist: ${feitos}/${t.checklist.length}`));
@@ -362,7 +411,7 @@
         edicao = null; form.reset(); $('titulo').setCustomValidity('');
         $('prazo').setCustomValidity(''); $('checklist-texto').setCustomValidity('');
         $('titulo-editor').textContent = 'Nova tarefa';
-        $('salvar-tarefa').textContent = 'Criar tarefa'; $('cancelar-edicao').hidden = true;
+        $('salvar-tarefa').textContent = 'Salvar tarefa'; $('cancelar-edicao').hidden = true;
     }
     function editar(t) {
         edicao = structuredClone(t);
@@ -430,7 +479,11 @@
         const atual = edicao;
         await gravar(() => atual ? atualizarTarefa(atual, valores)
             : supabaseClient.from('tasks').insert({ couple_id: casalId, ...valores }).select('id').single(),
-        atual ? 'Tarefa atualizada!' : 'Tarefa criada!', function () { editor.close(); });
+        atual ? 'Tarefa atualizada!' : 'Tarefa criada!', function () {
+            editor.close();
+            showSection('tarefa');
+            if (!atual) filtrar('pending');
+        });
     });
     $('cancelar-edicao').addEventListener('click', function () {
         if (!editorOcupado()) editor.close();
@@ -462,6 +515,7 @@
     const botoesFiltro = document.querySelectorAll('[data-filtro]');
     const filtroEstado = $('filtro-estado-tarefa');
     const dialogoFiltros = $('filtros-tarefas');
+    CC.dismissOutside(dialogoFiltros);
     const abrirFiltros = $('abrir-filtros-tarefas');
 
     function sincronizarFiltros() {

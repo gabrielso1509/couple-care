@@ -4,6 +4,7 @@
     const C = CC, $ = C.$;
     const feelings = { calm: ['😌','Tranquila'], energetic: ['⚡','Com energia'], sensitive: ['🥺','Sensível'], tired: ['🪫','Cansada'], happy: ['😊','Feliz'], affectionate: ['😍','Carinhosa'], sad: ['😔','Triste'], tearful: ['😢','Com vontade de chorar'], irritated: ['😠','Irritada'], anxious: ['😰','Ansiosa'], overwhelmed: ['🤯','Sobrecarregada'], sleepy: ['😴','Sonolenta'], pain: ['🤕','Com dor'], nausea: ['🤢','Enjoada'], bloated: ['🎈','Inchada'], wants_affection: ['🤗','Quero carinho'], wants_company: ['🫂','Quero companhia'], wants_space: ['🌿','Quero um tempo para mim'] };
     let context, current = null, selected = [], generation = 0, dirty = false, dayLoading = false;
+    let recentVersion = 0;
     $('cc-checkin-date').value = C.today(); $('cc-checkin-date').max = C.today();
     const more = C.el('details', 'cc-advanced'); more.append(C.el('summary', '', 'Outros sentimentos'));
     const extra = C.el('div', 'feeling-grid'); more.append(extra); $('cc-feelings').after(more);
@@ -27,9 +28,12 @@
         const length = summary?.mean_cycle_days || summary?.estimated_cycle_days;
         let day = null;
         if (start) day = Math.floor((Date.parse(C.today() + 'T00:00:00Z') - Date.parse(start + 'T00:00:00Z')) / 86400000) + 1;
-        $('cc-cycle-title').textContent = day ? 'Dia ' + day + (length ? ' de ' + Math.round(length) : ' do ciclo') : 'Seu ciclo começa com um registro';
+        $('cc-cycle-title').textContent = day ? 'Seu ciclo atual' : 'Seu ciclo começa com um registro';
         $('cc-cycle-day').textContent = day || '—';
-        $('cc-cycle-ring').style.setProperty('--cycle-progress', day && length ? Math.min(360, day / length * 360) + 'deg' : '0deg');
+        $('cc-cycle-length').textContent = length ? 'de '+Math.round(length)+' dias' : '';
+        const ring = $('cc-cycle-ring');
+        ring.toggleAttribute('data-cycle-position', Boolean(day && length));
+        ring.style.setProperty('--cycle-progress', day && length ? Math.min(360, day / length * 360) + 'deg' : '0deg');
         $('cc-cycle-state').textContent = summary?.ongoing_start_date ? 'Em andamento' : 'Ciclo estimado';
         const estimate = summary?.next_period_estimate;
         const remaining = estimate ? Math.round((Date.parse(estimate + 'T00:00:00Z') - Date.parse(C.today() + 'T00:00:00Z')) / 86400000) : null;
@@ -37,6 +41,53 @@
         let basis = $('cc-cycle-basis');
         if (!basis) { basis = C.el('p', 'cc-cycle-basis'); basis.id = 'cc-cycle-basis'; $('cc-cycle-next').after(basis); }
         basis.textContent = summary?.cycle_source === 'history' ? 'Estimativa baseada no seu histórico.' : summary?.cycle_source === 'informed' ? 'Estimativa baseada na duração que você informou.' : 'Ainda não há histórico suficiente para uma previsão.';
+    }
+    async function loadRecent() {
+        const version = ++recentVersion;
+        const today = C.today();
+        const beginning = new Date(Date.parse(today+'T00:00:00Z')-6*86400000).toISOString().slice(0,10);
+        const chart = $('wellness-chart'), symptoms = $('wellness-symptoms'), notes = $('wellness-notes');
+        try {
+            const rows = C.result(await supabaseClient.from('daily_wellbeing')
+                .select('entry_date,feelings,note').eq('user_id',context.user.id)
+                .gte('entry_date',beginning).lte('entry_date',today).order('entry_date',{ascending:false}));
+            if (version !== recentVersion) return;
+            const groups = [
+                ['Energia',['energetic']],['Sono',['sleepy']],['Humor',['calm','happy','sad','irritated']],
+                ['Disposição',['tired','overwhelmed']],['Cuidados',['pain','nausea','bloated']]
+            ];
+            chart.replaceChildren();
+            for (const [label,keys] of groups) {
+                const count = rows.filter(row => row.feelings.some(key=>keys.includes(key))).length;
+                const bar = C.el('div','wellness-chart-bar');
+                const fill = C.el('i');
+                fill.style.height = Math.round(count/7*100)+'%';
+                bar.setAttribute('aria-label',label+': '+count+' de 7 dias');
+                bar.setAttribute('role','img');
+                bar.append(fill);
+                const slot = C.el('div','wellness-chart-slot');
+                slot.append(bar,C.el('small','',label));
+                chart.append(slot);
+            }
+            const symptomsKeys = new Set(['pain','nausea','bloated','tired','sleepy']);
+            const symptomsRows = rows.flatMap(row=>row.feelings.filter(key=>symptomsKeys.has(key)).map(key=>[row.entry_date,key]));
+            symptoms.replaceChildren(...symptomsRows.slice(0,4).map(([date,key])=>{
+                const line = C.el('div','wellness-recent-row');
+                line.append(C.el('span','',feelings[key][1]),C.el('small','',C.date(date)));
+                return line;
+            }));
+            if (!symptomsRows.length) symptoms.append(C.el('p','empty-state','Nenhum sintoma registrado nos últimos 7 dias.'));
+            const withNotes = rows.filter(row=>row.note?.trim());
+            notes.replaceChildren(...withNotes.slice(0,2).map(row=>{
+                const line = C.el('div','wellness-note');
+                line.append(C.el('p','',row.note),C.el('small','',C.date(row.entry_date)));
+                return line;
+            }));
+            if (!withNotes.length) notes.append(C.el('p','empty-state','Suas observações dos últimos 7 dias aparecem aqui.'));
+        } catch (_) {
+            if (version !== recentVersion) return;
+            for (const box of [chart,symptoms,notes]) box.replaceChildren(C.el('p','empty-state','Registros indisponíveis agora.'));
+        }
     }
     async function loadDay() {
         if (!context || context.profile.gender !== 'feminino') return;
@@ -75,6 +126,7 @@
         const values = { entry_date: $('cc-checkin-date').value, feelings: selected, note: note, shared_with_couple_id: $('cc-checkin-share').checked ? context.couple : null };
         const query = current ? supabaseClient.from('daily_wellbeing').update(values).eq('id', current.id).eq('version', current.version) : supabaseClient.from('daily_wellbeing').insert(values);
         current = C.result(await query.select('*').single()); dirty = false; checkinSaved(true); $('cc-checkin-status').textContent = 'Check-in salvo. ' + (values.shared_with_couple_id ? 'Compartilhado com seu casal atual.' : 'Só você vê este registro.');
+        void loadRecent();
     });
     window.addEventListener('cycle-summary-updated', function (e) { ring(e.detail); });
     /* O parceiro vê apenas sentimentos autorizados; nenhum período privado é consultado. */
@@ -109,12 +161,12 @@
     C.refreshOnReturn(function () {
         if (!context) return;
         if (context.profile.gender !== 'feminino') return loadPartner();
-        if (!dirty && !dayLoading && !$('cc-checkin').hasAttribute('aria-busy')) return loadDay();
+        if (!dirty && !dayLoading && !$('cc-checkin').hasAttribute('aria-busy')) return Promise.all([loadDay(),loadRecent()]);
     });
     C.ready.then(async function (c) {
         context = c;
         if (c.profile.gender !== 'feminino') { await loadPartner(); return; }
-        await loadDay();
+        await Promise.all([loadDay(),loadRecent()]);
         try { const data = C.result(await supabaseClient.rpc('get_cycle_summary', { p_today: C.today() })); ring(data[0]); }
         catch (_) { $('cc-cycle-title').textContent = 'Resumo indisponível'; }
     }).catch(function (e) { $('cc-checkin-status').textContent = C.error(e); });

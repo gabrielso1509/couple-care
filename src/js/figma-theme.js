@@ -23,11 +23,16 @@
         close: '<path d="m6 6 12 12M18 6 6 18"/>',
         arrow: '<path d="M5 12h14m-5-5 5 5-5 5"/>',
         check: '<path d="m5 12 4 4L19 6"/>',
-        search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
         lock: '<rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
         eye: '<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/>',
         clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-        camera: '<path d="M4 7h3l2-3h6l2 3h3v13H4V7Z"/><circle cx="12" cy="13" r="4"/>'
+        camera: '<path d="M4 7h3l2-3h6l2 3h3v13H4V7Z"/><circle cx="12" cy="13" r="4"/>',
+        target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+        chart: '<path d="M3 20h18M6 16v-4m4 4V8m4 8V5m4 11v-6"/>',
+        crown: '<path d="M3 6l5 4 4-6 4 6 5-4-2 12H5zm3 15h12"/>',
+        book: '<path d="M12 7c-3-3-7-3-10-1v13c3-2 7-2 10 1 3-3 7-3 10-1V6c-3-2-7-2-10 1Zm0 0v13"/>',
+        dots: '<path d="M5 12h.01m7 0h.01m7 0h.01"/>',
+        users: '<circle cx="9" cy="8" r="3"/><path d="M3 19v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2m1-14a3 3 0 0 1 0 6m5 8v-2a4 4 0 0 0-4-4"/>'
     };
 
     function icone(nome) {
@@ -50,14 +55,36 @@
     }
 
     const paginas = [
-        { arquivo: 'dashboard.html', titulo: 'Dashboard', icone: 'home' },
-        { arquivo: 'tarefas.html', titulo: 'Tarefas', icone: 'tasks' },
+        { arquivo: 'dashboard.html', titulo: 'Início', icone: 'home' },
+        { arquivo: 'tarefas.html', titulo: 'Tarefas e Compromissos', icone: 'tasks' },
         { arquivo: 'calendario.html', titulo: 'Calendário', icone: 'calendar' },
-        { arquivo: 'menstruacao.html', titulo: 'Menstruação', icone: 'heart' },
+        { arquivo: 'menstruacao.html', titulo: 'Saúde e Ciclo', icone: 'heart' },
         { arquivo: 'financas.html', titulo: 'Finanças', icone: 'wallet' },
-        { arquivo: 'espaco.html', titulo: 'Nosso espaço', icone: 'sparkles' },
+        { arquivo: 'relatorios.html', titulo: 'Relatórios', icone: 'chart' },
         { arquivo: 'config.html', titulo: 'Configurações', icone: 'settings' }
     ];
+
+    const menu = {
+        ...Object.fromEntries(paginas.map(({arquivo,titulo,icone})=>[arquivo.split('.')[0],['/src/'+arquivo,titulo,icone]])),
+        planos:['/#planos','Planos','crown'],
+        site:['/','Página inicial','home']
+    };
+    const completo = ['dashboard','financas','tarefas','calendario','menstruacao','relatorios','config'];
+
+    function linkMenu(chave, arquivoAtual, classe = '') {
+        const [href, titulo, desenho] = menu[chave];
+        const link = elemento('a', classe);
+        link.href = href;
+        link.title = titulo;
+        link.setAttribute('aria-label', titulo);
+        link.innerHTML = icone(desenho);
+        link.append(elemento('span','',titulo));
+        if (href === '/src/'+arquivoAtual) {
+            link.classList.add('ativo');
+            link.setAttribute('aria-current','page');
+        }
+        return link;
+    }
 
     /* 3. Navegação: os links continuam sendo páginas reais, com sessão validada. */
     function prepararAplicacao() {
@@ -70,46 +97,35 @@
         app.classList.remove('menu-recolhido');
         const atual = nav.querySelector('[aria-current="page"]');
         let arquivoAtual = atual ? new URL(atual.href).pathname.split('/').pop() : '';
-        if (document.getElementById('cc-nosso-espaco')) arquivoAtual = 'espaco.html';
         if (!arquivoAtual) arquivoAtual = location.pathname.split('/').pop() || 'dashboard.html';
+        const chaveAtual = document.body.dataset.ccPage || arquivoAtual.split('.')[0];
         const pagina = paginas.find(function (item) { return item.arquivo === arquivoAtual; });
         if (pagina) {
-            cabecalho.querySelector('h1').textContent = pagina.titulo;
-            document.title = pagina.titulo + ' | CoupleCare';
+            const titulo = chaveAtual === 'calendario' ? 'Calendário do Casal' : pagina.titulo;
+            cabecalho.querySelector('h1').textContent = titulo;
+            document.title = titulo + ' | CoupleCare';
         }
         const marca = lateral.querySelector('.marca-tarefas');
         if (marca) marca.href = '/src/dashboard.html';
 
-        nav.replaceChildren();
-        const paginaInicial = elemento('a', 'item-menu');
-        paginaInicial.href = '/';
-        paginaInicial.title = 'Página inicial';
-        paginaInicial.setAttribute('aria-label', 'Página inicial');
-        paginaInicial.innerHTML = icone('home');
-        paginaInicial.append(elemento('span', '', 'Página inicial'));
-        nav.append(paginaInicial);
-        paginas.forEach(function (item, indice) {
-            if (indice === 0 || indice === 5) {
-                const grupo = elemento('span', 'cc-nav-label', indice === 0 ? 'ORGANIZAR' : 'CONECTAR');
-                grupo.setAttribute('aria-hidden', 'true');
-                nav.append(grupo);
-            }
-            const link = elemento('a', 'item-menu');
-            link.href = '/src/' + item.arquivo;
-            link.title = item.titulo;
-            link.setAttribute('aria-label', item.titulo);
-            link.innerHTML = icone(item.icone);
-            link.append(elemento('span', '', item.titulo));
-            if (item.arquivo === arquivoAtual) {
-                link.classList.add('ativo');
-                link.setAttribute('aria-current', 'page');
-            }
-            nav.append(link);
-        });
+        const atalhos = completo;
+        nav.replaceChildren(...atalhos.map(chave=>linkMenu(chave,arquivoAtual,'item-menu')));
+        const restantes = [...completo,'planos','site'].filter(chave=>
+            !atalhos.some(existente=>menu[existente][0]===menu[chave][0]));
+        const outros = elemento('details','cc-nav-outros');
+        const resumo = elemento('summary','item-menu');
+        resumo.innerHTML = icone('dots');
+        resumo.append(elemento('span','','Mais'));
+        resumo.setAttribute('aria-label','Mais páginas');
+        outros.append(resumo,...restantes.map(chave=>linkMenu(chave,arquivoAtual,'item-menu')));
+        nav.append(outros);
 
-        const nota = elemento('p', 'cc-menu-note', 'Pequenos cuidados. Mais vida juntos.');
         const conta = lateral.querySelector('.conta-menu');
-        if (conta) conta.before(nota);
+        if (conta && chaveAtual==='financas') {
+            const planos=linkMenu('planos',arquivoAtual,'cc-menu-plans');
+            planos.append(elemento('small','','Recursos e preços'));
+            conta.before(planos);
+        }
 
         const fundo = botao('cc-backdrop', 'Fechar menu', 'close');
         fundo.hidden = true;
@@ -125,10 +141,9 @@
         grupoTitulo.append(menuMovel, grupoTitulo.nextElementSibling);
 
         const mobileBrand = elemento('div', 'cc-mobile-brand');
-        const mobileMark = elemento('button', 'cc-mobile-brand-icon');
-        mobileMark.type = 'button';
-        mobileMark.setAttribute('aria-label', 'Animar coração do CoupleCare');
-        mobileMark.setAttribute('aria-pressed', 'false');
+        const mobileMark = elemento('a', 'cc-mobile-brand-icon');
+        mobileMark.href = '/src/dashboard.html';
+        mobileMark.setAttribute('aria-label', 'Início do CoupleCare');
         const markSlot = elemento('span', 'marca-tarefas-icone');
         mobileMark.append(markSlot);
         const mobileName = elemento('strong', 'cc-mobile-wordmark', 'Couple');
@@ -136,25 +151,32 @@
         mobileBrand.append(mobileMark, mobileName,
             elemento('span', '', '/ ' + (pagina ? pagina.titulo : cabecalho.querySelector('h1').textContent)));
         grupoTitulo.firstElementChild.after(mobileBrand);
+        if (['calendario','financas','menstruacao','tarefas','relatorios'].includes(chaveAtual)) {
+            const tituloMovel = elemento('span','cc-mobile-page-label',
+                chaveAtual==='calendario'?'Calendário':menu[chaveAtual][1]);
+            tituloMovel.setAttribute('aria-hidden','true');
+            mobileBrand.after(tituloMovel);
+        }
         if (window.CCBrand) window.CCBrand(markSlot);
 
         const inferior = elemento('nav', 'cc-bottom-nav');
         inferior.setAttribute('aria-label', 'Navegação rápida');
-        const interiorMobile = Boolean(document.querySelector('script[src$="/interior-mobile.js"]'));
-        paginas.slice(0, interiorMobile ? 5 : 4).forEach(function (item, indice) {
-            const link = elemento('a', item.arquivo === arquivoAtual ? 'ativo' : '');
-            link.href = '/src/' + item.arquivo;
-            if (item.arquivo === arquivoAtual) link.setAttribute('aria-current', 'page');
-            link.innerHTML = icone(item.icone);
-            link.append(elemento('span', '', indice === 0 ? 'Início' : indice === 3 ? 'Bem-estar' : item.titulo));
-            inferior.append(link);
-        });
-        const mais = botao('', 'Mais páginas', 'menu');
+        const mais = botao('', 'Mais páginas', 'dots');
         mais.append(elemento('span', '', 'Mais'));
         mais.setAttribute('aria-controls', lateral.id);
         mais.setAttribute('aria-expanded', 'false');
-        if (paginas.slice(4).some(function (item) { return item.arquivo === arquivoAtual; })) mais.classList.add('ativo');
-        if (!interiorMobile) inferior.append(mais);
+        const novo = elemento('button','mock-mobile-plus','+');
+        novo.type='button';
+        const novoItem={financas:['new-entry','Adicionar despesa'],tarefas:['novo-item','Novo item']}[chaveAtual];
+        novo.setAttribute('aria-label',novoItem?.[1] || (chaveAtual==='calendario' ? 'Adicionar evento' : chaveAtual==='menstruacao' ? 'Registrar hoje' : 'Adicionar tarefa'));
+        novo.addEventListener('click',()=>{
+            if(novoItem) document.getElementById(novoItem[0])?.click();
+            else if(chaveAtual==='calendario') document.querySelector('.calendar-day-action')?.click();
+            else if(chaveAtual==='menstruacao') document.getElementById('cc-checkin')?.scrollIntoView({block:'start'});
+            else location.assign('/src/tarefas.html?nova=tarefa');
+        });
+        const atalhosMobile=['dashboard','financas','+','calendario','mais'];
+        inferior.append(...atalhosMobile.map(chave=>chave==='+'?novo:chave==='mais'?mais:linkMenu(chave,arquivoAtual)));
         app.append(inferior);
 
         /* A gaveta mobile limita o foco; Esc fecha e devolve o foco ao botão. */
@@ -192,6 +214,9 @@
         menuMovel.addEventListener('click', function () { mostrarMenu(true, menuMovel); });
         mais.addEventListener('click', function () { mostrarMenu(true, mais); });
         fundo.addEventListener('click', fecharMenu);
+        nav.addEventListener('click', evento=>{
+            if (aberto && evento.target.closest('a[href]')) mostrarMenu(false);
+        });
         if (recolher) {
             // Captura o clique antes do comportamento antigo de recolher o menu.
             recolher.addEventListener('click', function (evento) {
@@ -221,7 +246,7 @@
             if (!aberto) return;
             if (evento.key === 'Escape') { evento.preventDefault(); fecharMenu(); return; }
             if (evento.key !== 'Tab') return;
-            const itens = Array.from(lateral.querySelectorAll('a[href], button:not(:disabled)')).filter(function (item) { return item.getClientRects().length; });
+            const itens = Array.from(lateral.querySelectorAll('a[href], summary, button:not(:disabled)')).filter(function (item) { return item.getClientRects().length; });
             const primeiro = itens[0];
             const ultimo = itens[itens.length - 1];
             if (evento.shiftKey && document.activeElement === primeiro) { evento.preventDefault(); ultimo.focus(); }
@@ -229,62 +254,13 @@
         });
         mostrarMenu(false);
         atualizarBotao();
-        prepararBusca(cabecalho);
-
-    }
-
-    /* 4. Busca de páginas, sem fingir uma busca global nos dados da conta. */
-    function prepararBusca(cabecalho) {
         const acoes = elemento('div', 'cc-header-actions');
-        const abrir = botao('cc-search-open', 'Buscar página', 'search');
-        abrir.append(elemento('span', '', 'Buscar página'));
-        const data = elemento('time', 'cc-date', new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }));
-        acoes.append(abrir, data);
+        const hoje = new Date();
+        const data = elemento('time', 'cc-date', hoje.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }));
+        acoes.append(data);
         cabecalho.append(acoes);
-        const dialogo = elemento('dialog', 'cc-search');
-        dialogo.setAttribute('aria-labelledby', 'cc-busca-titulo');
-        const topo = elemento('header');
-        const titulo = elemento('h2', '', 'Ir para…');
-        titulo.id = 'cc-busca-titulo';
-        const fechar = botao('icon-button', 'Fechar busca', 'close');
-        topo.append(titulo, fechar);
-        const rotulo = elemento('label', 'cc-sr', 'Nome da página');
-        rotulo.htmlFor = 'cc-busca-pagina';
-        const campo = elemento('input');
-        campo.id = 'cc-busca-pagina';
-        campo.type = 'search';
-        campo.placeholder = 'Qual página você procura?';
-        const links = elemento('nav');
-        links.setAttribute('aria-label', 'Resultados da busca de páginas');
-        paginas.forEach(function (item) {
-            const link = elemento('a');
-            link.href = '/src/' + item.arquivo;
-            link.innerHTML = icone(item.icone);
-            link.append(elemento('span', '', item.titulo));
-            links.append(link);
-        });
-        const vazio = elemento('p', '', 'Nenhuma página encontrada.');
-        vazio.hidden = true;
-        dialogo.append(topo, rotulo, campo, links, vazio);
-        document.body.append(dialogo);
-        abrir.addEventListener('click', function () { dialogo.showModal(); campo.focus(); });
-        fechar.addEventListener('click', function () { dialogo.close(); });
-        dialogo.addEventListener('close', function () { abrir.focus(); });
-        dialogo.addEventListener('keydown', function (evento) {
-            if (evento.key === 'Escape') { evento.preventDefault(); dialogo.close(); }
-        });
-        campo.addEventListener('input', function () {
-            const termo = campo.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-            let quantidade = 0;
-            links.querySelectorAll('a').forEach(function (link) {
-                const texto = link.textContent.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-                link.hidden = !texto.includes(termo);
-                if (!link.hidden) quantidade += 1;
-            });
-            vazio.hidden = quantidade > 0;
-        });
-    }
 
+    }
 
     prepararAplicacao();
 

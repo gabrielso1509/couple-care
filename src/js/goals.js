@@ -37,14 +37,23 @@
         if (!goals.length) box.append(C.el('p', 'empty-state', 'Qual é o próximo sonho de vocês? Crie uma meta para começar.'));
         goals.forEach(function (g) {
             const card = C.el('section', 'cc-goal'); const ratio = Math.min(100, Math.round(Number(g.saved_cents) / Number(g.target_cents) * 100));
-            card.append(C.el('h4', '', g.title), C.el('strong', '', C.money(g.saved_cents)), C.el('small', '', 'de ' + C.money(g.target_cents)));
-            const progress = C.el('div', 'progress-bar'), fill = C.el('i'); fill.style.width = ratio + '%'; progress.append(fill); progress.setAttribute('aria-label', ratio + '% da meta');
-            card.append(progress, C.el('p', 'goal-meta', ratio + '% alcançado' + (g.target_date ? ' · Meta: ' + C.date(g.target_date) : '')));
+            const content = C.el('div', 'cc-goal-content');
+            content.append(C.el('h4', '', g.title), C.el('strong', '', C.money(g.saved_cents)), C.el('small', '', ' de ' + C.money(g.target_cents)));
+            const progress = C.el('div', 'progress-bar'), fill = C.el('i');
+            fill.style.width = ratio + '%';
+            progress.append(fill);
+            progress.setAttribute('aria-hidden','true');
+            const track = C.el('div','cc-goal-track');
+            track.append(progress,C.el('b','',ratio+'%'));
+            content.append(track);
+            if (g.target_date) content.append(C.el('p','goal-meta','Meta: '+C.date(g.target_date)));
             const actions = C.el('div', 'cc-row-actions');
             actions.append(C.button('+ Adicionar valor', async function () { await openContributions(g); }, 'soft-button'), C.button('Editar', function () { editGoal(g); }), C.button('Excluir', async function () {
                 if (!confirm('Excluir esta meta e os aportes dela?')) return;
                 C.result(await supabaseClient.from('savings_goals').delete().eq('id', g.id).eq('version', g.version).select('id').single()); C.notify('Meta removida.'); await load();
-            })); card.append(actions); box.append(card);
+            })); content.append(actions); card.append(content); box.append(card);
+            // A fotografia é opcional e nunca altera os valores financeiros.
+            if (window.CCGoalInspiration) void window.CCGoalInspiration(card, g);
         });
     }
     async function load() {

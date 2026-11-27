@@ -1,0 +1,80 @@
+/* =========================================================
+   COUPLECARE — camada visual compartilhada
+   A preferência fica no atributo data-cc-theme do HTML.
+   Os scripts e IDs das integrações anteriores são preservados.
+   ========================================================= */
+:root { --cc-radius: 18px; --cc-gap: 16px; }
+.cc-theme-toggle { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:40px; padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:var(--panel); color:var(--text); white-space:nowrap; font:600 12px 'DM Sans',sans-serif; cursor:pointer; }
+.cc-theme-toggle:focus-visible { outline:2px solid var(--purple); outline-offset:3px; }
+/* Três cards de planos, com dimensões coerentes e sem larguras fixas. */
+.landing .pricing-and-faq { grid-template-columns:minmax(0,1fr); }
+.cc-plans { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--cc-gap); }
+.landing .cc-plan { display:flex; flex-direction:column; gap:12px; border:1px solid var(--line); background:var(--panel); border-radius:var(--cc-radius); min-width:0; }
+.landing .cc-plan-plus { border-color:#F28C45; }
+.landing .cc-plan-infinity { border-color:#A99BE8; }
+.cc-plan .plan-features { flex:1; }
+.cc-plan .plan-price strong { font-size:clamp(24px,3vw,36px); }
+.cc-plan-note { margin-top:12px !important; font-size:12px; }
+@media(max-width:720px) {
+  .cc-plans { grid-template-columns:1fr; }
+  .cc-theme-toggle { font-size:11px; padding:6px 9px; min-height:36px; }
+}
+/* Paleta da área autenticada. O modo escolhido também controla os campos nativos. */
+:root[data-cc-theme="light"] {
+  color-scheme:only light;
+  --ink:#fff;
+  --navy:#f7f2f9;
+  --panel:#fff;
+  --panel-2:#f5effa;
+  --line:#e5deea;
+  --text:#161634;
+  --muted:#514d65;
+  --orange:#a64f24;
+  --orange-soft:#96522c;
+  --purple:#7544bd;
+  --mint:#247a61;
+  --premium-accent:#eedff8;
+  --premium-warm:#fff0e5;
+  --premium-shadow:0 3px 10px #55336612, 0 1px 2px #55336609;
+  --app-canvas:radial-gradient(ellipse at 94% 2%,#f6eafc 0,transparent 42%),
+      radial-gradient(ellipse at 4% 99%,#fff2ed 0,transparent 38%),var(--ink);
+  --orbital-fundo:var(--ink);
+  --orbital-texto:var(--text);
+  --orbital-suave:var(--muted);
+  --orbital-borda:var(--line);
+}
+
+:root[data-cc-theme="dark"] {
+  color-scheme:dark;
+  --ink:#101827;
+  --navy:#14243b;
+  --panel:#19243b;
+  --panel-2:#262d45;
+  --line:#ffffff20;
+  --text:#f1eee8;
+  --muted:#b9b9cc;
+  --orange:#e9a475;
+  --orange-soft:#f5c19a;
+  --purple:#c3a4ef;
+  --mint:#91cfb6;
+  --premium-accent:#392d50;
+  --premium-warm:#352d35;
+  --premium-shadow:0 3px 10px #0003;
+}
+
+html[data-cc-theme="light"] body { color:var(--text); background:var(--ink); }
+html[data-cc-theme="light"] .aplicacao .menu-lateral { background:var(--panel); border-color:var(--line); box-shadow:0 12px 35px #69548312; }
+html[data-cc-theme="light"] :is(.marca-tarefas,.marca,.conta-nome,.cc-nav-label,.menu-lateral .item-menu,.cabecalho h1) { color:var(--text); }
+html[data-cc-theme="light"] .menu-lateral .item-menu.ativo { background:#E9DFF5; border-color:#DFD1EF; color:#62428D; }
+html[data-cc-theme="light"] .menu-lateral .item-menu:hover { background:#F0E9F7; color:#62428D; }
+html[data-cc-theme="light"] :is(.card,.painel,.cc-modal,.cc-search,.auth-dialog,.balance-card,.cc-goal,.plan,.faq details,.feature-grid article) { background:var(--panel); color:var(--text); border-color:var(--line); box-shadow:0 8px 24px #6752790D; }
+html[data-cc-theme="light"] :is(.card,.painel,.cc-modal,.cc-search,.auth-dialog,.balance-card,.cc-goal) :is(h2,h3,h4,strong,b,label) { color:var(--text); }
+html[data-cc-theme="light"] :is(.cc-status,.empty-state,.texto-suave,.cc-date,.cc-menu-note,.cabecalho p,.painel p,.card-title span,.goal-meta) { color:var(--muted); }
+html[data-cc-theme="light"] :is(.campo-app,.cc-field,.cc-modal,.auth-dialog,.cc-search) :is(input,select,textarea), html[data-cc-theme="light"] option { background:var(--panel); color:var(--text); border-color:var(--line); }
+html[data-cc-theme="light"] :is(.soft-button,.secondary-button,.botao-secundario,.text-button,.cc-search-open,.cc-modal [data-close]) { color:#62428D; background:#F0E8F7; border-color:#DDD0EC; }
+html[data-cc-theme="light"] :is(.primary-button,.botao-primario) { background:#E9DDF5; color:#442B6C; box-shadow:none; }
+html[data-cc-theme="light"] :is(.tarefa-cartao,.transaction,.cc-notification,.tarefas-indicadores > div) { background:var(--panel); color:var(--text); border-color:var(--line); }
+html[data-cc-theme="light"] :is(.cc-bottom-nav,.cc-mobile-nav) { background:var(--panel); color:var(--text); border-color:var(--line); }
+/* Imagens de inspiração, nunca apresentadas como fotos reais do casal. */
+.cc-goal-image { display:block; width:100%; aspect-ratio:16/8; object-fit:cover; border-radius:12px; margin-bottom:12px; }
+.cc-goal-credit { display:block; font-size:11px; color:var(--muted); margin-bottom:8px; }

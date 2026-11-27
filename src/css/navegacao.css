@@ -50,6 +50,14 @@
     animation: cc-skeleton-pulse 1.65s ease-in-out infinite alternate;
 }
 
+[data-cc-theme="light"] .cc-skeleton-card {
+    background: var(--panel-2);
+    border-color: var(--line);
+}
+
+[data-cc-theme="light"] .cc-skeleton-progress i { border-color: var(--line); }
+[data-cc-theme="light"] :is(.cc-skeleton-card span, .cc-skeleton-heading) { background: var(--line); }
+
 .cc-skeleton-card span + span { width: 33%; }
 .cc-skeleton-card span:last-child { margin-top: .5rem; }
 .cc-skeleton-heading { width: min(40%, 10rem); margin-top: .35rem; }

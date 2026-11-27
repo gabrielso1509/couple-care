@@ -54,7 +54,13 @@
         memories.forEach(function (row) {
             const card = C.el('article', 'memory-item');
             if (row.photo_paths.length) { const img = C.el('img'); img.hidden = true; img.alt = row.title; card.append(img); C.photo(img, row.photo_paths[0]); }
-            const body = C.el('div'); body.append(C.el('h4', '', row.title), C.el('small', '', C.date(row.memory_date) + ' · ' + row.photo_paths.length + ' foto(s)'));
+            const memoryDate = new Date(row.memory_date+'T12:00:00');
+            const date = C.el('time', '', memoryDate.toLocaleDateString('pt-BR',{
+                day:'numeric',month:'short',year:'numeric'
+            }).replace('.',''));
+            date.dateTime = row.memory_date;
+            const body = C.el('div');
+            body.append(date, C.el('h4', '', row.title), C.el('small', '', row.photo_paths.length + ' foto(s)'));
             if (row.note) body.append(C.el('p', '', row.note.slice(0, 180)));
             const actions = C.el('div', 'cc-row-actions');
             actions.append(C.button('Relembrar →', function () { return showMemory(row); }), C.button('Editar', function () { newMemory(row); }), C.button('Excluir', async function () {

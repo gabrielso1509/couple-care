@@ -1188,18 +1188,7 @@
         await carregar(contexto?.members);
     }
 
-    document.addEventListener(
-        'visibilitychange',
-        function () {
-            if (!document.hidden && identidadePronta) {
-                void carregar();
-            }
-        }
-    );
-
-    window.addEventListener('online', function () {
-        void carregar();
-    });
+    CC.refreshOnReturn(function () { if (identidadePronta) return carregar(); });
 
     window.addEventListener('offline', function () {
         ocultarDados();

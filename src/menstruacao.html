@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 
-<html lang="pt-BR">
-<head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<html lang="pt-BR" data-cc-theme="light">
+<head>
 <meta charset="utf-8"/>
+<meta name="color-scheme" content="only light"/>
+<meta name="darkreader-lock"/>
+<script src="/src/js/tema-inicial.js?v=tema-nativo"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
 <base href="/src/"/>
@@ -12,18 +16,23 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
-<link href="/src/css/figma-theme.css" rel="stylesheet"/><link href="/src/css/app.css" rel="stylesheet"/><link rel="stylesheet" href="/src/css/navegacao.css?v=1">
-<script defer src="/src/js/couple-brand.js"></script>
-<script defer src="/src/js/figma-theme.js?v=navegacao"></script>
-<link rel="preconnect" href="https://cwsmavsxeudwjocqakhh.supabase.co" crossorigin>
-<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="/src/js/supabase-client.js"></script><script defer="" src="/src/js/sessao.js?v=navegacao"></script><script defer="" src="/src/js/app-core.js?v=navegacao"></script><script defer="" src="/src/js/app-shell.js"></script><script defer="" src="/src/js/menstruacao.js?v=navegacao"></script><script defer="" src="/src/js/wellbeing-extra.js?v=navegacao"></script><script>document.documentElement.classList.add('cc-figma');</script><link rel="stylesheet" href="/src/css/couple-glass.css">
-<script defer src="/src/js/agenda-preferencias.js"></script>
-<link rel="stylesheet" href="/src/css/interior-mobile.css">
-<script defer src="/src/js/interior-mobile.js"></script>
-</head>
-<body class="pagina-orbital">
-<!-- Mensagem exibida enquanto verificamos a conta. -->
+<link href="/src/css/figma-theme.css?v=app-header" rel="stylesheet"/><link href="/src/css/app.css" rel="stylesheet"/><link href="/src/css/navegacao.css?v=tema-nativo" rel="stylesheet"/>
+<script defer="" src="/src/js/couple-brand.js?v=neon-ui"></script>
+<script defer="" src="/src/js/figma-theme.js?v=agenda-relatorios"></script>
+<link crossorigin="" href="https://cwsmavsxeudwjocqakhh.supabase.co" rel="preconnect"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="/src/js/supabase-client.js"></script><script defer="" src="/src/js/sessao.js?v=navegacao"></script><script defer="" src="/src/js/app-core.js?v=harmonia"></script><script defer src="/src/js/controles-compartilhados.js?v=1"></script><script defer="" src="/src/js/app-shell.js"></script><script defer="" src="/src/js/menstruacao.js?v=harmonia"></script><script defer="" src="/src/js/wellbeing-extra.js?v=mockups-v2"></script><script>document.documentElement.classList.add('cc-figma');</script><link href="/src/css/couple-glass.css" rel="stylesheet"/>
+<script defer="" src="/src/js/agenda-preferencias.js"></script>
+<link href="/src/css/interior-mobile.css?v=mockups-v2" rel="stylesheet"/>
+<script defer="" src="/src/js/interior-mobile.js?v=mockups-v2"></script>
+<link href="/src/css/tema-couplecare.css?v=painel-lateral" rel="stylesheet"/>
+<script defer="" src="/src/js/tema-couplecare.js?v=app-header"></script>
 
+<link href="/src/css/redesign-premium.css?v=tema-nativo" rel="stylesheet"/>
+<link href="/src/css/mockup-fiel.css?v=painel-lateral" rel="stylesheet"/><script defer="" src="/src/js/mockup-fiel.js?v=agenda-relatorios"></script><link href="/src/css/logo-motion.css?v=texto-legivel" rel="stylesheet"/><link rel="icon" type="image/svg+xml" href="/assets/images/couplecare-logo-header.svg?v=neon-ui"/><link href="/src/css/painel-lateral.css?v=2" rel="stylesheet"/>
+<link rel="stylesheet" href="/src/css/interface-app.css?v=conta-lateral">
+</head>
+<body class="pagina-orbital" data-cc-page="menstruacao">
+<!-- Mensagem exibida enquanto verificamos a conta. -->
 <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
 <div class="aplicacao" data-shell-state="loading">
 <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
@@ -96,35 +105,42 @@
 <div class="conteudo-principal">
 <header class="cabecalho">
 <div>
-<span class="texto-destaque">SEU ESPAÇO A DOIS</span>
-<h1>Bem-estar</h1>
-<p>Cuidado, acolhimento e informação para o casal.</p>
+<span class="texto-destaque cc-old-decoration">SEU ESPAÇO A DOIS</span>
+<h1>Saúde e Ciclo</h1>
+<p>Acompanhe seu ciclo, cuide da sua saúde e compartilhe o que quiser com seu par.</p>
 </div>
-<span class="selo-tarefas">Feito para construir juntos</span>
+<span class="selo-tarefas cc-old-decoration">Feito para construir juntos</span>
 </header>
-<!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
+
 <main class="conteudo menstruacao-real" id="conteudo-pagina" tabindex="-1">
-<p aria-live="polite" id="status-sessao" role="status" hidden></p>
+<p aria-live="polite" hidden="" id="status-sessao" role="status"></p>
 <section class="cc-page-skeleton">
-    <span class="cc-sr" role="status">Carregando bem-estar…</span>
-    <div class="cc-skeleton-heading" aria-hidden="true"></div>
-    <div class="cc-skeleton-card cc-skeleton-rows" aria-hidden="true"><span></span><span></span><span></span></div>
+<span class="cc-sr" role="status">Carregando bem-estar…</span>
+<div aria-hidden="true" class="cc-skeleton-heading"></div>
+<div aria-hidden="true" class="cc-skeleton-card cc-skeleton-rows"><span></span><span></span><span></span></div>
 </section>
-<section class="wellness-hero mobile-desktop"><div><span class="section-label">CUIDADO E ACOLHIMENTO</span><h2>Entender também é uma forma de amar.</h2><p>Acompanhem o bem-estar com privacidade, respeito e leveza.</p></div><div aria-hidden="true" class="hero-hearts">♡<span>♡</span></div></section><p aria-live="polite" class="texto-suave" id="status-menstruacao" role="status">
+<section class="wellness-hero cc-old-decoration"><div><span class="section-label">CUIDADO E ACOLHIMENTO</span><h2>Entender também é uma forma de amar.</h2><p>Acompanhem o bem-estar com privacidade, respeito e leveza.</p></div><div aria-hidden="true" class="hero-hearts">♡<span>♡</span></div></section><p aria-live="polite" class="texto-suave" id="status-menstruacao" role="status">
                         Carregando seus registros…
-                    </p><div hidden="" id="individual"><div class="wellness-grid"><section class="card cycle-card"><div class="card-title"><div><span>CICLO ATUAL</span><h3 id="cc-cycle-title">Carregando seu ciclo…</h3></div><span class="status-pill" id="cc-cycle-state">Seus registros</span></div><div class="cycle-visual" id="cc-cycle-ring"><div><strong id="cc-cycle-day">—</strong><span>dia do ciclo</span></div></div><div class="cycle-info"><span id="cc-cycle-next">Sem estimativa</span></div><a class="soft-button" href="#cc-cycle-history" id="abrir-historico-ciclo">Ver calendário do ciclo</a></section><section class="card checkin-card"><span class="section-label">CHECK-IN PESSOAL</span><h3>Como você está hoje?</h3><p>Teu check-in começa privado. Tu escolhe quando compartilhar.</p><form id="cc-checkin"><fieldset disabled="" id="cc-checkin-fields"><details class="checkin-date-panel"><summary id="checkin-date-caption">Registro de hoje · Alterar data</summary><label class="cc-field checkin-date-field">Data<input id="cc-checkin-date" required="" type="date"/></label></details><div class="feeling-grid" id="cc-feelings"></div><label class="cc-field checkin-note-field">Observação<textarea id="cc-checkin-note" maxlength="1000" placeholder="Quer registrar alguma observação?"></textarea></label><label class="check-row"><input id="cc-checkin-share" type="checkbox"/> Compartilhar com meu casal atual</label><button class="primary-button" type="submit">Salvar check-in</button></fieldset><p aria-live="polite" id="cc-checkin-status" role="status"></p><button class="soft-button" id="retry-checkin" type="button" hidden>Tentar novamente</button></form></section></div><section class="card support-card"><div><span>PARA QUEM CUIDA JUNTO</span><h3>Como apoiar no dia a dia</h3></div><ul><li>✓ Pergunte como ela prefere ser apoiada</li><li>✓ Dividam os cuidados da rotina</li><li>✓ Respeite o espaço e as escolhas de compartilhamento</li></ul></section>
-<!-- Atalho para informar o término do período atual. -->
-<section class="card checkin-card agenda-preferencias" aria-labelledby="titulo-compartilhar-previsao">
-    <h3 id="titulo-compartilhar-previsao">Compartilhar estimativas do ciclo</h3>
-    <p>Autorize seu casal atual a ver as estimativas de TPM e janela fértil. As datas podem variar e não devem ser usadas como método contraceptivo.</p>
-    <form class="form-app" id="form-previsao">
-        <fieldset disabled id="campos-previsao">
-            <label class="check-row"><input id="compartilhar-previsao" type="checkbox"> Mostrar estimativas para meu casal atual</label>
-            <button class="soft-button" type="submit">Salvar preferência</button>
-        </fieldset>
-        <p class="feedback-app" id="status-previsao" role="status"></p>
-    </form>
+                    </p><div hidden="" id="individual"><nav class="wellness-sections" aria-label="Seções de Saúde e Ciclo"><a href="#cc-cycle-title">Ciclo</a><a href="#cc-checkin" data-checkin="Registrar sintomas">Saúde</a><a href="#cc-checkin" data-checkin="Registrar bem-estar">Bem-estar</a></nav><div class="wellness-grid"><section class="card cycle-card"><div class="card-title"><div><span>Seu ciclo atual</span><h3 id="cc-cycle-title">Carregando seu ciclo…</h3></div><span class="status-pill" id="cc-cycle-state">Seus registros</span></div><div class="cycle-visual" id="cc-cycle-ring"><div><span>Dia do ciclo</span><strong id="cc-cycle-day">—</strong><span id="cc-cycle-length"></span></div></div><div class="cycle-info"><span id="cc-cycle-next">Sem estimativa</span></div><div class="cycle-actions"><a class="primary-button" id="abrir-registro-saude" href="#cc-checkin">Registrar hoje</a><a class="soft-button" href="#cc-cycle-history" id="abrir-historico-ciclo">Ver calendário do ciclo</a></div></section><article class="card mock-care-banner"><div><h3>Cuidar da sua saúde também fortalece o nosso vínculo. ♡</h3><p>Seu ciclo, sua saúde, no seu ritmo.</p></div></article><section class="card checkin-card"><span class="section-label">CHECK-IN PESSOAL</span><h3>Registrar hoje</h3><p>Teu check-in começa privado. Tu escolhe quando compartilhar.</p><div aria-label="Atalhos de registro" class="wellness-quick-actions" id="wellness-quick-actions"></div><form id="cc-checkin"><fieldset disabled="" id="cc-checkin-fields"><details class="checkin-date-panel"><summary id="checkin-date-caption">Registro de hoje · Alterar data</summary><label class="cc-field checkin-date-field">Data<input id="cc-checkin-date" required="" type="date"/></label></details><div class="feeling-grid" id="cc-feelings"></div><label class="cc-field checkin-note-field">Observação<textarea id="cc-checkin-note" maxlength="1000" placeholder="Quer registrar alguma observação?"></textarea></label><label class="check-row"><input id="cc-checkin-share" type="checkbox"/> Compartilhar com meu casal atual</label><button class="primary-button" type="submit">Salvar check-in</button></fieldset><p aria-live="polite" id="cc-checkin-status" role="status"></p><button class="soft-button" hidden="" id="retry-checkin" type="button">Tentar novamente</button></form></section>
+<section class="card wellness-reminders"><h3>Lembretes</h3><p>Organizem os cuidados com tarefas e compromissos com prazo.</p><div class="wellness-reminder-actions"><a class="text-button" href="/src/calendario.html">Ver agenda</a><a class="soft-button" href="/src/tarefas.html?nova=tarefa">Adicionar lembrete</a></div></section>
+<section aria-labelledby="titulo-compartilhar-previsao" class="card checkin-card agenda-preferencias">
+<h3 id="titulo-compartilhar-previsao">Compartilhamento</h3>
+<p>Autorize seu casal atual a ver as estimativas de TPM e janela fértil. As datas podem variar e não devem ser usadas como método contraceptivo.</p>
+<form class="form-app" id="form-previsao">
+<fieldset disabled="" id="campos-previsao">
+<label class="check-row"><input id="compartilhar-previsao" type="checkbox"/> Mostrar estimativas para meu casal atual</label>
+<button class="soft-button" type="submit">Salvar preferência</button>
+</fieldset>
+<p class="feedback-app" id="status-previsao" role="status"></p>
+</form>
 </section>
+<section class="card wellness-recent"><h3>Seu bem-estar</h3><p>Registros dos últimos 7 dias</p><div id="wellness-chart"></div></section>
+<section class="card wellness-recent"><h3>Sintomas recentes</h3><div id="wellness-symptoms"></div></section>
+<section class="card wellness-recent"><h3>Notas do ciclo</h3><div id="wellness-notes"></div></section>
+</div>
+<dialog class="cc-modal mobile-checkin-dialog" id="mobile-checkin-dialog" aria-labelledby="mobile-checkin-title"><header><h2 id="mobile-checkin-title">Registrar sintomas</h2><button type="button" id="fechar-registro-saude" data-close aria-label="Fechar registro"></button></header><div id="mobile-checkin-content"></div></dialog>
+<!-- Atalho para informar o término do período atual. -->
+
 <details class="cc-cycle-history" id="cc-cycle-history"><summary><span>Histórico e registros do ciclo</span><small>Consultar meses, informar início ou término e ajustar minhas preferências</small></summary><div class="cc-cycle-history-content"><section class="painel" id="historico-ciclo">
 <h2>Histórico mensal</h2>
 <div class="campo-app">
@@ -134,7 +150,7 @@
 <select disabled="True" id="filtro-mes"><option value="">Carregando meses…</option></select>
 </div>
 <div class="acoes-app">
-<button id="atualizar-registros" type="button" hidden>Tentar novamente</button>
+<button hidden="" id="atualizar-registros" type="button">Tentar novamente</button>
 </div>
 </section><details class="cc-advanced"><summary>Detalhes das médias e estimativas</summary><section class="painel">
 <h2>Meu ciclo</h2>
@@ -198,8 +214,8 @@
                                                 Duração habitual do ciclo
                                                 em dias (opcional)
                                             </label>
-<input id="ciclo-habitual" max="365" min="1" step="1" type="number"/>
-</div>
+<input id="ciclo-habitual" max="365" min="1" step="1" type="number">
+</input></div>
 <div class="campo-app">
 <label for="duracao-habitual">
                                                 Duração habitual da
@@ -310,10 +326,8 @@
 <a href="calendario.html">
                                 Abrir calendário
                             </a>
-</section></div></details></div><section class="cc-partner-wellness" hidden="" id="parceiro"><div class="wellness-grid"><section class="card partner-feelings-card"><span class="section-label">BEM-ESTAR COMPARTILHADO</span><div class="partner-profile"><span aria-hidden="true" class="conta-avatar" id="partner-wellness-avatar">♡</span><div><h2 id="partner-wellness-name">Seu casal</h2><p id="partner-wellness-caption">Carregando os sentimentos compartilhados…</p></div></div><div class="partner-feelings" id="partner-feelings"></div><p id="partner-feelings-note"></p><p id="partner-feelings-status" role="status"></p><button class="soft-button" id="refresh-partner-wellness" type="button" hidden>Tentar novamente</button></section><section class="card partner-care-card"><span class="section-label">PRESENÇA E ACOLHIMENTO</span><div aria-hidden="true" class="partner-care-art">♡</div><h2>Estar perto também é cuidar.</h2><p>Pergunte como ela está, divida os cuidados da rotina e respeite o tempo de vocês.</p><a class="soft-button" href="calendario.html">Abrir nosso calendário →</a></section></div><section class="card support-card"><div><span>PARA QUEM CUIDA JUNTO</span><h3>Como apoiar no dia a dia</h3></div><ul><li>✓ Pergunte como ela prefere ser apoiada</li><li>✓ Dividam os cuidados da rotina</li><li>✓ Respeite o espaço e as escolhas de compartilhamento</li></ul></section></section><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+</section></div></details></div><section class="cc-partner-wellness" hidden="" id="parceiro"><div class="wellness-grid"><section class="card partner-feelings-card"><span class="section-label">BEM-ESTAR COMPARTILHADO</span><div class="partner-profile"><span aria-hidden="true" class="conta-avatar" id="partner-wellness-avatar">♡</span><div><h2 id="partner-wellness-name">Seu casal</h2><p id="partner-wellness-caption">Carregando os sentimentos compartilhados…</p></div></div><div class="partner-feelings" id="partner-feelings"></div><p id="partner-feelings-note"></p><p id="partner-feelings-status" role="status"></p><button class="soft-button" hidden="" id="refresh-partner-wellness" type="button">Tentar novamente</button></section><section class="card partner-care-card"><span class="section-label">PRESENÇA E ACOLHIMENTO</span><div aria-hidden="true" class="partner-care-art">♡</div><h2>Estar perto também é cuidar.</h2><p>Pergunte como ela está, divida os cuidados da rotina e respeite o tempo de vocês.</p><a class="soft-button" href="calendario.html">Abrir nosso calendário →</a></section></div><section class="card support-card"><div><span>PARA QUEM CUIDA JUNTO</span><h3>Como apoiar no dia a dia</h3></div><ul><li>✓ Pergunte como ela prefere ser apoiada</li><li>✓ Dividam os cuidados da rotina</li><li>✓ Respeite o espaço e as escolhas de compartilhamento</li></ul></section></section><footer class="rodape-tarefas cc-old-decoration">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
 </div>
 </div>
 </body>
 </html>
-
-

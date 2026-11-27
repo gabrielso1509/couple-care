@@ -1,0 +1,53 @@
+.cc-heart-motion { display:block; width:100%; height:100%; object-fit:contain; }
+.marca-tarefas-icone:has(.cc-heart-motion), .marca-icone:has(.cc-heart-motion) {
+    background:transparent;
+    border:0;
+    box-shadow:none;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .cc-heart-motion { animation:cc-brand-appear .46s ease-out both; transition:transform .22s ease; }
+    :is(a,button):hover .cc-heart-motion { transform:scale(1.08); }
+    @keyframes cc-brand-appear {
+        from { opacity:.55; transform:scale(.88); }
+        to { opacity:1; transform:scale(1); }
+    }
+}
+.account-brand-mark { display: inline-block; width: 36px; height: 30px; vertical-align: middle; margin-inline-end: 5px; }
+
+/* Tipografia e ações compartilhadas do CoupleCare. */
+:root {
+    --cc-typeface:"DM Sans",system-ui,sans-serif;
+    --font-display:var(--cc-typeface);
+    --font-body:var(--cc-typeface);
+}
+html body,
+html body :is(h1,h2,h3,h4,h5,h6,button,input,select,textarea,summary,.brand,.marca-tarefas,.mobile-intro-title,.finance-summary strong) {
+    font-family:var(--cc-typeface)!important;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] :is(.aplicacao,dialog) :is(.primary-button,.botao-primario) {
+    background:var(--panel);
+    color:var(--purple);
+    border:1px solid var(--line);
+    box-shadow:none;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] :is(.aplicacao,dialog) :is(.primary-button,.botao-primario):hover:not(:disabled) {
+    border-color:var(--purple);
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao :is(.mock-tabs button,.tarefas-filtros button,.task-view-bar button,.cycle-actions button)[aria-pressed=true] {
+    background:transparent;
+    color:var(--purple);
+    border:1px solid var(--purple);
+    box-shadow:none;
+}
+
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao button.text-button {
+    background:transparent;
+    box-shadow:none;
+}
+
+/* Textos de apoio e estados vazios nas páginas do app. */
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao :is(p.empty-state,.cc-empty,.mobile-module-description),
+html.cc-figma[data-cc-theme] body[data-cc-page] .cc-modal .bank-panel p {
+    font-size:14px;
+    line-height:1.5;
+}

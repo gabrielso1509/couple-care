@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 
-<html lang="pt-BR">
-<head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<html lang="pt-BR" data-cc-theme="light">
+<head>
 <meta charset="utf-8"/>
+<meta name="color-scheme" content="only light"/>
+<meta name="darkreader-lock"/>
+<script src="/src/js/tema-inicial.js?v=tema-nativo"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
 <base href="/src/"/>
@@ -12,32 +16,35 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
-<link href="/src/css/figma-theme.css" rel="stylesheet"/>
+<link href="/src/css/figma-theme.css?v=app-header" rel="stylesheet"/>
 <link href="/src/css/app.css" rel="stylesheet"/>
 <link href="/src/css/couple-glass.css" rel="stylesheet"/>
-<link href="/src/css/calendario-mensal.css" rel="stylesheet"/>
+<link href="/src/css/calendario-mensal.css?v=tema-nativo" rel="stylesheet"/>
 <script>document.documentElement.classList.add('cc-figma');</script>
-<link rel="stylesheet" href="/src/css/navegacao.css?v=1">
-<script defer src="/src/js/couple-brand.js"></script>
-<script defer src="/src/js/figma-theme.js?v=navegacao"></script>
-<link rel="preconnect" href="https://cwsmavsxeudwjocqakhh.supabase.co" crossorigin>
-<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="/src/js/supabase-client.js"></script>
-<script defer src="/src/js/sessao.js?v=navegacao"></script>
-<script defer src="/src/js/app-core.js?v=navegacao"></script>
+<link href="/src/css/navegacao.css?v=tema-nativo" rel="stylesheet"/>
+<script defer="" src="/src/js/couple-brand.js?v=neon-ui"></script>
+<script defer="" src="/src/js/figma-theme.js?v=agenda-relatorios"></script>
+<link crossorigin="" href="https://cwsmavsxeudwjocqakhh.supabase.co" rel="preconnect"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer="" src="/src/js/supabase-client.js"></script>
+<script defer="" src="/src/js/sessao.js?v=navegacao"></script>
+<script defer="" src="/src/js/app-core.js?v=harmonia"></script><script defer src="/src/js/controles-compartilhados.js?v=1"></script>
+<script defer="" src="/src/js/app-shell.js"></script>
+<script defer="" src="/src/js/agenda-dados.js"></script>
+<script defer="" src="/src/js/modal-consulta.js?v=painel-lateral"></script>
+<script defer="" src="/src/js/calendario.js?v=agenda-relatorios"></script>
+<link href="/src/css/modal-consulta.css?v=tema-nativo" rel="stylesheet"/>
+<link href="/src/css/interior-mobile.css?v=mockups-v2" rel="stylesheet"/>
+<script defer="" src="/src/js/interior-mobile.js?v=mockups-v2"></script>
+<link href="/src/css/tema-couplecare.css?v=painel-lateral" rel="stylesheet"/>
+<script defer="" src="/src/js/tema-couplecare.js?v=app-header"></script>
 
-<script defer src="/src/js/app-shell.js"></script>
-<script defer src="/src/js/agenda-dados.js"></script>
-<script defer src="/src/js/modal-consulta.js"></script>
-<script defer src="/src/js/calendario.js?v=navegacao"></script>
-
-<link rel="stylesheet" href="/src/css/modal-consulta.css">
-<link rel="stylesheet" href="/src/css/interior-mobile.css">
-<script defer src="/src/js/interior-mobile.js"></script>
+<link href="/src/css/redesign-premium.css?v=tema-nativo" rel="stylesheet"/>
+<link href="/src/css/mockup-fiel.css?v=painel-lateral" rel="stylesheet"/><script defer="" src="/src/js/mockup-fiel.js?v=agenda-relatorios"></script><link href="/src/css/logo-motion.css?v=texto-legivel" rel="stylesheet"/><link rel="icon" type="image/svg+xml" href="/assets/images/couplecare-logo-header.svg?v=neon-ui"/><link href="/src/css/painel-lateral.css?v=2" rel="stylesheet"/>
+<link rel="stylesheet" href="/src/css/interface-app.css?v=conta-lateral">
 </head>
-<body class="pagina-orbital">
+<body class="pagina-orbital" data-cc-page="calendario">
 <!-- Mensagem exibida enquanto verificamos a conta. -->
-
 <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
 <div class="aplicacao" data-shell-state="loading">
 <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
@@ -110,77 +117,75 @@
 <div class="conteudo-principal">
 <header class="cabecalho">
 <div>
-<h1>Calendário</h1>
-<p>Compromissos, prazos e registros do ciclo.</p>
+<h1>Calendário do Casal</h1>
+<p>Agenda, compromissos, contas e momentos especiais, tudo sincronizado.</p>
 </div>
 </header>
-<main class="conteudo calendario-real" id="conteudo-pagina" tabindex="-1" data-page-loading>
-<p aria-live="polite" id="status-sessao" role="status" hidden></p>
+<main class="conteudo calendario-real" data-page-loading="" id="conteudo-pagina" tabindex="-1">
+<p aria-live="polite" hidden="" id="status-sessao" role="status"></p>
 <section class="cc-page-skeleton">
-    <span class="cc-sr" role="status">Carregando calendário…</span>
-    <div class="cc-skeleton-heading" aria-hidden="true"></div>
-    <div class="cc-skeleton-card cc-skeleton-rows" aria-hidden="true"><span></span><span></span><span></span></div>
+<span class="cc-sr" role="status">Carregando calendário…</span>
+<div aria-hidden="true" class="cc-skeleton-heading"></div>
+<div aria-hidden="true" class="cc-skeleton-card cc-skeleton-rows"><span></span><span></span><span></span></div>
 </section>
-
 <!-- Layout inspirado em Event Calendar, de Parviz (CC BY 4.0).
      https://www.figma.com/community/file/1521809352066199654/event-calendar
      https://creativecommons.org/licenses/by/4.0/ -->
-<section class="card calendario-mensal" aria-label="Navegação do calendário">
-    <div class="calendario-mensal-barra">
-        <div>
-            <p class="mobile-only mobile-calendar-label" id="mobile-calendar-label" aria-live="polite"></p>
-            <h2 class="mobile-only mobile-calendar-heading" id="mobile-calendar-heading">Esta semana</h2>
-            <h2 id="mes" aria-live="polite">Calendário mensal</h2>
-        </div>
-        <div class="calendario-mensal-acoes" aria-label="Controles do calendário" role="group">
-            <button class="soft-button calendario-seta" aria-label="Mês anterior" id="anterior" type="button">‹</button>
-            <button class="soft-button" id="hoje" type="button">Hoje</button>
-            <button class="soft-button calendario-seta" aria-label="Próximo mês" id="seguinte" type="button">›</button>
-        <button id="alternar-calendario" type="button" class="mobile-only mobile-text-action" aria-controls="mobile-semana dias" aria-pressed="false">Ver mês</button>
-        </div>
-    </div>
-    <div class="mobile-only mobile-semana" id="mobile-semana" role="group" aria-label="Dias da semana"></div>
-    <div class="calendario-mensal-grade">
-        <div aria-hidden="true" class="calendario-semana">
-            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-        </div>
-        <div aria-label="Dias do mês. Selecione um dia para abrir a agenda." class="calendario-dias" id="dias" role="group"></div>
-    </div>
-    <div class="calendario-mensal-rodape">
-        <ul aria-label="Legenda" class="calendario-legenda">
-            <li class="cal-tipo-evento">Compromissos</li>
-            <li class="cal-tipo-tarefa">Tarefas</li>
-            <li class="cal-tipo-pessoal">Ciclo e sentimentos</li>
-        </ul>
-        <button class="soft-button" id="atualizar-calendario" type="button" hidden>Tentar novamente</button>
-    </div>
-    <p id="status-calendario" role="status">Carregando calendário…</p>
-</section>
-<section class="card mobile-only mobile-dia-agenda" id="mobile-dia-agenda" aria-labelledby="mobile-dia-titulo">
-    <div class="mobile-dia-heading">
-        <div><p class="mobile-kicker" id="mobile-dia-semana"></p><h2 id="mobile-dia-titulo">Agenda do dia</h2></div>
-        <a class="soft-button" href="tarefas.html#compromissos">＋ Novo evento</a>
-    </div>
-    <div id="mobile-dia-itens"></div>
-</section>
+<button type="button" class="soft-button calendar-agenda-toggle" id="calendar-agenda-toggle" aria-haspopup="dialog" aria-controls="dialogo-dia">Agenda da semana</button>
+<div class="mock-calendar-grid"><section aria-label="Navegação do calendário" class="card calendario-mensal">
+<div class="calendario-mensal-barra">
+<div aria-label="Controles do calendário" class="calendar-period cc-month-control" role="group">
+<button aria-label="Mês anterior" class="soft-button calendario-seta" id="anterior" type="button">‹</button>
+<button id="calendar-month-picker" type="button"><span aria-live="polite" id="mes">Calendário mensal</span></button>
+<button aria-label="Próximo mês" class="soft-button calendario-seta" id="seguinte" type="button">›</button>
+<button aria-controls="mobile-semana dias" aria-pressed="false" class="mobile-only mobile-text-action" id="alternar-calendario" type="button">Ver mês</button>
+</div>
+<div aria-label="Visualização" class="mock-tabs mock-calendar-tabs"><button aria-pressed="true" data-calendar-mode="month" type="button">Mês</button><button aria-pressed="false" data-calendar-mode="week" type="button">Semana</button><button aria-pressed="false" data-calendar-mode="list" type="button">Lista</button></div><label class="mock-filter"><span class="cc-sr">Filtrar eventos</span><select id="mock-calendar-filter"><option value="all">Filtros</option><option value="evento">Compromissos</option><option value="tarefa">Tarefas e lembretes</option><option value="aniversario">Aniversários</option><option value="conta">Contas a vencer</option><option value="momento">Momentos especiais</option><option value="pessoal">Ciclo e sentimentos</option></select></label></div>
+<div aria-label="Dias da semana" class="mobile-only mobile-semana" id="mobile-semana" role="group"></div>
+<div class="calendario-mensal-grade">
+<div aria-hidden="true" class="calendario-semana">
+<span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+</div>
+<div aria-label="Dias do mês. Selecione um dia para abrir a agenda." class="calendario-dias" id="dias" role="group"></div>
+</div>
+<div class="calendario-mensal-rodape">
+<ul aria-label="Legenda" class="calendario-legenda">
+<li class="cal-tipo-evento">Compromissos</li>
+<li class="cal-tipo-tarefa">Tarefas</li>
+<li class="cal-tipo-pessoal">Ciclo e sentimentos</li>
+</ul>
+<button class="soft-button" id="hoje" type="button">Hoje</button>
+<button class="soft-button" hidden="" id="atualizar-calendario" type="button">Tentar novamente</button>
+</div>
+<p id="status-calendario" role="status">Carregando calendário…</p>
+<div hidden="" id="mock-calendar-list"></div></section><section aria-labelledby="mobile-dia-titulo" class="card mock-day-panel mobile-dia-agenda" id="mobile-dia-agenda">
+<div class="mobile-dia-heading">
+<div><p class="mobile-kicker" id="mobile-dia-semana"></p><h2 id="mobile-dia-titulo" tabindex="-1">Agenda do dia</h2></div>
+<button class="soft-button cc-action" id="calendar-day-detail" aria-haspopup="dialog" aria-controls="dialogo-dia" type="button">Agenda da semana</button>
+</div>
+<div class="calendar-day-cover" id="calendar-day-cover" hidden>
+<strong id="calendar-day-cover-date"></strong>
+<div><strong id="calendar-day-cover-title"></strong><small id="calendar-day-cover-type"></small><p id="calendar-day-cover-description"></p></div>
+</div>
+<div id="mobile-dia-itens"></div>
+<a class="soft-button calendar-day-action" href="tarefas.html#compromissos">＋ Adicionar evento</a>
+</section></div>
 <dialog aria-labelledby="titulo-agenda" class="cc-modal modal-consulta" id="dialogo-dia">
-    <header>
-        <div>
-            <p id="selecionado"></p>
-            <h2 id="titulo-agenda">Agenda do dia</h2>
-        </div>
-        <button aria-label="Fechar agenda" data-close type="button"></button>
-    </header>
-    <div class="modal-consulta-corpo">
-        <div class="modal-consulta-grade" id="lista"></div>
-        <p class="calendario-agenda-vazia" id="agenda-vazia" hidden>Nenhum item para este dia.</p>
-        <p class="calendario-agenda-vazia" id="agenda-aviso" hidden>Parte da agenda está indisponível.</p>
-    </div>
+<header>
+<div>
+<p id="selecionado"></p>
+<h2 id="titulo-agenda">Agenda da semana</h2>
+</div>
+<button aria-label="Fechar agenda" data-close="" type="button"></button>
+</header>
+<div class="modal-consulta-corpo">
+<div class="calendar-week-groups" id="lista"></div>
+<p class="calendario-agenda-vazia" hidden="" id="agenda-vazia">Nenhum item para este dia.</p>
+<p class="calendario-agenda-vazia" hidden="" id="agenda-aviso">Parte da agenda está indisponível.</p>
+</div>
 </dialog>
 </main>
 </div>
 </div>
 </body>
 </html>
-
-

@@ -1,0 +1,12 @@
+=== testes/pluggy-security.cjs
+PASS: sessão, titularidade, registro, extrato v2, paginação segura e desconexão.
+=== testes/pluggy-token.cjs
+PASS: método, autenticação, identidade e resposta sem segredo.
+=== testes/pluggy-webhook.mjs
+PASS: assinatura, expiração, JSON, metadados mínimos, repetição e falha recuperável.
+
+Sintaxe: 47/47 arquivos aprovados.
+
+Browser: bloqueio ERR_BLOCKED_BY_ADMINISTRATOR; testes visuais não concluídos.
+
+Atualização da logo neon: node --check src/js/couple-brand.js aprovado; três testes Pluggy novamente aprovados. Teste visual em navegador e integração bancária real não executados nesta revisão.

@@ -2,9 +2,11 @@
 (function () {
     'use strict';
     const C = CC;
-    const area = document.querySelector('[data-budget]');
-    if (!area) return;
-    const dashboard = area.classList.contains('dashboard-budget');
+    const trigger = C.$('open-finance-budget');
+    const dashboard = !trigger;
+    const dashboardArea = document.querySelector('[data-budget]');
+    if (!trigger && !dashboardArea) return;
+    if (trigger) trigger.disabled = true;
     let context, budget, expense, generation = 0;
     let month = '';
     let ready = false;
@@ -27,14 +29,6 @@
         const label = budget ? C.money(expense) + ' de ' + C.money(budget) : 'Defina um limite para o mês.';
         text.append(C.el('strong', '', dashboard ? percent + '% do orçamento utilizado' : label));
         section.append(text);
-        if (!dashboard) {
-            if (budget) section.append(C.el('strong', 'finance-budget-percent', percent + '%'));
-            const trigger = C.el('button', 'soft-button', budget ? 'Editar' : 'Definir');
-            trigger.type = 'button';
-            trigger.setAttribute('aria-haspopup', 'dialog');
-            trigger.addEventListener('click', open);
-            section.append(trigger);
-        }
         if (dashboard && document.querySelector('[data-money-toggle][aria-pressed="true"]')) area.hidden = true;
         area.append(section);
         if (budget) {
@@ -69,16 +63,20 @@
             ready = false;
             unavailable = C.error(error);
         }
+        if (trigger) trigger.disabled = !ready;
         draw();
     }
 
     const dialog = dashboard ? null : C.dialog('finance-budget-dialog', 'Orçamento mensal', `
+        <div class="finance-budget" id="finance-budget-preview"></div>
         <form class="form-app" id="finance-budget-form">
             <label class="cc-field">Limite deste mês (R$)<input id="finance-budget-amount" inputmode="decimal" placeholder="Ex.: 1500,00" required></label>
             <button class="primary-button" type="submit">Salvar orçamento</button>
             <p id="finance-budget-status" role="status"></p>
         </form>`);
 
+    const area = dashboardArea || C.$('finance-budget-preview');
+    trigger?.addEventListener('click', open);
     function open() {
         C.$('finance-budget-amount').value = budget ? (budget / 100).toFixed(2).replace('.', ',') : '';
         C.$('finance-budget-status').textContent = '';
@@ -95,7 +93,7 @@
             }, { onConflict: 'couple_id,month_start' }));
             dialog.close();
             await load();
-            area.querySelector('button')?.focus();
+            trigger.focus();
         });
         window.addEventListener('finance-summary-updated', function (event) { void load(event.detail); });
     } else {

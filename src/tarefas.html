@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 
-<html lang="pt-BR">
-<head><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<html lang="pt-BR" data-cc-theme="light">
+<head>
 <meta charset="utf-8"/>
+<meta name="color-scheme" content="only light"/>
+<meta name="darkreader-lock"/>
+<script src="/src/js/tema-inicial.js?v=tema-nativo"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <!-- Faz os caminhos relativos buscarem arquivos na pasta src. -->
 <base href="/src/"/>
@@ -12,19 +16,24 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <!-- defer executa depois do HTML, mantendo a ordem dos arquivos. -->
 <!-- Autenticação: mantenha esta ordem. -->
-<link href="/src/css/figma-theme.css" rel="stylesheet"/><link href="/src/css/app.css" rel="stylesheet"/><link rel="stylesheet" href="/src/css/navegacao.css?v=1">
-<script defer src="/src/js/couple-brand.js"></script>
-<script defer src="/src/js/figma-theme.js?v=navegacao"></script>
-<link rel="preconnect" href="https://cwsmavsxeudwjocqakhh.supabase.co" crossorigin>
-<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="/src/js/supabase-client.js"></script><script defer="" src="/src/js/sessao.js?v=navegacao"></script><script defer="" src="/src/js/app-core.js?v=navegacao"></script><script defer="" src="/src/js/app-shell.js"></script><script defer src="/src/js/agenda-dados.js"></script><script defer="" src="/src/js/tarefas.js?v=navegacao"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="/src/js/tasks-extra.js"></script><link rel="stylesheet" href="/src/css/couple-glass.css">
-<script defer src="/src/js/tarefas-compromissos.js?v=navegacao"></script>
-<link rel="stylesheet" href="/src/css/tarefas-compromissos.css">
-<link rel="stylesheet" href="/src/css/interior-mobile.css">
-<script defer src="/src/js/interior-mobile.js"></script>
-</head>
-<body class="pagina-orbital">
-<!-- Mensagem exibida enquanto verificamos a conta. -->
+<link href="/src/css/figma-theme.css?v=app-header" rel="stylesheet"/><link href="/src/css/app.css" rel="stylesheet"/><link href="/src/css/navegacao.css?v=tema-nativo" rel="stylesheet"/>
+<script defer="" src="/src/js/couple-brand.js?v=neon-ui"></script>
+<script defer="" src="/src/js/figma-theme.js?v=agenda-relatorios"></script>
+<link crossorigin="" href="https://cwsmavsxeudwjocqakhh.supabase.co" rel="preconnect"/>
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer="" src="/src/js/supabase-client.js"></script><script defer="" src="/src/js/sessao.js?v=navegacao"></script><script defer="" src="/src/js/app-core.js?v=harmonia"></script><script defer src="/src/js/controles-compartilhados.js?v=1"></script><script defer="" src="/src/js/app-shell.js"></script><script defer="" src="/src/js/agenda-dados.js"></script><script defer="" src="/src/js/tarefas.js?v=agenda-relatorios"></script><script>document.documentElement.classList.add('cc-figma');</script><script defer="" src="/src/js/tasks-extra.js"></script><link href="/src/css/couple-glass.css" rel="stylesheet"/>
+<script defer="" src="/src/js/tarefas-compromissos.js?v=agenda-relatorios"></script>
+<link href="/src/css/tarefas-compromissos.css" rel="stylesheet"/>
+<link href="/src/css/interior-mobile.css?v=mockups-v2" rel="stylesheet"/>
+<script defer="" src="/src/js/interior-mobile.js?v=mockups-v2"></script>
+<link href="/src/css/tema-couplecare.css?v=painel-lateral" rel="stylesheet"/>
+<script defer="" src="/src/js/tema-couplecare.js?v=app-header"></script>
 
+<link href="/src/css/redesign-premium.css?v=tema-nativo" rel="stylesheet"/>
+<link href="/src/css/mockup-fiel.css?v=painel-lateral" rel="stylesheet"/><script defer="" src="/src/js/mockup-fiel.js?v=agenda-relatorios"></script><link href="/src/css/logo-motion.css?v=texto-legivel" rel="stylesheet"/><link rel="icon" type="image/svg+xml" href="/assets/images/couplecare-logo-header.svg?v=neon-ui"/><link href="/src/css/painel-lateral.css?v=2" rel="stylesheet"/>
+<link rel="stylesheet" href="/src/css/interface-app.css?v=conta-lateral">
+</head>
+<body class="pagina-orbital" data-cc-page="tarefas">
+<!-- Mensagem exibida enquanto verificamos a conta. -->
 <a class="pular-conteudo" href="#conteudo-pagina">Ir para o conteúdo</a>
 <div class="aplicacao" data-shell-state="loading">
 <!-- 2. Menu compartilhado: o link ativo indica a página atual. -->
@@ -97,142 +106,136 @@
 <div class="conteudo-principal">
 <header class="cabecalho">
 <div>
-<span class="texto-destaque">SEU ESPAÇO A DOIS</span>
+<span class="texto-destaque cc-old-decoration">SEU ESPAÇO A DOIS</span>
 <h1>Tarefas</h1>
-<p>Mais sintonia nos pequenos cuidados do dia.</p>
+<p>Organização da casa e da rotina do casal</p>
 </div>
-<span class="selo-tarefas">Feito para construir juntos</span>
+<span class="selo-tarefas cc-old-decoration">Feito para construir juntos</span>
 </header>
-<!-- 3. Conteúdo funcional da prévia; nenhuma gravação no banco. -->
-<main class="conteudo tarefas-pagina" id="conteudo-pagina" tabindex="-1" data-page-loading>
-<p aria-live="polite" id="status-sessao" role="status" hidden></p>
+
+<main class="conteudo tarefas-pagina" data-page-loading="" id="conteudo-pagina" tabindex="-1">
+<p aria-live="polite" hidden="" id="status-sessao" role="status"></p>
 <section class="cc-page-skeleton">
-    <span class="cc-sr" role="status">Carregando tarefas…</span>
-    <div class="cc-skeleton-card cc-skeleton-progress" aria-hidden="true"><i></i><div><span></span><span></span></div></div>
-    <button class="primary-button cc-skeleton-action" type="button" disabled>+ Nova tarefa</button>
-    <div class="cc-skeleton-heading" aria-hidden="true"></div>
-    <div class="cc-skeleton-card cc-skeleton-rows" aria-hidden="true"><span></span><span></span><span></span></div>
+<span class="cc-sr" role="status">Carregando tarefas…</span>
+<div aria-hidden="true" class="cc-skeleton-card cc-skeleton-progress"><i></i><div><span></span><span></span></div></div>
+<button class="primary-button cc-skeleton-action" disabled="" type="button">+ Novo item</button>
+<div aria-hidden="true" class="cc-skeleton-heading"></div>
+<div aria-hidden="true" class="cc-skeleton-card cc-skeleton-rows"><span></span><span></span><span></span></div>
 </section>
-<section class="card mobile-only mobile-task-progress" aria-labelledby="mobile-task-progress-title">
-    <div class="mobile-progress-ring" id="mobile-progress-ring" hidden>
-        <strong id="mobile-progress-completed">0</strong>
-        <small id="mobile-progress-total"></small>
-        <progress class="cc-sr" id="mobile-task-progress-bar" aria-labelledby="mobile-task-progress-title"></progress>
-    </div>
-    <div>
-        <span class="mobile-kicker">Progresso de hoje</span>
-        <h2 id="mobile-task-progress-title">Um passo de cada vez</h2>
-        <p id="mobile-task-progress-count">Carregando tarefas…</p>
-    </div>
-</section><section class="stats-row"><div><span class="stat-icon orange">✓</span><p><strong id="total-pendentes">—</strong><small>Pendentes</small></p></div><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Para hoje</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section><p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p>
-<button class="soft-button" id="atualizar-tarefas" type="button" hidden>Tentar novamente</button><button class="primary-button tarefas-novo-item" id="novo-item" type="button"
-        aria-haspopup="dialog" aria-controls="editor-tarefa-mobile" disabled>＋ Novo item</button>
-<dialog id="editor-tarefa-mobile" class="cc-modal tarefas-editor" aria-labelledby="titulo-editor">
-    <header>
-        <h2 id="titulo-editor">Novo item</h2>
-        <button id="fechar-editor-tarefas" type="button" data-close aria-label="Fechar editor"></button>
-    </header>
-    <div class="tarefas-tipos" id="tarefas-tipos" role="group" aria-label="Tipo de item">
-        <button class="soft-button" type="button" data-tarefa-tipo="tarefa" aria-pressed="true">Tarefa</button>
-        <button class="soft-button" type="button" data-tarefa-tipo="compromisso" aria-pressed="false">Compromisso</button>
-    </div>
+<p hidden="" id="total-atrasadas"></p><p aria-live="polite" class="cc-status" id="status-tarefas" role="status">Carregando tarefas…</p>
+<button class="soft-button" hidden="" id="atualizar-tarefas" type="button">Tentar novamente</button><div class="task-section-bar"><nav aria-label="Seções" class="mock-tabs task-section-tabs"><button id="show-task-list" type="button" aria-pressed="true">Tarefas</button><button id="show-appointment-list" type="button" aria-pressed="false">Compromissos</button></nav><div id="task-create-slot"></div></div><div class="task-view-bar" id="task-view-bar"><div aria-label="Filtros rápidos" class="acoes-app tarefas-filtros" role="group">
+<button aria-pressed="true" data-filtro="pending" type="button">Pendentes <span class="task-filter-count">0</span></button><button aria-pressed="false" data-filtro="overdue" type="button">Atrasadas <span class="task-filter-count">0</span></button><button aria-pressed="false" data-filtro="today" type="button">Hoje <span class="task-filter-count">0</span></button>
+<button aria-pressed="false" data-filtro="upcoming" type="button">Próximas <span class="task-filter-count">0</span></button>
+<button aria-pressed="false" data-filtro="completed" type="button">Concluídas <span class="task-filter-count">0</span></button>
+</div><div class="mock-task-toolbar"><label class="mock-search"><span aria-hidden="true">⌕</span><input aria-label="Buscar tarefas" id="mock-task-search" placeholder="Buscar tarefas…"/></label><button aria-controls="editor-tarefa-mobile" aria-haspopup="dialog" class="primary-button tarefas-novo-item" disabled="" id="novo-item" type="button">+ Novo item</button></div></div>
+<dialog aria-labelledby="titulo-editor" class="cc-modal tarefas-editor" id="editor-tarefa-mobile">
+<header>
+<h2 id="titulo-editor">Nova tarefa</h2>
+<button aria-label="Fechar editor" data-close="" id="fechar-editor-tarefas" type="button"></button>
+</header>
+<div aria-label="Tipo de item" class="tarefas-tipos" id="tarefas-tipos" role="group">
+<button aria-pressed="true" class="soft-button" data-tarefa-tipo="tarefa" type="button">Tarefa</button>
+<button aria-pressed="false" class="soft-button" data-tarefa-tipo="compromisso" type="button">Compromisso</button>
+</div>
 <form class="form-app" id="form-tarefa">
 <fieldset disabled="" id="campos-tarefa">
-<div class="campo-app"><label for="titulo">O que precisa ser feito?</label><input id="titulo" maxlength="150" placeholder="O que vocês vão cuidar hoje?" required="" type="text"/></div><div class="tarefas-linha"><div class="campo-app"><label for="prazo">Prazo (opcional)</label><input id="prazo" type="date"/></div><div class="campo-app"><label for="responsavel">Responsável</label><select id="responsavel"><option value="">Sem responsável</option></select></div></div>
-<div class="campo-app"><label for="categoria">Categoria</label><select hidden="True" id="categoria"><option value="house">Casa</option><option value="shopping">Compras</option><option value="bills">Contas</option><option value="care">Cuidados</option><option value="leisure">Lazer</option><option value="other">Outros</option></select><div aria-label="Categoria" class="cc-category-pills" role="group"><button aria-pressed="false" data-category="house" type="button">Casa</button><button aria-pressed="false" data-category="shopping" type="button">Compras</button><button aria-pressed="false" data-category="bills" type="button">Contas</button><button aria-pressed="false" data-category="care" type="button">Cuidados</button><button aria-pressed="false" data-category="leisure" type="button">Lazer</button><button aria-pressed="false" data-category="other" type="button">Outros</button></div></div>
-<details class="cc-advanced"><summary>Mais opções da tarefa</summary><div class="cc-advanced-fields"><div class="campo-app"><label for="descricao">Descrição (opcional)</label><textarea id="descricao" maxlength="3000" placeholder="Detalhes que ajudam a realizar a tarefa" rows="3"></textarea></div><div class="campo-app"><label for="prioridade">Prioridade</label><select id="prioridade"><option value="normal">Normal</option><option value="low">Baixa</option><option value="high">Alta</option></select></div><div class="campo-app"><label for="repeticao">Repetir</label><select aria-describedby="ajuda-repeticao" id="repeticao"><option value="none">Não repetir</option><option value="daily">Todo dia</option><option value="weekly">Toda semana</option><option value="monthly">Todo mês</option></select><small id="ajuda-repeticao">Ao concluir, cria a próxima tarefa a partir do prazo. Reabrir e concluir de novo não duplica a próxima.</small></div><div class="campo-app"><label for="checklist-texto">Checklist (opcional)</label><textarea aria-describedby="ajuda-checklist" id="checklist-texto" placeholder="Separar roupas
+<div class="campo-app"><label for="titulo">Título da tarefa</label><input id="titulo" maxlength="150" placeholder="O que vocês vão cuidar hoje?" required="" type="text"/></div><div class="campo-app"><label for="categoria">Categoria</label><select id="categoria"><option value="house">Casa</option><option value="shopping">Compras</option><option value="bills">Contas</option><option value="care">Cuidados</option><option value="leisure">Lazer</option><option value="other">Outros</option></select></div><div class="campo-app"><label for="responsavel">Responsável</label><select id="responsavel"><option value="">Sem responsável</option></select></div><div class="campo-app"><label for="prioridade">Prioridade</label><select id="prioridade"><option value="normal">Média</option><option value="low">Baixa</option><option value="high">Alta</option></select></div><div class="campo-app"><label for="prazo">Prazo (opcional)</label><input id="prazo" type="date"/></div><div class="campo-app"><label for="repeticao">Repetir</label><select aria-describedby="ajuda-repeticao" id="repeticao"><option value="none">Não repetir</option><option value="daily">Todo dia</option><option value="weekly">Toda semana</option><option value="monthly">Todo mês</option></select><small id="ajuda-repeticao">Ao concluir, cria a próxima tarefa a partir do prazo. Reabrir e concluir de novo não duplica a próxima.</small></div>
+
+<details class="cc-advanced"><summary>Observações e checklist</summary><div class="cc-advanced-fields"><div class="campo-app"><label for="descricao">Descrição (opcional)</label><textarea id="descricao" maxlength="3000" placeholder="Detalhes que ajudam a realizar a tarefa" rows="3"></textarea></div><div class="campo-app"><label for="checklist-texto">Checklist (opcional)</label><textarea aria-describedby="ajuda-checklist" id="checklist-texto" placeholder="Separar roupas
 Colocar para lavar
-Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. Até 30 itens, com 200 caracteres cada.</small></div></div></details><div class="acoes-app"><button class="botao-primario" id="salvar-tarefa" type="submit">Criar tarefa</button><button hidden="" id="cancelar-edicao" type="button">Cancelar edição</button></div>
+Estender" rows="3"></textarea><small id="ajuda-checklist">Um item por linha. Até 30 itens, com 200 caracteres cada.</small></div></div></details><div class="acoes-app task-editor-actions"><button class="soft-button" id="cancelar-nova-tarefa" type="button">Cancelar</button><button class="botao-primario" id="salvar-tarefa" type="submit">Salvar tarefa</button><button hidden="" id="cancelar-edicao" type="button">Cancelar edição</button></div>
 </fieldset>
 <p aria-live="polite" class="feedback-app" id="feedback" role="status"></p>
 </form>
-<form class="form-app" id="form-compromisso" hidden>
-            <label class="cc-field">Título<input id="compromisso-titulo" required maxlength="150"></label>
-            <label class="cc-field">Descrição (opcional)<textarea id="compromisso-descricao" maxlength="3000" rows="3"></textarea></label>
-            <label class="cc-field">Data<input id="compromisso-data" type="date" min="1900-01-01" max="2100-12-31" required></label>
-            <div class="form-row">
-                <label class="cc-field">Início (opcional)<input id="compromisso-inicio" type="time"></label>
-                <label class="cc-field">Fim (opcional)<input id="compromisso-fim" type="time"></label>
-            </div>
-            <p class="cc-status">Sem horário de início, o compromisso aparece como dia inteiro.</p>
-            <button class="primary-button" type="submit" id="salvar-compromisso">Salvar compromisso</button>
-            <p id="feedback-compromisso" role="status"></p>
-        </form>
-</dialog><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="section-label">PRÓXIMOS PASSOS</span>
+<form class="form-app" hidden="" id="form-compromisso">
+<label class="cc-field">Título<input id="compromisso-titulo" maxlength="150" required=""/></label>
+<label class="cc-field">Descrição (opcional)<textarea id="compromisso-descricao" maxlength="3000" rows="3"></textarea></label>
+<label class="cc-field">Data<input id="compromisso-data" max="2100-12-31" min="1900-01-01" required="" type="date"/></label>
+<div class="form-row">
+<label class="cc-field">Início (opcional)<input id="compromisso-inicio" type="time"/></label>
+<label class="cc-field">Fim (opcional)<input id="compromisso-fim" type="time"/></label>
+</div>
+<p class="cc-status">Sem horário de início, o compromisso aparece como dia inteiro.</p>
+<button class="primary-button" id="salvar-compromisso" type="submit">Salvar compromisso</button>
+<p id="feedback-compromisso" role="status"></p>
+</form>
+</dialog><div class="mock-task-grid" id="task-list-view"><aside class="mock-task-sidebar"><section aria-labelledby="mobile-task-progress-title" class="card mock-task-progress mobile-task-progress">
+<div class="mobile-progress-ring" hidden="" id="mobile-progress-ring">
+<strong id="mobile-progress-completed">0</strong>
+<small id="mobile-progress-total"></small>
+<progress aria-labelledby="mobile-task-progress-title" class="cc-sr" id="mobile-task-progress-bar"></progress>
+</div>
+<div>
+<span class="task-progress-kicker">Progresso da semana</span>
+<h2 id="mobile-task-progress-title">Progresso do casal</h2>
+<p id="mobile-task-progress-count">Carregando tarefas…</p>
+</div>
+<section class="stats-row" hidden><div><span class="stat-icon purple">◷</span><p><strong id="total-hoje">—</strong><small>Hoje</small></p></div><div><span class="stat-icon orange">✓</span><p><strong id="total-proximas">—</strong><small>Próximas</small></p></div><div><span class="stat-icon mint">✓</span><p><strong id="total-concluidas">—</strong><small>Concluídas</small></p></div></section></section><section class="card mock-task-categories" hidden><h3>Categorias</h3><div id="mock-task-categories"><p class="empty-state">Aguardando tarefas.</p></div></section></aside><div class="mock-task-main"><section aria-labelledby="titulo-lista" class="card task-list-card"><span class="cc-old-decoration">PRÓXIMOS PASSOS</span>
 <div class="tarefas-cabecalho">
-    <h2 id="titulo-lista">O que vem por aí</h2>
-
+<h2 id="titulo-lista">Tarefas do casal</h2>
 </div>
 <div class="tarefas-barra-filtros">
-<div aria-label="Filtros rápidos" class="acoes-app tarefas-filtros" role="group">
-    <button aria-pressed="false" data-filtro="today" type="button">Hoje</button>
-    <button aria-pressed="false" data-filtro="upcoming" type="button">Próximas</button>
-    <button aria-pressed="false" data-filtro="completed" type="button">Concluídas</button>
-</div>
-    <button class="soft-button tarefas-abrir-filtros" id="abrir-filtros-tarefas" type="button"
-            aria-label="Filtros de tarefas" title="Filtros de tarefas" aria-haspopup="dialog" aria-controls="filtros-tarefas">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-            <path d="M4 6h16M7 12h10m-7 6h4"/>
-        </svg>
-        <span aria-hidden="true">Filtros</span>
-    </button>
-</div>
-<dialog id="filtros-tarefas" class="cc-modal filtros-tarefas" aria-labelledby="titulo-filtros-tarefas">
-    <header>
-        <h2 id="titulo-filtros-tarefas">Filtrar tarefas</h2>
-        <button id="fechar-filtros-tarefas" type="button" data-close aria-label="Fechar filtros"></button>
-    </header>
-    <div class="tarefas-ferramentas">
-        <div class="campo-app">
-            <label for="busca-tarefa">Buscar tarefa</label>
-            <input id="busca-tarefa" placeholder="Título ou descrição" type="search">
-        </div>
-        <div class="campo-app">
-            <label for="filtro-estado-tarefa">Mostrar</label>
-            <select id="filtro-estado-tarefa">
-                <option value="all">Todas</option><option value="today">Hoje</option><option value="upcoming">Próximas</option>
-                <option value="pending">Pendentes</option><option value="completed">Concluídas</option><option value="overdue">Atrasadas</option>
-            </select>
-        </div>
-        <div class="campo-app">
-            <label for="filtro-responsavel">Responsável</label>
-            <select id="filtro-responsavel"><option value="all">Todos</option><option value="unassigned">Sem responsável</option></select>
-        </div>
-        <div class="campo-app">
-            <label for="ordenacao">Ordenar por</label>
-            <select id="ordenacao"><option value="due">Prazo mais próximo</option><option value="priority">Maior prioridade</option><option value="newest">Mais recentes</option></select>
-        </div>
-    </div>
-    <div class="acoes-app filtros-tarefas-acoes">
 
-        <button class="primary-button" id="ver-tarefas-filtradas" type="button">Ver tarefas</button>
-    </div>
+<button aria-controls="filtros-tarefas" aria-haspopup="dialog" aria-label="Filtros de tarefas" class="soft-button tarefas-abrir-filtros" id="abrir-filtros-tarefas" title="Filtros de tarefas" type="button">
+<svg aria-hidden="true" fill="none" height="19" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24" width="19">
+<path d="M4 6h16M7 12h10m-7 6h4"></path>
+</svg>
+<span aria-hidden="true">Filtros</span>
+</button>
+</div>
+<dialog aria-labelledby="titulo-filtros-tarefas" class="cc-modal filtros-tarefas" id="filtros-tarefas">
+<header>
+<h2 id="titulo-filtros-tarefas">Filtrar tarefas</h2>
+<button aria-label="Fechar filtros" data-close="" id="fechar-filtros-tarefas" type="button"></button>
+</header>
+<div class="tarefas-ferramentas">
+<div class="campo-app">
+<label for="busca-tarefa">Buscar tarefa</label>
+<input id="busca-tarefa" placeholder="Título ou descrição" type="search"/>
+</div>
+<div class="campo-app">
+<label for="filtro-estado-tarefa">Mostrar</label>
+<select id="filtro-estado-tarefa">
+<option value="all">Todas</option><option value="today">Hoje</option><option value="upcoming">Próximas</option>
+<option value="pending">Pendentes</option><option value="completed">Concluídas</option><option value="overdue">Atrasadas</option>
+</select>
+</div>
+<div class="campo-app">
+<label for="filtro-responsavel">Responsável</label>
+<select id="filtro-responsavel"><option value="all">Todos</option><option value="unassigned">Sem responsável</option></select>
+</div>
+<div class="campo-app">
+<label for="ordenacao">Ordenar por</label>
+<select id="ordenacao"><option value="due">Prazo mais próximo</option><option value="priority">Maior prioridade</option><option value="newest">Mais recentes</option></select>
+</div>
+</div>
+<div class="acoes-app filtros-tarefas-acoes">
+<button class="primary-button" id="ver-tarefas-filtradas" type="button">Ver tarefas</button>
+</div>
 </dialog>
 <p aria-live="polite" class="texto-suave" id="resumo" role="status"></p>
 <div class="lista-app tarefas-lista" id="lista"></div>
 <button hidden="" id="mais-tarefas" type="button">Mostrar mais tarefas</button>
-</section><section id="compromissos-recorrentes" aria-label="Compromissos semanais do casal" hidden></section><section class="card tarefas-compromissos" id="compromissos" aria-labelledby="titulo-compromissos">
-    <div class="tarefas-compromissos-cabecalho">
-        <h2 id="titulo-compromissos">Compromissos agendados</h2>
-    </div>
-    <div class="compromisso-periodo" role="group" aria-label="Mês dos compromissos">
-        <button class="soft-button" id="compromisso-mes-anterior" type="button" aria-label="Mês anterior" disabled>‹</button>
-        <button class="soft-button" id="compromisso-mes-atual" type="button" aria-label="Escolher mês dos compromissos" aria-haspopup="dialog" disabled>Este mês</button>
-        <button class="soft-button" id="compromisso-mes-seguinte" type="button" aria-label="Próximo mês" disabled>›</button>
-    </div>
-    <input type="hidden" id="mes-compromissos">
-    <p id="status-compromissos" class="cc-status" role="status">Carregando compromissos…</p>
-    <div id="lista-compromissos" class="tarefas-compromissos-lista"></div>
+</section></div></div><section aria-label="Compromissos semanais do casal" class="mock-task-secondary" hidden="" id="compromissos-recorrentes"></section><section aria-labelledby="titulo-compromissos" class="card tarefas-compromissos" id="compromissos" hidden>
+<div class="tarefas-compromissos-cabecalho">
+<h2 id="titulo-compromissos">Compromissos agendados</h2>
+</div>
+<div aria-label="Mês dos compromissos" class="compromisso-periodo cc-month-control" role="group">
+<button aria-label="Mês anterior" class="soft-button" disabled="" id="compromisso-mes-anterior" type="button">‹</button>
+<button aria-haspopup="dialog" aria-label="Escolher mês dos compromissos" class="soft-button" disabled="" id="compromisso-mes-atual" type="button"><span id="compromisso-mes-legenda">Este mês</span></button>
+<button aria-label="Próximo mês" class="soft-button" disabled="" id="compromisso-mes-seguinte" type="button">›</button>
+</div>
+<input id="mes-compromissos" type="hidden"/>
+<p class="cc-status" id="status-compromissos" role="status">Carregando compromissos…</p>
+<div class="tarefas-compromissos-lista" id="lista-compromissos"></div>
 </section>
-<details class="card cc-history activity-history" id="historico-atividades">
+<details class="card cc-history activity-history mock-task-secondary" id="historico-atividades">
 <summary class="activity-history-toggle" id="titulo-historico">Histórico de atividades</summary>
-<div class="activity-history-scroll" id="rolagem-historico" role="region" aria-labelledby="titulo-historico" tabindex="0">
+<div aria-labelledby="titulo-historico" class="activity-history-scroll" id="rolagem-historico" role="region" tabindex="0">
 <div class="activity-toolbar"><label class="cc-field">Agrupar por<select id="agrupar-atividades"><option value="week">Semana</option><option value="month">Mês</option><option value="year">Ano</option></select></label><p id="resumo-atividades" role="status"></p></div><ol id="historico-tarefas"></ol><button class="soft-button" hidden="" id="mais-atividades" type="button">Carregar atividades anteriores</button>
 </div>
-</details><footer class="rodape-tarefas">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
+</details><footer class="rodape-tarefas cc-old-decoration">CoupleCare <span>Seu espaço para o que importa.</span></footer></main>
 </div>
 </div>
 </body>
 </html>
-
-

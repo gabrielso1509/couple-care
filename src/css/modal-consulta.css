@@ -54,6 +54,22 @@
 .modal-consulta-item small { color: var(--cal-cor-item, #c7b8ff); font-size: 12px; }
 .modal-consulta-item[data-destaque] { outline: 1px solid #c7b8ff; }
 
+[data-cc-theme="light"].cc-figma :is(.modal-consulta, .modal-consulta > header) {
+    background: var(--panel);
+    border-color: var(--line);
+    color: var(--text);
+}
+
+[data-cc-theme="light"] .modal-consulta-item {
+    background: var(--panel-2);
+    border-color: var(--line);
+    border-inline-start-color: var(--cal-cor-item, var(--purple));
+    color: var(--text);
+}
+
+[data-cc-theme="light"] .modal-consulta-item p { color: var(--muted); }
+[data-cc-theme="light"] :is(.modal-consulta-item small, .modal-consulta header p) { color: var(--cal-cor-item, var(--purple)); }
+
 @media (max-width: 560px) {
     .modal-consulta-grade { grid-template-columns: minmax(0, 1fr); }
     .cc-figma .modal-consulta > header, .modal-consulta-corpo { padding-inline: 15px; }

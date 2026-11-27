@@ -1,212 +1,239 @@
-<!doctype html>
-<html lang="pt-BR" class="cc-figma">
+<!DOCTYPE html>
+
+<html lang="pt-BR" data-cc-theme="light">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI" name="google-site-verification"/>
-  <meta name="theme-color" content="#0a1426">
-  <meta name="description" content="Organizem tarefas, calendário, finanças e metas do casal em um só lugar.">
-  <title>CoupleCare | Organizem a vida a dois</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap">
-  <link rel="stylesheet" href="/src/css/figma-theme.css">
-  <link rel="stylesheet" href="/src/css/landing.css?v=vitrine">
-  <script defer src="/src/js/analytics.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="/src/js/supabase-client.js"></script>
-  <script defer src="/src/js/login.js"></script>
-  <script defer src="/src/js/cadastro.js"></script>
-  <script defer src="/src/js/couple-brand.js"></script>
-  <script defer src="/src/js/landing.js?v=plano-casal"></script>
-  <link rel="prefetch" href="/dashboard">
-  <link rel="stylesheet" href="/src/css/landing-showcase.css?v=2">
-  <script defer src="/src/js/landing-tour.js?v=vitrine-mobile"></script>
+<meta charset="utf-8"/>
+<meta name="color-scheme" content="only light"/>
+<meta name="darkreader-lock"/>
+<script src="/src/js/tema-inicial.js?v=tema-nativo"></script>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="4xkn10wXFQzQzRZmCwyyRRvSvkjwkyz3YLzJ3lr6CeI" name="google-site-verification"/>
+<meta content="#ffffff" data-dark="#201c25" name="theme-color">
+<meta content="Organizem tarefas, calendário, finanças e metas do casal em um só lugar." name="description"/>
+<title>CoupleCare | Organizem a vida a dois</title>
+<link rel="manifest" href="/manifest.webmanifest?v=neon-ui"/>
+<link rel="apple-touch-icon" href="/assets/images/couplecare-app-192.png?v=neon-ui"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Outfit:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+
+<link href="/src/css/landing.css?v=neon-ui" rel="stylesheet"/>
+<script defer="" src="/src/js/analytics.js"></script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer="" src="/src/js/supabase-client.js"></script>
+<script defer="" src="/src/js/login.js?v=rota-painel"></script>
+<script defer="" src="/src/js/cadastro.js?v=rota-painel"></script>
+<script defer="" src="/src/js/couple-brand.js?v=neon-ui"></script>
+<script defer="" src="/src/js/landing.js?v=mockups-v2"></script>
+<link href="/src/dashboard.html" rel="prefetch"/>
+<link href="/src/css/landing-showcase.css?v=mockups-v2" rel="stylesheet"/>
+<script defer="" src="/src/js/landing-tour.js?v=landing2"></script>
+<script defer="" src="/src/js/tema-couplecare.js?v=referencias"></script>
+
+
+<link href="/src/css/logo-motion.css?v=neon-ui" rel="stylesheet"/><link rel="icon" type="image/svg+xml" href="/assets/images/couplecare-logo-header.svg?v=neon-ui"/><link href="/src/css/painel-lateral.css?v=2" rel="stylesheet"/>
+<link rel="stylesheet" href="/src/css/interface-app.css?v=1">
 </head>
-<body class="landing">
-  <header class="site-header wrap">
-    <a class="brand" href="/" aria-label="CoupleCare, início"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</a>
-    <nav class="desktop-site-nav" aria-label="Navegação principal">
-      <a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a>
-    </nav>
-    <div class="header-auth">
-      <button class="button outline" type="button" data-signup aria-haspopup="dialog">Cadastrar-se</button>
-      <button class="button outline login-button" type="button" data-login aria-haspopup="dialog">Entrar</button>
-      <details class="landing-account" id="landing-account" hidden>
-        <summary class="button outline">
-          <span class="landing-account-avatar" id="landing-account-avatar" aria-hidden="true"></span>
-          <span class="landing-account-name" id="landing-account-name">Minha conta</span>
-          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </summary>
-        <div class="landing-account-panel">
-          <a href="/dashboard">Entrar no sistema</a>
-          <a href="/configuracoes">Configurações</a>
-          <button type="button" id="landing-sign-out">Sair da conta</button>
-          <p id="landing-account-status" role="status"></p>
-        </div>
-      </details>
-      <details class="mobile-site-menu">
-        <summary class="button outline" aria-label="Navegação principal">☰</summary>
-        <nav aria-label="Links da página">
-          <a href="#demo">Ver a demo</a>
-          <a href="#recursos">Recursos</a>
-          <a href="#planos">Planos</a>
-          <a href="#duvidas">Dúvidas</a>
-        </nav>
-      </details>
-    </div>
-  </header>
+<body class="landing" data-cc-page="landing">
+<header class="site-header wrap">
+<a aria-label="CoupleCare, início" class="brand" href="/"><span aria-hidden="true" class="marca-icone">♡</span> CoupleCare</a>
+<nav aria-label="Navegação principal" class="desktop-site-nav">
+<a aria-current="page" href="/">Início</a><a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#demo">Como funciona</a><a href="#blog">Blog</a>
+</nav>
+<div class="header-auth"><button aria-label="Alternar tema" class="approved-theme-toggle" id="cc-theme-toggle" type="button"><span class="sun"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" viewbox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"></path></svg></span><span class="moon"><svg fill="currentColor" viewbox="0 0 24 24"><path d="M20.8 14.6A9 9 0 0 1 9.4 3.2 9 9 0 1 0 20.8 14.6Z"></path></svg></span></button>
+<button aria-haspopup="dialog" class="button primary" data-install="" type="button">Baixe o app</button>
 
-  <main>
-    <section class="hero wrap">
-      <div class="hero-copy">
-        <h1>Organizem a vida a dois<span>.</span></h1>
-        <p>Tarefas, calendário e finanças em um só lugar.</p>
-        <div class="actions">
-          <button class="button primary" type="button" data-signup aria-haspopup="dialog">Criar conta</button>
-          <a class="button primary" id="landing-dashboard" data-enter-app href="/dashboard" hidden>Entrar no sistema</a>
-          <a class="button outline" href="#demo">Ver a demo</a>
-        </div>
-      </div>
-      <img class="hero-photo" src="/src/img/couplecare-rotina.webp" width="1536" height="1024" alt="Casal organizando a rotina no celular à mesa" fetchpriority="high">
-    </section>
+<details class="landing-account" hidden="" id="landing-account">
+<summary class="button outline">
+<span aria-hidden="true" class="landing-account-avatar" id="landing-account-avatar"></span>
+<span class="landing-account-name" id="landing-account-name">Minha conta</span>
+<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>
+</summary>
+<div class="landing-account-panel">
+<a href="/src/dashboard.html">Entrar no sistema</a>
+<a href="/src/config.html">Configurações</a>
+<button id="landing-sign-out" type="button">Sair da conta</button>
+<p id="landing-account-status" role="status"></p>
+</div>
+</details>
+<details class="mobile-site-menu">
+<summary aria-label="Navegação principal" class="button outline">☰</summary>
+<nav aria-label="Links da página">
+<a href="#demo">Ver a demo</a>
+<a href="#recursos">Recursos</a>
+<a href="#planos">Planos</a>
+<a href="#blog">Blog</a>
 
-    <section class="site-section wrap showcase" id="demo" aria-labelledby="showcase-title">
-      <div class="showcase-intro">
-        <h2 id="showcase-title">A rotina de vocês,<br>em um só lugar.</h2>
-        <p>Toquem na tela do celular para experimentar o CoupleCare com dados de exemplo.</p>
-      </div>
-      <div class="showcase-tabs" role="group" aria-label="Telas da demonstração">
-        <button type="button" data-demo-page="tasks" aria-controls="demo-screen" aria-pressed="false">Tarefas</button>
-        <button type="button" data-demo-page="calendar" aria-controls="demo-screen" aria-pressed="true">Calendário</button>
-        <button type="button" data-demo-page="finances" aria-controls="demo-screen" aria-pressed="false">Finanças</button>
-      </div>
-      <div class="device-stage">
-        <div class="device device-preview device-left" aria-hidden="true" id="demo-left"></div>
-        <div class="device device-main">
-          <div class="device-status" aria-hidden="true"><span>09:41</span><span class="device-camera"></span><span>▰ ▪</span></div>
-          <div class="device-brand"><span class="marca-icone" aria-hidden="true">♡</span><strong>CoupleCare</strong></div>
-          <div id="demo-screen" class="device-screen" tabindex="0" role="region" aria-label="Tela da demonstração"></div>
-          <nav class="device-nav" aria-label="Menu do aplicativo de demonstração"></nav>
-        </div>
-        <div class="device device-preview device-right" aria-hidden="true" id="demo-right"></div>
-      </div>
-      <div class="showcase-pager" aria-label="Navegar pelas telas">
-        <button type="button" data-demo-slide="-1" aria-label="Tela anterior">‹</button>
-        <span class="showcase-dots" aria-hidden="true"></span>
-        <button type="button" data-demo-slide="1" aria-label="Próxima tela">›</button>
-      </div>
-      <div class="showcase-description" aria-live="polite">
-        <span class="showcase-feature-icon" aria-hidden="true"></span>
-        <h3 id="demo-feature-title">Planejem a semana juntos</h3>
-        <p id="demo-feature-description">Reúnam compromissos e vejam o que está marcado para cada dia.</p>
-      </div>
-      <noscript><p>Ative o JavaScript para experimentar as telas interativas.</p></noscript>
-    </section>
+</nav>
+</details>
+<button aria-haspopup="dialog" class="button outline login-button" data-login="" type="button">Entrar</button>
+<a class="button login-button" data-enter-app href="/src/dashboard.html" hidden>Acessar app</a>
+</div>
+</header>
+<main>
+<section class="hero wrap"><svg aria-hidden="true" class="hero-ribbon" preserveaspectratio="none" viewbox="0 0 1200 520"><defs><lineargradient id="ribbon-gradient" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#f9d8bf"></stop><stop offset=".55" stop-color="#efbda4"></stop><stop offset="1" stop-color="#c7a0e4"></stop></lineargradient></defs><path d="M8 510 C35 396 192 470 352 423 S690 324 851 240 C924 203 1009 133 1063 83 C1010 13 1088 10 1114 63 C1160 10 1200 38 1168 99 C1149 134 1105 170 1064 198" fill="none" stroke="url(#ribbon-gradient)" stroke-linecap="round" stroke-width="7"></path></svg>
+<div class="hero-copy">
+<h1>Organização, finanças e bem-estar do casal <span>em um só app</span></h1>
+<p>Planejem juntos, cuidem do dinheiro, da rotina, da saúde e dos seus sonhos, de forma simples, automática e a dois.</p>
+<div class="actions">
+<button aria-haspopup="dialog" class="button primary" data-install="" type="button"><svg fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4"></path></svg>Baixar o app</button>
+<a class="button outline" href="#demo">▷ Ver como funciona</a>
+</div>
+<div class="hero-platforms" aria-label="Opções de instalação">
+<button type="button" data-install="ios"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M10 18h4"></path></svg>iPhone</button>
+<button type="button" data-install="android"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7 6-2-3m12 3 2-3M3 17v-2a9 9 0 0 1 18 0v2ZM8 13h.01m8 0h.01"></path></svg>Android</button>
+<button type="button" data-signup="" aria-haspopup="dialog">Criar conta</button>
+<a data-enter-app="" href="/src/dashboard.html" hidden>Entrar no sistema</a>
+</div>
+</div>
+<section aria-labelledby="showcase-title" class="showcase hero-demo" id="demo">
+<div class="showcase-intro">
+<h2 id="showcase-title">Experimentem o CoupleCare</h2>
+<p>Demonstração interativa · dados de exemplo</p>
+</div>
+<div class="device-stage">
+<div aria-hidden="true" class="device device-preview device-left" id="demo-left"></div>
+<div class="device device-main">
+<div aria-hidden="true" class="device-status"><span>9:41</span><span class="device-camera"></span><svg fill="currentColor" viewbox="0 0 38 14"><path d="M1 11h3V8H1zm5 0h3V5H6zm5 0h3V2h-3z"></path><path d="M17 5q5-4 10 0l-2 2q-3-2-6 0zm3 4q2-2 4 0l-2 2z"></path><rect height="8" rx="2" width="8" x="28" y="3"></rect><path d="M37 5h1v4h-1z"></path></svg></div>
 
-    <section class="site-section wrap" id="recursos">
-      <h2>Cuidem do dia a dia juntos</h2>
-      <div class="feature-grid">
-        <article>
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="m8 12 2 2 6-6"/></svg>
-          <h3>Tarefas</h3>
-          <p>Dividam o que precisa ser feito e acompanhem o andamento.</p>
-        </article>
-        <article>
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4m8-4v4M3 10h18"/></svg>
-          <h3>Calendário</h3>
-          <p>Reúnam compromissos e datas importantes.</p>
-        </article>
-        <article>
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h14a2 2 0 0 1 2 2v10H5a3 3 0 0 1-3-3v-10a3 3 0 0 1 3-3h12M16 12h6v4h-6a2 2 0 0 1 0-4Z"/></svg>
-          <h3>Finanças</h3>
-          <p>Acompanhem receitas, despesas e contas do casal.</p>
-        </article>
-        <article>
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
-          <h3>Metas</h3>
-          <p>Planejem objetivos e registrem os aportes.</p>
-        </article>
-        <article>
-          <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
-          <h3>Bem-estar</h3>
-          <p>Acompanhem registros com controle de compartilhamento.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="wrap showcase-checklist" aria-labelledby="demo-checklist-title">
-      <div>
-        <h2 id="demo-checklist-title">A lista de vocês, sempre à mão</h2>
-        <p>Marquem uma tarefa de exemplo e vejam a mudança também na tela de Tarefas.</p>
-      </div>
-      <div id="demo-checklist" class="device-list" role="group" aria-label="Checklist de exemplo"></div>
-    </section>
-
-    <div class="site-section wrap pricing-and-faq">
-      <section id="planos" aria-labelledby="titulo-planos">
-        <h2 id="titulo-planos">Planos e preços</h2>
-        <article class="plan">
-          <h3>Plano Casal</h3>
-          <p class="plan-price"><strong>R$ 14,99</strong> <small>/ mês</small></p>
-          <p class="plan-description">Um espaço compartilhado para duas pessoas.</p>
-          <ul class="plan-features">
-            <li>Tarefas e calendário</li>
-            <li>Finanças, metas e bem-estar</li>
-          </ul>
-          <button class="button primary" type="button" data-signup aria-haspopup="dialog">Criar conta</button>
-          <a class="button primary" data-enter-app href="/dashboard" hidden>Entrar no sistema</a>
-        </article>
-      </section>
-
-      <section class="faq" id="duvidas" aria-labelledby="titulo-duvidas">
-        <h2 id="titulo-duvidas">Dúvidas frequentes</h2>
-        <details open>
-          <summary>Como funciona o CoupleCare?</summary>
-          <p>Crie sua conta e convide a outra pessoa para compartilhar tarefas, calendário, finanças e metas.</p>
-        </details>
-        <details>
-          <summary>Cada pessoa tem seu próprio login?</summary>
-          <p>Sim. O convite vincula as duas contas ao mesmo espaço.</p>
-        </details>
-        <details>
-          <summary>Preciso conectar um banco?</summary>
-          <p>A conexão é opcional. Vocês também podem cadastrar contas e lançamentos manualmente.</p>
-        </details>
-      </section>
-    </div>
-
-    <section class="wrap landing-closing" aria-labelledby="titulo-convite">
-      <h2 id="titulo-convite">Comecem a organizar a rotina de vocês.</h2>
-      <button class="button primary" type="button" data-signup aria-haspopup="dialog">Criar conta</button>
-      <a class="button primary" data-enter-app href="/dashboard" hidden>Entrar no sistema</a>
-    </section>
-  </main>
-
-  <footer class="site-footer wrap">
-    <a class="brand" href="/"><span class="marca-icone" aria-hidden="true">♡</span> CoupleCare</a>
-    <a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a>
-  </footer>
-
-  <dialog class="auth-dialog" id="modal-login" aria-labelledby="titulo-login">
-    <div class="modal-conteudo">
-      <button class="modal-fechar" type="button" id="fechar-login" aria-label="Fechar login">×</button>
-      <header class="modal-cabecalho"><span class="marca-icone" aria-hidden="true">♡</span><h2 id="titulo-login">Entrar no CoupleCare</h2></header>
-      <form class="formulario" id="formulario-login">
+<div aria-label="Tela da demonstração" class="device-screen" id="demo-screen" role="region" tabindex="0"></div>
+<nav aria-label="Menu do aplicativo de demonstração" class="device-nav"></nav>
+</div>
+<div aria-hidden="true" class="device device-preview device-right" id="demo-right"></div>
+</div>
+<div aria-label="Navegar pelas telas" class="showcase-pager">
+<button aria-label="Tela anterior" data-demo-slide="-1" type="button">‹</button>
+<span aria-hidden="true" class="showcase-dots"></span>
+<button aria-label="Próxima tela" data-demo-slide="1" type="button">›</button>
+</div>
+<div aria-live="polite" class="showcase-description">
+<span aria-hidden="true" class="showcase-feature-icon"></span>
+<h3 id="demo-feature-title">Planejem a semana juntos</h3>
+<p id="demo-feature-description">Reúnam compromissos e vejam o que está marcado para cada dia.</p>
+</div>
+<div aria-label="Telas da demonstração" class="showcase-tabs" role="group">
+<button aria-controls="demo-screen" aria-pressed="false" data-demo-page="tasks" type="button">Tarefas</button>
+<button aria-controls="demo-screen" aria-pressed="true" data-demo-page="calendar" type="button">Calendário</button>
+<button aria-controls="demo-screen" aria-pressed="false" data-demo-page="finances" type="button">Finanças</button>
+</div>
+<noscript><p>Ative o JavaScript para experimentar as telas interativas.</p></noscript>
+</section>
+</section>
+<section aria-labelledby="titulo-planos" class="site-section wrap premium-plans" id="planos">
+<h2 id="titulo-planos">Escolha o plano ideal para o seu casal</h2><p class="plans-subtitle">Mais organização, conexão e conquistas juntos.</p>
+<div class="cc-plans"><article class="plan cc-plan cc-plan-essencial"><div class="plan-heading"><span aria-hidden="true" class="mock-plan-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M19 4c-8 0-13 4-13 10a5 5 0 0 0 5 5c6 0 8-7 8-15ZM4 20l9-9"></path></svg></span><div><h3>Essencial</h3><p class="plan-description">Organização básica do casal</p></div></div><p class="plan-price"><strong>Grátis</strong><small>R$ 0,00</small></p><ul class="plan-features"><li>Tarefas básicas (compartilhadas)</li><li>Calendário básico (eventos e lembretes)</li><li>Saúde e ciclo básico (registro e previsões)</li><li>Nosso espaço básico <small>(fotos, notas e lembranças)</small></li><li>Tema claro / escuro</li></ul><p class="plan-warning"><span aria-hidden="true">⊗</span> Não inclui recursos financeiros nem conexão bancária.</p></article>
+<article class="plan cc-plan cc-plan-plus"><div class="plan-heading"><span aria-hidden="true" class="mock-plan-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z" fill="currentColor" stroke="none"></path></svg></span><div><h3>Plus</h3><p class="plan-description">Finanças compartilhadas automáticas</p></div></div><p class="plan-price"><strong>R$ 19,90</strong><small>/mês</small></p><ul class="plan-features"><li>1 conexão PF por pessoa</li><li>Pessoa física</li><li>Finanças compartilhadas <small>(com sincronização automática)</small></li><li>Tarefas e calendário (com lembretes)</li><li>Saúde e ciclo (com mais detalhes)</li><li>Nosso espaço (fotos, notas e momentos)</li><li>Relatórios básicos (gastos, evolução e metas)</li><li>Imagens automáticas de metas via Pexels <small>(fotos lindas e inspiradoras)</small></li></ul></article>
+<article class="plan cc-plan cc-plan-infinity"><span class="mock-plan-badge">Mais completo</span><div class="plan-heading"><span aria-hidden="true" class="mock-plan-icon"><svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="m3 6 5 5 4-7 4 7 5-5-2 12H5L3 6Zm3 15h12"></path></svg></span><div><h3>Infinity</h3><p class="plan-description">Controle e automação avançados</p></div></div><p class="plan-price"><strong>R$ 34,99</strong><small>/mês</small></p><ul class="plan-features"><li>Múltiplas contas (você e seu par)</li><li>Pessoa física + PJ, sujeito a suporte</li><li>Open Finance avançado <small>(conexão segura e mais instituições)</small></li><li>Relatórios e insights (análises inteligentes)</li><li>Automações premium <small>(categorias, regras e rotinas)</small></li><li>Exportação (PDF, planilha, histórico)</li><li>Prioridade em novidades <small>(acesso antecipado a novos recursos)</small></li></ul></article></div><p class="cc-plan-note">Planos previstos para lançamento. Cobrança, limites e recursos avançados ainda não estão ativados.</p>
+</section>
+<section class="site-section wrap" id="recursos">
+<h2>Automação que simplifica a vida a dois</h2>
+<div class="feature-grid">
+<article>
+<svg aria-hidden="true" class="feature-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><rect height="18" rx="3" width="16" x="4" y="3"></rect><path d="m8 12 2 2 6-6"></path></svg>
+<h3>Tarefas</h3>
+<p>Dividam o que precisa ser feito e acompanhem o andamento.</p>
+</article>
+<article>
+<svg aria-hidden="true" class="feature-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><rect height="16" rx="3" width="18" x="3" y="5"></rect><path d="M8 3v4m8-4v4M3 10h18"></path></svg>
+<h3>Calendário</h3>
+<p>Reúnam compromissos e datas importantes.</p>
+</article>
+<article>
+<svg aria-hidden="true" class="feature-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M4 6.5h14a2 2 0 0 1 2 2v10H5a3 3 0 0 1-3-3v-10a3 3 0 0 1 3-3h12M16 12h6v4h-6a2 2 0 0 1 0-4Z"></path></svg>
+<h3>Finanças</h3>
+<p>Acompanhem receitas, despesas e contas do casal.</p>
+</article>
+<article>
+<svg aria-hidden="true" class="feature-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg>
+<h3>Metas</h3>
+<p>Planejem objetivos e registrem os aportes.</p>
+</article>
+<article>
+<svg aria-hidden="true" class="feature-icon" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"></path></svg>
+<h3>Bem-estar</h3>
+<p>Acompanhem registros com controle de compartilhamento.</p>
+</article>
+</div>
+<div class="feature-stories">
+<article>
+<img src="/src/img/mockup-momento.webp" width="360" height="240" alt="" loading="lazy"/>
+<div><h3>Momentos do casal</h3><p>Guardem fotos, lembranças e conquistas na linha do tempo de vocês.</p></div>
+</article>
+<article>
+<img src="/src/img/mockup-viagem.webp" width="360" height="240" alt="" loading="lazy"/>
+<div><h3>Metas e sonhos</h3><p>Acompanhem o progresso das metas e encontrem imagens de inspiração para o próximo passo.</p></div>
+</article>
+</div>
+</section>
+<section aria-labelledby="demo-checklist-title" class="wrap showcase-checklist">
+<div>
+<h2 id="demo-checklist-title">A lista de vocês, sempre à mão</h2>
+<p>Marquem uma tarefa de exemplo e vejam a mudança também na tela de Tarefas.</p>
+</div>
+<div aria-label="Checklist de exemplo" class="device-list" id="demo-checklist" role="group"></div>
+</section>
+<section aria-labelledby="titulo-blog" class="site-section wrap faq" id="blog">
+<h2 id="titulo-blog">Blog</h2>
+<details><summary>Como organizar a rotina do casal</summary><p>Comecem pelas tarefas da semana. Definam quem cuida de cada uma, coloquem um prazo e usem a opção de repetir para as tarefas recorrentes.</p></details>
+<details><summary>Como acompanhar uma meta a dois</summary><p>Em Nosso Espaço, criem uma meta com o valor que querem alcançar. Registrem os aportes à medida que guardarem dinheiro para acompanhar o progresso.</p></details>
+<details><summary>Como manter cada registro de bem-estar privado</summary><p>No check-in, a opção de compartilhar fica a seu critério. O controle de compartilhamento das estimativas do ciclo fica em Saúde e Ciclo.</p></details>
+</section>
+<section aria-labelledby="titulo-duvidas" class="site-section wrap faq" id="duvidas">
+<h2 id="titulo-duvidas">Dúvidas frequentes</h2>
+<details open="">
+<summary>Como funciona o CoupleCare?</summary>
+<p>Crie sua conta e convide a outra pessoa para compartilhar tarefas, calendário, finanças e metas.</p>
+</details>
+<details>
+<summary>Cada pessoa tem seu próprio login?</summary>
+<p>Sim. O convite vincula as duas contas ao mesmo espaço.</p>
+</details>
+<details>
+<summary>Preciso conectar um banco?</summary>
+<p>Nos planos pagos, a proposta é sincronizar automaticamente os bancos após a autorização de cada titular.</p>
+</details>
+</section>
+<section aria-labelledby="titulo-convite" class="wrap landing-closing">
+<h2 id="titulo-convite">Comecem a organizar a rotina de vocês.</h2>
+<button aria-haspopup="dialog" class="button primary" data-signup="" type="button">Criar conta</button>
+<a class="button primary" data-enter-app="" hidden="" href="/src/dashboard.html">Entrar no sistema</a>
+</section>
+</main>
+<footer class="site-footer wrap">
+<a class="brand" href="/"><span aria-hidden="true" class="marca-icone">♡</span> CoupleCare</a>
+<a href="/">Início</a><a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#demo">Como funciona</a><a href="#blog">Blog</a><a href="#duvidas">Dúvidas</a>
+</footer>
+<dialog aria-labelledby="titulo-instalar" class="auth-dialog install-dialog" id="modal-instalar">
+<div class="modal-conteudo">
+<form method="dialog"><button aria-label="Fechar instalação" class="modal-fechar" type="submit">×</button></form>
+<header class="modal-cabecalho"><h2 id="titulo-instalar">Baixe o app</h2><p>Adicione o CoupleCare à tela inicial pelo navegador.</p></header>
+<button class="button primary" id="confirmar-instalacao" type="button" hidden>Instalar CoupleCare</button>
+<div class="install-options">
+<details data-platform="ios"><summary>iPhone e iPad</summary><p>No Safari, toque em Compartilhar e em Adicionar à Tela de Início. Confirme com Adicionar.</p></details>
+<details data-platform="android"><summary>Android</summary><p>Abra o menu do Chrome e escolha Instalar app ou Adicionar à tela inicial.</p></details>
+<details data-platform="desktop"><summary>Computador</summary><p>No Chrome ou no Edge, procure a opção de instalar este site no menu do navegador.</p></details>
+</div>
+<p id="status-instalacao" role="status"></p>
+</div>
+</dialog>
+<dialog aria-labelledby="titulo-login" class="auth-dialog" id="modal-login">
+<div class="modal-conteudo">
+<button aria-label="Fechar login" class="modal-fechar" id="fechar-login" type="button">×</button>
+<header class="modal-cabecalho"><span aria-hidden="true" class="marca-icone">♡</span><h2 id="titulo-login">Entrar no CoupleCare</h2></header>
+<form class="formulario" id="formulario-login">
 <div class="campo"><label for="email">E-mail</label><input autocomplete="email" id="email" name="email" placeholder="voce@exemplo.com" required="" type="email"/></div>
 <div class="campo"><div class="campo-cabecalho"><label for="senha">Senha</label><a href="/src/recuperar-senha.html">Esqueci minha senha</a></div><input autocomplete="current-password" id="senha" name="senha" placeholder="Sua senha" required="" type="password"/></div>
 <button class="botao-entrar" type="submit">Entrar</button>
 <p aria-live="polite" class="feedback" id="feedback-login" role="status"></p>
 </form>
-      <button class="button outline auth-secondary" id="abrir-cadastro" type="button">Criar conta</button>
-    </div>
-  </dialog>
-  <dialog aria-describedby="descricao-cadastro" aria-labelledby="titulo-cadastro" class="auth-dialog" id="modal-cadastro">
+<button class="button outline auth-secondary" id="abrir-cadastro" type="button">Criar conta</button>
+</div>
+</dialog>
+<dialog aria-describedby="descricao-cadastro" aria-labelledby="titulo-cadastro" class="auth-dialog" id="modal-cadastro">
 <div class="modal-conteudo">
 <button aria-label="Fechar cadastro" class="modal-fechar" id="fechar-cadastro" type="button">
 <span aria-hidden="true">×</span>
 </button>
 <header class="modal-cabecalho">
-<span class="marca-icone" aria-hidden="true">♡</span>
-
+<span aria-hidden="true" class="marca-icone">♡</span>
 <h2 id="titulo-cadastro">Criar conta no CoupleCare</h2>
 <p id="descricao-cadastro">
                 Crie sua conta para começar a organizar sua vida a dois.
@@ -259,6 +286,3 @@
 </dialog>
 </body>
 </html>
-
-
-

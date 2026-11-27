@@ -8,6 +8,15 @@
 .cal-tipo-tarefa { --cal-cor-item: #f4b487; }
 .cal-tipo-pessoal { --cal-cor-item: #84dac8; }
 
+[data-cc-theme="light"] .calendario-real {
+    --cal-linha: var(--line);
+    --cal-texto-suave: var(--muted);
+}
+
+[data-cc-theme="light"] .cal-tipo-evento { --cal-cor-item: var(--purple); }
+[data-cc-theme="light"] .cal-tipo-tarefa { --cal-cor-item: var(--orange-soft); }
+[data-cc-theme="light"] .cal-tipo-pessoal { --cal-cor-item: var(--mint); }
+
 .calendario-mensal {
     padding: clamp(12px, 2.2vw, 26px);
     container-type: inline-size;

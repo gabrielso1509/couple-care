@@ -1,0 +1,376 @@
+:root {
+    --cc-body-size:1rem;
+    --cc-control-size:.9375rem;
+    --cc-caption-size:.875rem;
+    --cc-card-title-size:1.125rem;
+    --cc-layout-gap:.875rem;
+}
+
+html body .aplicacao .conteudo-principal > .conteudo { gap:var(--cc-layout-gap); }
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) :is(p,li) {
+    font-size:var(--cc-body-size);
+    line-height:1.5;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao :is(.card p,.card li,.empty-state,.mobile-module-description,.mobile-dia-agenda .mobile-day-row p) {
+    font-size:var(--cc-body-size);
+    line-height:1.5;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao :is(.cc-field,.mobile-day-time,.mobile-day-row small,.finance-category-figures > span,.mock-axis) {
+    color:var(--muted);
+    font-size:var(--cc-caption-size);
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao .card small {
+    font-size:var(--cc-caption-size);
+}
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) :is(.card small,.cc-field,.cc-empty,.empty-state,.cc-date,.modal-consulta-item small) {
+    font-size:var(--cc-caption-size);
+    line-height:1.45;
+}
+html.cc-figma body[data-cc-page] .aplicacao :is(.card h2,.card h3) {
+    font-size:var(--cc-card-title-size);
+    line-height:1.25;
+    overflow-wrap:anywhere;
+}
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) :is(button,input,select,textarea,summary,.soft-button,.cc-action) {
+    font-size:var(--cc-control-size);
+}
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) button:not(.calendario-dia,.mobile-semana-dia) {
+    background:var(--panel)!important;
+    background-image:none!important;
+}
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) :is(button[aria-pressed=true],button[aria-selected=true],button[aria-checked=true]) {
+    color:var(--purple)!important;
+    box-shadow:inset 0 0 0 1px var(--purple);
+}
+html.cc-figma body[data-cc-page] .calendario-dia[aria-pressed=true],
+html.cc-figma body[data-cc-page] .mobile-semana-dia[aria-pressed=true] {
+    background:var(--panel)!important;
+    color:var(--purple)!important;
+    box-shadow:inset 0 0 0 1px var(--purple);
+}
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) :is(.cc-action,.soft-button,button.text-button) {
+    min-height:40px;
+    padding:6px 12px;
+    color:var(--purple);
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:none;
+    text-decoration:none;
+    background:var(--panel);
+}
+html.cc-figma body[data-cc-page] :is(.aplicacao,dialog.cc-modal) :is(.cc-action,.soft-button,button.text-button):is(:hover,:focus-visible) {
+    border-color:var(--purple);
+}
+html.cc-figma body[data-cc-page] .cc-header-actions .cc-date { font-size:var(--cc-caption-size); }
+html.cc-figma body[data-cc-page] .cc-header-actions .cc-couple-avatars a { width:42px; height:42px; font-size:var(--cc-caption-size); }
+html.cc-figma body[data-cc-page] .cc-header-actions .cc-notification-button { width:42px; height:42px; }
+
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-menu {
+    gap:8px;
+    flex-shrink:0;
+    min-height:64px;
+    padding:10px 4px 4px;
+    border-top-color:var(--line);
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-menu .conta-avatar {
+    width:44px;
+    height:44px;
+    font-size:1rem;
+    font-weight:700;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .aplicacao:not(.cc-compact) .menu-lateral .conta-nome {
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    overflow-wrap:anywhere;
+    white-space:normal;
+    color:var(--text);
+    font-size:.875rem;
+    font-weight:650;
+    line-height:1.25;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-sair {
+    width:44px;
+    min-height:44px;
+    padding:8px;
+    border:1px solid color-mix(in srgb,var(--purple) 42%,var(--panel));
+    border-radius:12px;
+    color:var(--purple);
+    cursor:pointer;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-sair svg {
+    width:24px;
+    height:24px;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-sair:not(:disabled):is(:hover,:focus-visible) {
+    border-color:var(--purple);
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-sair:focus-visible {
+    outline:2px solid var(--purple);
+    outline-offset:2px;
+}
+html.cc-figma[data-cc-theme] body[data-cc-page] .menu-lateral .conta-sair:disabled { cursor:wait; }
+html.cc-figma[data-cc-theme] body[data-cc-page] .cc-compact .menu-lateral .conta-menu { padding-inline:0; }
+@media (prefers-reduced-motion:no-preference) {
+    .menu-lateral .conta-sair:not(:disabled):is(:hover,:focus-visible) svg {
+        animation:conta-saida .32s ease-out;
+    }
+}
+@keyframes conta-saida {
+    45% { transform:translateX(4px); }
+}
+
+html.cc-figma body[data-cc-page=menstruacao] .support-card li { color:var(--text); }
+@media (min-width:641px) and (max-width:900px) {
+    html.cc-figma body[data-cc-page] .cc-header-actions .cc-date { display:inline; }
+    html.cc-figma body[data-cc-page] .cc-header-actions .cc-couple-avatars { display:flex; }
+}
+
+html.cc-figma body .cc-month-control {
+    display:grid;
+    grid-template-columns:34px minmax(0,1fr) 34px;
+    align-items:center;
+    gap:2px;
+    padding:2px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--panel);
+}
+html.cc-figma body .cc-month-control > button:not(.mobile-only) {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    min-height:38px;
+    min-width:0;
+    border:0;
+    border-radius:9px;
+    padding:0 5px;
+    background:var(--panel);
+    color:var(--text);
+    font-size:var(--cc-control-size);
+    font-weight:700;
+    box-shadow:none;
+}
+html.cc-figma body .cc-month-control > button:not(.cc-month-button) { color:var(--purple); }
+html.cc-figma body .cc-month-control > button:is(:hover,:focus-visible) { outline:1px solid var(--purple); }
+.cc-month-button svg,.space-suggestions svg { width:16px; height:16px; flex:none; }
+html.cc-figma[data-cc-theme] body .cc-month-control :is(#finance-month-picker,#calendar-month-picker,#report-picker) {
+    font-size:var(--cc-control-size);
+    min-height:38px;
+    padding:0 5px;
+}
+html.cc-figma body .cc-month-control #mes { font:inherit!important; white-space:nowrap; }
+html.cc-figma body .cc-month-control #alternar-calendario { display:none; }
+html.cc-figma body.cc-finances .finance-toolbar :is(#new-entry,#open-finance-budget) {
+    min-height:42px;
+    padding-inline:12px;
+    font-size:var(--cc-control-size);
+    border-radius:12px;
+}
+@media(min-width:721px) {
+    html.cc-figma[data-cc-theme] body.cc-finances .finance-summary {
+        grid-template-columns:repeat(2,minmax(0,1.15fr)) repeat(2,minmax(0,1fr));
+        gap:10px;
+    }
+}
+
+.calendar-week-groups,.calendar-week-items { display:grid; gap:8px; }
+.calendar-week-category {
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--panel);
+}
+.calendar-week-category > summary {
+    display:grid;
+    grid-template-columns:36px minmax(0,1fr) auto 12px;
+    align-items:center;
+    gap:9px;
+    padding:8px;
+    cursor:pointer;
+    list-style:none;
+}
+.calendar-week-category > summary::-webkit-details-marker { display:none; }
+.calendar-week-category > summary::after { content:'›'; color:var(--muted); font-size:1.25rem; }
+.calendar-week-category[open] > summary::after { transform:rotate(90deg); }
+.calendar-week-icon,.calendar-week-count {
+    display:grid;
+    place-items:center;
+    border-radius:10px;
+    color:var(--purple);
+    background:var(--panel-2);
+}
+.calendar-week-icon { width:36px; height:36px; }
+.calendar-week-icon svg { width:20px; height:20px; }
+.calendar-week-category[data-kind=aniversario] .calendar-week-icon { color:#aa3280; }
+.calendar-week-category[data-kind=momento] .calendar-week-icon { color:#b63566; }
+.calendar-week-category:is([data-kind=conta],[data-kind=lembrete]) .calendar-week-icon { color:var(--orange-soft); }
+.calendar-week-category[data-kind=pessoal] .calendar-week-icon { color:var(--mint); }
+.calendar-week-count { min-width:24px; min-height:24px; font-size:var(--cc-caption-size); }
+.calendar-week-items { padding:0 8px 8px; }
+.calendar-week-items .modal-consulta-item { background:var(--panel-2); border-color:var(--line); color:var(--text); }
+.calendar-week-date { display:block; color:var(--muted); font-size:var(--cc-caption-size); }
+
+.cc-feature-grid,.report-panels,.report-details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--cc-layout-gap); align-items:start; }
+.cc-feature-grid > .card,.report-panels .report-panel,.report-kpis > .card { min-width:0; margin:0; padding:16px; }
+.report-panels > .report-panel { align-self:stretch; }
+.report-details,.report-panels > .empty-state { grid-column:1/-1; }
+.report-stack { display:grid; gap:var(--cc-layout-gap); min-width:0; }
+.space-suggestions { display:grid; gap:8px; margin:14px 0; }
+.space-suggestions button { display:flex; align-items:center; gap:9px; text-align:left; }
+.space-event { display:grid; gap:4px; padding:10px 0; border-top:1px solid var(--line); }
+.space-event span { color:var(--muted); font-size:var(--cc-caption-size); }
+.space-week a { display:inline-flex; align-items:center; margin-top:10px; }
+.reports-toolbar { display:flex; align-items:end; gap:10px; flex-wrap:wrap; }
+.reports-toolbar .cc-field { width:auto; margin:0; }
+.report-kpis { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--cc-layout-gap); }
+.report-metric strong { display:block; margin:7px 0; font-size:clamp(1.25rem,2vw,1.8rem); overflow-wrap:anywhere; }
+.report-metric p { margin:0; color:var(--muted); }
+.report-panel h2 { margin-bottom:8px; }
+.report-flow { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:8px; padding:8px 0; border-top:1px solid var(--line); }
+.report-flow strong { overflow-wrap:anywhere; }
+.report-flow span,.report-rank-label span { font-size:var(--cc-caption-size); white-space:nowrap; }
+.report-in { color:var(--mint); }
+.report-out { color:var(--text); }
+.report-ranking { display:grid; gap:8px; max-height:250px; overflow:auto; }
+.report-rank-label { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:baseline; gap:6px; }
+.report-rank-label span { text-align:end; }
+.report-rank-label strong { overflow-wrap:anywhere; }
+.report-rank progress { width:100%; height:7px; accent-color:var(--purple); }
+.landing :is(.device-nav,.showcase-tabs,.showcase-switcher,.device-controls,.device-week) button,
+.landing :is(.approved-theme-toggle,.device-action) {
+    background:var(--panel);
+    background-image:none;
+}
+.landing :is(.device-nav,.showcase-tabs,.showcase-switcher,.device-controls,.device-week) button[aria-pressed=true],
+.landing .device-action.primary {
+    color:var(--purple);
+    box-shadow:inset 0 0 0 1px var(--line);
+}
+@media(min-width:901px) {
+    html.cc-figma[data-cc-theme] body[data-cc-page=espaco] .aplicacao .menu-lateral { top:0; height:100dvh; }
+    html.cc-figma[data-cc-theme] body[data-cc-page=espaco] .menu-lateral-cabecalho { display:flex; }
+}
+@media(max-width:720px) {
+    .cc-feature-grid,.report-panels,.report-details { grid-template-columns:minmax(0,1fr); }
+    html.cc-figma body.cc-finances .finance-toolbar :is(#new-entry,#open-finance-budget) { min-height:40px; padding-inline:5px; }
+    .report-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .report-kpis .report-metric:last-child { grid-column:1/-1; }
+    html.cc-figma[data-cc-theme] body[data-cc-page] .cc-bottom-nav :is(a,button) {
+        font-size:.75rem;
+        line-height:1.2;
+    }
+    html.cc-figma[data-cc-theme] body[data-cc-page] .cc-bottom-nav .mock-mobile-plus { font-size:1.6rem; }
+}
+
+/* Agenda, tarefas e compromissos */
+.calendar-item-meta {
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:6px 12px;
+    color:var(--muted);
+    font-size:.875rem;
+    margin-bottom:5px;
+}
+.calendar-item-meta span { color:var(--purple); font-weight:650; }
+@media(min-width:901px) {
+    html.cc-figma body[data-cc-page=calendario] .mock-calendar-grid { align-items:stretch; }
+    html.cc-figma body[data-cc-page=calendario] .mock-calendar-grid > section {
+        min-height:clamp(620px,74dvh,820px);
+    }
+    html.cc-figma body[data-cc-page=calendario] .calendario-mensal { display:flex; flex-direction:column; }
+    html.cc-figma body[data-cc-page=calendario] .calendario-mensal-grade { flex:1; display:flex; flex-direction:column; }
+    html.cc-figma body[data-cc-page=calendario] .calendario-dias { flex:1; grid-auto-rows:minmax(77px,1fr); }
+    html.cc-figma body[data-cc-page=calendario] .mock-day-panel #mobile-dia-itens { max-height:50dvh; }
+}
+.mock-day-panel .calendar-day-cover small:empty { display:none; }
+.task-section-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.task-section-tabs { flex:0 1 auto; }
+#task-create-slot { margin-inline-start:auto; }
+html.cc-figma[data-cc-theme] body[data-cc-page=tarefas] :is(#task-view-bar,#task-list-view,#compromissos,#historico-atividades,.mock-task-progress .stats-row,.mock-task-categories)[hidden],
+body[data-task-section=compromisso] .cc-header-actions .mock-search { display:none!important; }
+html.cc-figma[data-cc-theme] body[data-cc-page=tarefas] .task-list-card,
+html.cc-figma[data-cc-theme] body[data-cc-page=tarefas] .tarefas-compromissos { min-height:0; }
+html.cc-figma[data-cc-theme] body[data-cc-page=tarefas] .task-list-card .tarefas-cabecalho { background:transparent; padding:0; }
+body[data-cc-page=tarefas] #resumo:empty { display:none; }
+body[data-cc-page=tarefas] .tarefas-compromissos-lista { display:grid; gap:8px; }
+body[data-cc-page=tarefas] .tarefas-compromisso { border:1px solid var(--line); padding:12px; border-radius:12px; }
+html.cc-figma[data-cc-theme] .tarefas-editor .tarefas-tipos {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    position:relative;
+    isolation:isolate;
+}
+html.cc-figma[data-cc-theme] .tarefas-editor .tarefas-tipos[hidden] { display:none; }
+.tarefas-editor .tarefas-tipos::before {
+    content:'';
+    z-index:-1;
+    position:absolute;
+    inset:4px auto 4px 4px;
+    width:calc(50% - 4px);
+    background:var(--panel);
+    border:1px solid var(--purple);
+    border-radius:9px;
+    transition:transform .2s ease;
+}
+.tarefas-editor .tarefas-tipos[data-selected=compromisso]::before { transform:translateX(100%); }
+html.cc-figma[data-cc-theme] body[data-cc-page] .tarefas-editor .tarefas-tipos button {
+    background:transparent!important;
+    box-shadow:none;
+    border:0;
+}
+.tarefas-editor form:not([hidden]) { animation:task-form-in .2s ease-out; }
+@keyframes task-form-in { from {opacity:0;transform:translateX(6px)} to {opacity:1;transform:none} }
+@media(prefers-reduced-motion:reduce) {
+    .tarefas-editor .tarefas-tipos::before { transition:none; }
+    .tarefas-editor form:not([hidden]) { animation:none; }
+}
+
+/* Relatórios */
+.pagina-relatorios { --report-expense:#b22a46; }
+html[data-cc-theme=dark] .pagina-relatorios { --report-expense:#ff92a1; }
+.report-out { color:var(--report-expense); }
+.report-metric-label { display:flex; align-items:center; gap:8px; }
+.report-metric-icon {
+    display:grid;
+    place-items:center;
+    width:30px;
+    height:30px;
+    flex:none;
+    border-radius:50%;
+    color:var(--purple);
+    background:var(--panel-2);
+}
+.report-metric-icon svg { width:17px; height:17px; }
+.report-metric:is([data-kind=income],[data-kind=net]) .report-metric-icon { color:var(--mint); background:color-mix(in srgb,var(--mint) 13%,var(--panel)); }
+.report-metric:is([data-kind=expense],[data-kind=negative]) .report-metric-icon { color:var(--report-expense); background:color-mix(in srgb,var(--report-expense) 13%,var(--panel)); }
+.report-metric[data-kind=net] > strong { color:var(--mint); }
+.report-metric[data-kind=negative] > strong { color:var(--report-expense); }
+.report-reading { color:var(--muted); margin:4px 0 12px; }
+.report-week {
+    display:grid;
+    grid-template-columns:54px minmax(0,1fr);
+    gap:8px;
+    align-items:center;
+    border-top:1px solid var(--line);
+    padding:8px 0;
+}
+.report-week-pair { display:grid; gap:5px; }
+.report-week-bar { display:grid; grid-template-columns:minmax(0,1fr) minmax(85px,auto); gap:8px; align-items:center; }
+.report-week-value { text-align:end; font-size:.875rem; white-space:nowrap; }
+.report-track { height:7px; background:var(--panel-2); border-radius:99px; }
+.report-fill { height:100%; display:block; background:currentColor; border-radius:inherit; }
+.report-trend-chart { display:block; width:100%; height:auto; max-height:240px; }
+.report-trend-axis { display:flex; justify-content:space-between; gap:8px; font-size:.875rem; color:var(--muted); }
+#calendar-day-cover-description { margin:4px 0 0; color:var(--muted); }
+#calendar-day-cover-description:empty { display:none; }
+html.cc-figma[data-cc-theme] body[data-cc-page] .dashboard-linha .dashboard-task-overdue { color:#a63249; font-weight:650; }
+html.cc-figma[data-cc-theme=dark] body[data-cc-page] .dashboard-linha .dashboard-task-overdue { color:#ff9bab; }
+html.cc-figma[data-cc-theme] body[data-cc-page=tarefas] .task-list-card .tarefa-cartao.atrasada .tarefa-cartao-prazo,
+html.cc-figma[data-cc-theme] body.pagina-relatorios .report-metric:is([data-kind=expense],[data-kind=negative]) > strong { color:var(--report-expense,#b22a46); }
+html.cc-figma[data-cc-theme] body.pagina-relatorios .report-metric:is([data-kind=income],[data-kind=net]) > strong { color:var(--mint); }
+html.cc-figma[data-cc-theme] body[data-cc-page=tarefas] #titulo-historico { color:var(--text); }

@@ -160,7 +160,7 @@ formularioCadastro.addEventListener('submit', async function (evento) {
         confirmacaoCadastro.setCustomValidity('');
 
         if (data.session) {
-            window.location.replace('/dashboard');
+            window.location.replace('/src/dashboard.html');
         } else {
             // Mensagem neutra: o Auth pode ocultar se um e-mail já está cadastrado.
             feedbackCadastro.textContent =

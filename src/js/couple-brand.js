@@ -1,73 +1,139 @@
+/* CoupleCare — identidade visual aprovada: neon em movimento e dois pulsos.
+ * O desenho é compartilhado por todas as páginas; cada SVG recebe IDs exclusivos.
+ * Não depende de bibliotecas, imagens externas ou chamadas à API. */
 (function () {
     'use strict';
-    const markup = `<svg viewBox="-5 -3 56 53" class="cc-brand-mark" aria-hidden="true">
-<defs>
-  <path id="cc-left-N" d="M23 12 C16 3 4 6 4 16 C4 25 19 36 23 40"/>
-  <path data-curve="" id="cc-right-N" d="M23 12 C30 3 42 6 42 16 C42 25 27 37 23 40"/>
-  <filter id="cc-soft-N" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.3"/></filter>
-</defs>
-<g fill="none" stroke-linecap="round" stroke-width="3">
-  <g data-shadow="" filter="url(#cc-soft-N)" opacity="0" stroke-width="4">
-    <use href="#cc-left-N" stroke="#ef985f"/><use href="#cc-right-N" stroke="#ac88da"/>
-  </g>
-  <use href="#cc-left-N" stroke="#f39860"/><use href="#cc-right-N" stroke="#f39860"/>
-  <use href="#cc-right-N" data-ink="" stroke="#b494dd" opacity="0"/>
-</g>
-<circle data-dot="" cx="31" cy="15" r="5" fill="#ae745e"/>
-</svg>`;
     let serial = 0;
+    const left = 'M160 70 C136 18 68 24 65 81 C62 128 120 158 160 194';
+    const right = 'M160 194 C200 158 258 128 255 81 C252 24 184 18 160 70';
+    const clamp = x => Math.max(0, Math.min(1, x));
+    // Interpolação suave: acelera e desacelera sem saltos.
+    const ease = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+    const pulse = (t, center, width) => Math.exp(-Math.pow((t - center) / width, 2));
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    function markup(id) {
+        return `<svg viewBox="42 20 236 196" class="cc-brand-mark cc-heart-motion" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="${id}-warm" x1="0%" y1="0%" x2="100%" y2="100%"><stop stop-color="#F8CD98"/><stop offset="1" stop-color="#E9A475"/></linearGradient>
+            <linearGradient id="${id}-cool" x1="0%" y1="100%" x2="100%" y2="0%"><stop stop-color="#A78AD8"/><stop offset="1" stop-color="#D6B7ED"/></linearGradient>
+            <filter id="${id}-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"/></filter>
+          </defs>
+          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path data-part="ag" stroke="#EAB083" stroke-width="13" filter="url(#${id}-glow)" opacity=".3" d="${left}"/>
+            <path data-part="bg" stroke="#B99BDC" stroke-width="13" filter="url(#${id}-glow)" opacity=".3" d="${right}"/>
+            <path data-part="a" stroke="url(#${id}-warm)" stroke-width="9" d="${left}"/>
+            <path data-part="b" stroke="url(#${id}-cool)" stroke-width="9" d="${right}"/>
+            <path data-part="na" stroke="#FFE1BA" stroke-width="13" filter="url(#${id}-glow)" opacity="0" d="${left}"/>
+            <path data-part="nb" stroke="#DFBCFF" stroke-width="13" filter="url(#${id}-glow)" opacity="0" d="${right}"/>
+            <path data-part="sa" stroke="#FFF0DB" stroke-width="3" opacity="0" d="${left}"/>
+            <path data-part="sb" stroke="#F5E5FF" stroke-width="3" opacity="0" d="${right}"/>
+          </g>
+          <circle data-part="halo" r="9" fill="#F8CD98" filter="url(#${id}-glow)" opacity="0"/>
+          <circle data-part="tip" r="2.8" fill="#FFF4E5" opacity="0"/>
+          <circle data-part="transfer" cx="160" cy="194" r="7" fill="#F3D1E0" filter="url(#${id}-glow)" opacity="0"/>
+          <circle data-part="bottomWave" cx="160" cy="194" r="4" stroke="#D5B4E6" stroke-width="1.2" fill="none" opacity="0"/>
+          <circle data-part="topWave" cx="160" cy="70" r="4" stroke="#E7C5DD" stroke-width="1.2" fill="none" opacity="0"/>
+          <g data-part="star" opacity="0"><path d="M160 56 Q162 68 174 70 Q162 72 160 84 Q158 72 146 70 Q158 68 160 56" fill="#FFF0DC"/></g>
+          <g data-part="particles"></g>
+        </svg>`;
+    }
     window.CCBrand = function (target) {
-        target.innerHTML = markup.replaceAll('-N', '-' + ++serial);
+        if (target.dataset.ccBrandReady) return;
+        target.dataset.ccBrandReady = 'true';
+        target.innerHTML = markup('cc-logo-' + (++serial));
         const mark = target.firstElementChild;
-        const trigger = target.closest('a, button') || target;
-        const curve = mark.querySelector('[data-curve]');
-        const ink = mark.querySelector('[data-ink]');
-        const dot = mark.querySelector('[data-dot]');
-        const shadow = mark.querySelector('[data-shadow]');
-        const length = curve.getTotalLength();
-        ink.setAttribute('stroke-dasharray', length + ' ' + length);
-        let progress = 0, frame = 0;
-        const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-        function draw(t) {
-          const approach = Math.min(1, t / 0.28);
-          const trace = Math.max(0, Math.min(1, (t - 0.28) / 0.57));
-          const tip = curve.getPointAtLength(trace * length);
-          dot.setAttribute('cx', 31 + (tip.x - 31) * approach);
-          dot.setAttribute('cy', 15 + (tip.y - 15) * approach);
-          dot.setAttribute('r', 5 - 3.5 * approach);
-          dot.setAttribute('fill', 'rgb(' + [174+6*approach,116+32*approach,94+127*approach].join(',') + ')');
-          ink.setAttribute('stroke-dashoffset', length * (1 - trace));
-          ink.setAttribute('opacity', trace > 0 ? 1 : 0);
-          shadow.setAttribute('opacity', Math.max(0, (t - 0.85) / 0.15) * 0.65);
+        const $ = name => mark.querySelector('[data-part="' + name + '"]');
+        const paths = [$('a'), $('b')], glows = [$('ag'), $('bg')];
+        const neons = [$('na'), $('nb')], cores = [$('sa'), $('sb')];
+        const lengths = paths.map(p => p.getTotalLength());
+        const particles = [];
+        for (let i = 0; i < 12; i++) {
+            const p = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            p.setAttribute('r', i % 3 === 0 ? 1.8 : 1);
+            p.setAttribute('fill', i % 2 ? '#D6B7ED' : '#F8CD98');
+            p.setAttribute('opacity', 0);
+            $('particles').appendChild(p);
+            particles.push(p);
         }
-        function animate(target) {
-          cancelAnimationFrame(frame);
-          const start = progress, time = performance.now();
-          function tick(now) {
-            const u = reduced.matches ? 1 : Math.min(1,(now-time)/780);
-            progress = start+(target-start)*u*u*(3-2*u);
-            draw(progress);
-            if (u<1) frame = requestAnimationFrame(tick);
-          }
-          frame = requestAnimationFrame(tick);
-        }
-
-        trigger.addEventListener('pointerenter', function (event) {
-            if (event.pointerType === 'mouse') animate(1);
-        });
-        trigger.addEventListener('pointerleave', function (event) {
-            if (event.pointerType === 'mouse') animate(0);
-        });
-        trigger.addEventListener('focusin', function () { animate(1); });
-        trigger.addEventListener('focusout', function () { animate(0); });
-        if (trigger.matches('button')) trigger.addEventListener('click', function (event) {
-            if (event.pointerType !== 'mouse') {
-                const active = trigger.getAttribute('aria-pressed') !== 'true';
-                trigger.setAttribute('aria-pressed', String(active));
-                animate(Number(active));
+        let raf = 0, start = 0;
+        // O comprimento real do caminho permite desenhar o traço progressivamente.
+        function draw(i, v) {
+            for (const p of [paths[i], glows[i]]) {
+                p.style.strokeDasharray = lengths[i] + ' ' + lengths[i];
+                p.style.strokeDashoffset = lengths[i] * (1 - v);
+                p.style.visibility = v > 0 ? 'visible' : 'hidden';
             }
-        });
-        draw(0);
+        }
+        // Uma faixa luminosa de 42 unidades segue a ponta do desenho.
+        function neon(i, v, alpha) {
+            const head = v * lengths[i], tail = Math.min(head, 42);
+            for (const p of [neons[i], cores[i]]) {
+                p.setAttribute('stroke-dasharray', `${tail} ${lengths[i] + 42}`);
+                p.setAttribute('stroke-dashoffset', tail - head);
+                p.setAttribute('opacity', alpha);
+            }
+        }
+        function wave(id, v, max) {
+            $(id).setAttribute('r', 4 + v * max);
+            $(id).setAttribute('opacity', Math.sin(v * Math.PI) * .65);
+        }
+        function finish() {
+            draw(0, 1); draw(1, 1);
+            paths.forEach(p => p.style.filter = 'none');
+            glows.forEach(p => { p.setAttribute('opacity', '.3'); p.setAttribute('stroke-width', '13'); });
+            [...neons, ...cores, ...particles, $('star'), $('halo'), $('tip'), $('transfer'), $('bottomWave'), $('topWave')].forEach(p => p.setAttribute('opacity', '0'));
+        }
+        function render(now) {
+            const t = (now - start) / 1000;
+            const a = ease(t / 1.05), b = ease((t - 1.05) / 1.05);
+            draw(0, a); draw(1, b);
+            const i = t < 1.05 ? 0 : 1, v = i === 0 ? a : b;
+            const point = paths[i].getPointAtLength(v * lengths[i]);
+            const active = t < 2.1 ? Math.min(1, v * 18, (1 - v) * 18) : 0;
+            neon(0, a, i === 0 ? active : 0);
+            neon(1, b, i === 1 ? active : 0);
+            for (const name of ['tip', 'halo']) {
+                $(name).setAttribute('cx', point.x);
+                $(name).setAttribute('cy', point.y);
+                $(name).setAttribute('opacity', active);
+            }
+            $('halo').setAttribute('fill', i === 0 ? '#F8CD98' : '#D6B7ED');
+            $('tip').setAttribute('fill', i === 0 ? '#FFF4E5' : '#F5E8FF');
+            // A onda inferior marca a passagem da energia do laranja para o roxo.
+            const transfer = clamp((t - .94) / .48);
+            $('transfer').setAttribute('opacity', Math.sin(transfer * Math.PI) * .9);
+            wave('bottomWave', transfer, 20);
+            const f = clamp((t - 2.1) / .8);
+            wave('topWave', f, 35);
+            $('star').setAttribute('opacity', Math.sin(f * Math.PI) * .85);
+            particles.forEach((p, j) => {
+                const angle = j * Math.PI * 2 / 12, d = 8 + f * (24 + j % 3 * 9);
+                p.setAttribute('cx', 160 + Math.cos(angle) * d);
+                p.setAttribute('cy', 70 + Math.sin(angle) * d);
+                p.setAttribute('opacity', Math.sin(f * Math.PI) * .8);
+            });
+            // Dois pulsos luminosos no fechamento; depois, o coração fica estático.
+            const blink = t >= 2.1 ? Math.min(1, pulse(t, 2.27, .12) + .85 * pulse(t, 2.67, .13)) : 0;
+            glows.forEach(p => { p.setAttribute('opacity', .3 + blink * .65); p.setAttribute('stroke-width', 13 + blink * 8); });
+            if (t >= 2.1) {
+                paths.forEach(p => p.style.filter = `brightness(${1 + blink * .32})`);
+                neons.forEach(p => { p.setAttribute('stroke-dasharray', 'none'); p.setAttribute('opacity', blink * .55); });
+            } else paths.forEach(p => p.style.filter = 'none');
+            if (t < 3.2) raf = requestAnimationFrame(render);
+            else finish();
+        }
+        function play() {
+            cancelAnimationFrame(raf);
+            finish();
+            if (motion.matches) return;
+            start = performance.now();
+            draw(0, 0); draw(1, 0);
+            raf = requestAnimationFrame(render);
+        }
+        const trigger = target.closest('a,button') || target;
+        trigger.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') play(); });
+        if (trigger.matches('button')) trigger.addEventListener('click', play);
+        finish();
     };
-    document.querySelectorAll('.marca-tarefas-icone, .marca-icone, .orbit-heart, .panel-icon').forEach(window.CCBrand);
+    document.querySelectorAll('.marca-tarefas-icone,.marca-icone,.orbit-heart,.panel-icon').forEach(window.CCBrand);
 })();

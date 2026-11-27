@@ -145,19 +145,23 @@
                 if (notices.querySelector('.cc-toast') && notices.showPopover) notices.showPopover();
             }
         });
-        // Só fecha se o gesto começar e terminar fora do conteúdo.
-        // Arrastar um campo para fora não descarta a janela; fechar não limpa o formulário.
+        C.dismissOutside(d);
+        document.body.append(d); return d;
+    };
+    C.dismissOutside = function (dialog, busy = () => Boolean(dialog.dataset.busy)) {
+        if ('closedBy' in dialog) dialog.setAttribute('closedby', 'any');
         let outside = false;
-        function isOutside(event) {
-            const r = d.getBoundingClientRect();
-            return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
+        function hitBackdrop(event) {
+            const rect = dialog.getBoundingClientRect();
+            return event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right ||
+                event.clientY < rect.top || event.clientY > rect.bottom);
         }
-        d.addEventListener('pointerdown', function (event) { outside = event.target === d && isOutside(event); });
-        d.addEventListener('click', function (event) {
-            if (outside && event.target === d && isOutside(event) && !d.dataset.busy) d.close();
+        dialog.addEventListener('pointerdown', event => { outside = hitBackdrop(event); });
+        dialog.addEventListener('pointercancel', () => { outside = false; });
+        dialog.addEventListener('click', event => {
+            if (dialog.open && outside && hitBackdrop(event) && !busy()) dialog.close();
             outside = false;
         });
-        document.body.append(d); return d;
     };
     C.form = function (form, fn) {
         let busy = false;
@@ -190,8 +194,14 @@
     };
 
     C.refreshOnReturn = function (refresh) {
+        let hiddenAt = document.hidden ? Date.now() : 0;
         document.addEventListener('visibilitychange', function () {
-            if (!document.hidden) void refresh();
+            if (document.hidden) {
+                hiddenAt = Date.now();
+            } else {
+                if (hiddenAt && Date.now() - hiddenAt >= 120000) void refresh();
+                hiddenAt = 0;
+            }
         });
         window.addEventListener('online', function () {
             if (!document.hidden) void refresh();

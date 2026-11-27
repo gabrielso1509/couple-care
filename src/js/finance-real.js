@@ -3,88 +3,126 @@
     'use strict';
     const C = CC, $ = C.$;
     const categories = { house: 'Casa', leisure: 'Lazer', health: 'Saúde', market: 'Mercado', transport: 'Transporte', salary: 'Salário', other: 'Outros' };
-    let context, entries = [], financeAccounts = [], bills = [], billsReady = true, edited = null, billEdit = null, accountEdit = null, limit = 30, generation = 0;
-    let loading = false, customCategories = [], categorySaving = false, draftKey = null;
+    let context, entries = [], financeAccounts = [], bills = [], billsReady = false, edited = null, billEdit = null, limit = 30, generation = 0;
+    let loading = false, customCategories = [], draftKey = null;
     $('finance-month').value = C.today().slice(0, 7);
     const periodControl = C.el('div', 'finance-period-controls');
-    periodControl.innerHTML = '<label class="cc-field">Período<select id="finance-period"><option value="day">Hoje</option><option value="week">Últimos 7 dias</option><option value="15days">Últimos 15 dias</option><option value="month" selected>Este mês</option><option value="6months">Últimos 6 meses</option><option value="year">Este ano</option><option value="custom">Personalizado</option></select></label><label class="cc-field finance-custom-date" id="finance-from-wrap" hidden>De<input id="finance-from" type="date"></label><label class="cc-field finance-custom-date" id="finance-to-wrap" hidden>Até<input id="finance-to" type="date"></label>';
-    const monthWrap = $('finance-month').closest('label');
-    if (monthWrap) monthWrap.hidden = true;
-    const financeToolbar = $('finance-month').closest('.cc-toolbar');
-    if (financeToolbar) financeToolbar.insertBefore(periodControl, monthWrap || financeToolbar.firstChild);
+    periodControl.innerHTML = '<label class="cc-field"><span class="cc-sr">Período</span><select id="finance-period"><option value="day">Hoje</option><option value="week">Últimos 7 dias</option><option value="15days">Últimos 15 dias</option><option value="month" selected>Este mês</option><option value="6months">Últimos 6 meses</option><option value="year">Este ano</option><option value="custom">Personalizado</option><option value="selected-month" hidden>Mês selecionado</option></select></label><label class="cc-field finance-custom-date" id="finance-from-wrap" hidden>De<input id="finance-from" type="date"></label><label class="cc-field finance-custom-date" id="finance-to-wrap" hidden>Até<input id="finance-to" type="date"></label>';
+    $('finance-month').closest('.finance-month-control').after(periodControl);
     $('finance-from').value = C.today(); $('finance-to').value = C.today();
     const entryDialog = C.dialog('entry-dialog', 'Lançamento do casal', `
         <form id="entry-form"><label class="cc-field">Descrição<input id="entry-description" maxlength="150" required></label>
         <div class="form-row"><label class="cc-field">Tipo<select id="entry-type"><option value="expense">Despesa</option><option value="income">Receita</option></select></label><label class="cc-field">Valor em reais<input id="entry-amount" inputmode="decimal" placeholder="0,00" required></label></div>
         <div class="form-row"><label class="cc-field">Data<input id="entry-date" type="date" min="1900-01-01" max="2100-12-31" required></label><label class="cc-field">Categoria<select id="entry-category"></select></label></div>
         <label class="cc-field">Conta vinculada (opcional)<select id="entry-account"><option value="">Sem conta vinculada</option></select></label>
-        <div class="inline-category-tools"><button id="new-entry-category" type="button" class="text-button">+ Nova categoria</button></div>
-        <div id="inline-category-editor" class="inline-category-editor" hidden><label class="cc-field">Nome da nova categoria<input id="new-category-name" maxlength="40" placeholder="Ex.: Pets, Educação, Assinaturas"></label><div class="cc-row-actions"><button type="button" class="soft-button" id="save-entry-category">Salvar categoria</button><button type="button" class="text-button" id="cancel-entry-category">Cancelar</button></div><p id="entry-category-status" role="status" aria-live="polite"></p></div>
         <button type="submit" class="primary-button">Salvar lançamento</button><p id="entry-status" role="status"></p></form>`);
-    function syncCategories(value) {
-        const select = $('entry-category'); const previous = value || select.value || 'house'; select.replaceChildren();
-        Object.keys(categories).forEach(function (key) { const o = C.el('option', '', categories[key]); o.value = key; select.append(o); });
+    function syncCategorySelect(select, value, fallback) {
+        const previous = value ?? (select.value || fallback);
+        select.replaceChildren();
+        Object.entries(categories).forEach(([key, name]) => select.add(new Option(name, key)));
         if (customCategories.length) {
-            const group = C.el('optgroup'); group.label = 'Categorias do casal';
-            customCategories.forEach(function (row) { const o = C.el('option', '', row.name); o.value = 'custom:' + row.id; group.append(o); });
+            const group = C.el('optgroup');
+            group.label = 'Categorias do casal';
+            customCategories.forEach(category => group.append(new Option(category.name, 'custom:' + category.id)));
             select.append(group);
         }
-        select.value = previous; if (!select.value) select.value = 'house';
+        select.value = previous;
+        if (!select.value) select.value = fallback;
     }
+    const syncCategories = value => syncCategorySelect($('entry-category'), value, 'house');
     function categoryName(row) {
         return row.custom_category_id ? customCategories.find(function (c) { return c.id === row.custom_category_id; })?.name || 'Categoria do casal' : categories[row.category] || 'Outros';
     }
-    function normalized(s) { return s.trim().toLocaleLowerCase('pt-BR'); }
-    function balanceCents(value) {
-        const rawValue = String(value || '0').trim();
-        const normalizedValue = rawValue.indexOf(',') >= 0 ? rawValue.replace(/\./g, '').replace(',', '.') : rawValue;
-        const amount = Number(normalizedValue);
-        if (!Number.isFinite(amount) || Math.abs(amount) > 999999999.99) throw new Error('Informe um saldo válido.');
-        return Math.round(amount * 100);
+    const normalize = name => name.trim().toLocaleLowerCase('pt-BR');
+    const loadCategories = () => C.all(() => supabaseClient.from('finance_categories').select('id,name')
+        .eq('couple_id', context.couple).order('name').order('id'));
+    function findCustomCategory(name) {
+        return customCategories.find(category => normalize(category.name) === normalize(name));
     }
-    $('new-entry-category').addEventListener('click', function () {
-        $('inline-category-editor').hidden = false; $('new-category-name').focus();
-    });
-    $('cancel-entry-category').addEventListener('click', function () {
-        $('inline-category-editor').hidden = true; $('entry-category-status').textContent = ''; $('new-entry-category').focus();
-    });
-    $('save-entry-category').addEventListener('click', async function () {
-        if (categorySaving || entryDialog.dataset.busy) return;
-        const name = $('new-category-name').value.trim();
-        if (!name) { $('entry-category-status').textContent = 'Escreva o nome da categoria.'; $('new-category-name').focus(); return; }
-        const existingBuiltIn = Object.keys(categories).find(function (key) { return normalized(categories[key]) === normalized(name); });
-        if (existingBuiltIn) { syncCategories(existingBuiltIn); $('inline-category-editor').hidden = true; return; }
-        const existing = customCategories.find(function (row) { return normalized(row.name) === normalized(name); });
-        if (existing) { syncCategories('custom:' + existing.id); $('inline-category-editor').hidden = true; return; }
-        categorySaving = true; entryDialog.dataset.busy = 'true';
-        const controls = Array.from(entryDialog.querySelectorAll('input,select,textarea,button')); const states = controls.map(function (c) { return c.disabled; });
-        controls.forEach(function (c) { c.disabled = true; }); $('entry-category-status').textContent = 'Salvando categoria…';
-        try {
-            const row = C.result(await supabaseClient.from('finance_categories').insert({ couple_id: context.couple, name: name }).select('id,name').single()); C.notify('Categoria criada.');
-            customCategories.push(row); syncCategories('custom:' + row.id); $('inline-category-editor').hidden = true; $('new-category-name').value = '';
-        } catch (error) {
-            if (error.code === '23505') {
-                try {
-                    customCategories = await C.all(function () { return supabaseClient.from('finance_categories').select('id,name').eq('couple_id', context.couple).order('name').order('id'); });
-                    const row = customCategories.find(function (c) { return normalized(c.name) === normalized(name); });
-                    if (!row) throw error;
-                    syncCategories('custom:' + row.id); $('inline-category-editor').hidden = true;
-                } catch (failure) { $('entry-category-status').textContent = C.error(failure); }
-            } else $('entry-category-status').textContent = C.error(error);
-        } finally {
-            controls.forEach(function (c,i) { c.disabled = states[i]; }); delete entryDialog.dataset.busy; categorySaving = false;
+    function categoryEditor(dialog, kind, select) {
+        const trigger = C.el('button', 'soft-button', '+ Nova categoria');
+        trigger.id = 'new-' + kind + '-category';
+        trigger.type = 'button';
+        trigger.setAttribute('aria-expanded', 'false');
+        const tools = C.el('div', 'inline-category-tools');
+        tools.append(trigger);
+        const editor = C.el('div', 'inline-category-editor');
+        editor.id = kind + '-category-editor';
+        editor.hidden = true;
+        trigger.setAttribute('aria-controls', editor.id);
+        editor.innerHTML = '<label class="cc-field">Nome da nova categoria<input maxlength="40" placeholder="Ex.: Pets, Educação, Assinaturas"></label>' +
+            '<div class="cc-row-actions"><button type="button" class="soft-button" data-save-category>Salvar categoria</button>' +
+            '<button type="button" class="text-button" data-cancel-category>Cancelar</button></div><p role="status"></p>';
+        select.closest('.form-row').after(tools, editor);
+        const nameInput = editor.querySelector('input');
+        const feedback = editor.querySelector('[role=status]');
+        const save = editor.querySelector('[data-save-category]');
+        function close(focus = true) {
+            editor.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+            nameInput.value = '';
+            feedback.textContent = '';
+            if (focus) select.focus();
         }
-    });
+        function choose(value) {
+            syncCategories(kind === 'entry' ? value : undefined);
+            syncCategorySelect($('bill-category'), kind === 'bill' ? value : undefined, 'other');
+            close();
+        }
+        trigger.addEventListener('click', () => {
+            editor.hidden = false;
+            trigger.setAttribute('aria-expanded', 'true');
+            nameInput.focus();
+        });
+        editor.querySelector('[data-cancel-category]').addEventListener('click', () => close());
+        nameInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && !event.isComposing) {
+                event.preventDefault();
+                save.click();
+            }
+        });
+        save.addEventListener('click', async () => {
+            if (dialog.dataset.busy) return;
+            const name = nameInput.value.trim();
+            if (!name) { feedback.textContent = 'Escreva o nome da categoria.'; nameInput.focus(); return; }
+            const builtIn = Object.keys(categories).find(key => normalize(categories[key]) === normalize(name));
+            if (builtIn) { choose(builtIn); return; }
+            const existing = findCustomCategory(name);
+            if (existing) { choose('custom:' + existing.id); return; }
+            dialog.dataset.busy = 'true';
+            const controls = Array.from(dialog.querySelectorAll('input,select,textarea,button'));
+            const states = controls.map(control => control.disabled);
+            controls.forEach(control => control.disabled = true);
+            feedback.textContent = 'Salvando categoria…';
+            let saved;
+            try {
+                saved = C.result(await supabaseClient.from('finance_categories')
+                    .insert({ couple_id: context.couple, name }).select('id,name').single());
+                if (!customCategories.some(category => category.id === saved.id)) customCategories.push(saved);
+                C.notify('Categoria criada.');
+            } catch (error) {
+                try {
+                    if (error.code !== '23505') throw error;
+                    customCategories = await loadCategories();
+                    saved = findCustomCategory(name);
+                    if (!saved) throw error;
+                } catch (failure) { feedback.textContent = C.error(failure); }
+            } finally {
+                controls.forEach((control, index) => control.disabled = states[index]);
+                delete dialog.dataset.busy;
+            }
+            if (saved) choose('custom:' + saved.id);
+        });
+        return () => close(false);
+    }
     syncCategories();
-    const accountsPanel = C.el('section', 'card finance-accounts-panel');
-    accountsPanel.innerHTML = '<div class="card-title"><div><span>CONTAS DO CASAL</span><h3>Contas e saldos</h3></div><button type="button" class="soft-button" id="new-account">+ Cadastrar conta</button></div><div id="finance-accounts-list"></div>';
     const financeGrid = document.querySelector('.finance-grid');
-    if (financeGrid) financeGrid.parentNode.insertBefore(accountsPanel, financeGrid);
     const billsPanel = C.el('section', 'card finance-bills-panel');
-    billsPanel.innerHTML = '<div class="card-title"><div><span>ORGANIZAÇÃO DO CASAL</span><h3>Contas a pagar</h3></div><button type="button" class="soft-button" id="new-bill">+ Cadastrar conta</button></div><p>O controle de vencimento é separado dos gastos. Quando houver pagamento, o valor entra nos totais pelo banco ou por um lançamento.</p><div id="finance-bills-list"></div>';
+    billsPanel.innerHTML = '<div class="card-title"><div><h3>Contas a pagar</h3></div><button type="button" class="finance-bill-action" id="new-bill" aria-label="Adicionar conta a pagar">+ Adicionar</button></div><div id="finance-bills-list"></div>';
     if (financeGrid) financeGrid.parentNode.insertBefore(billsPanel, financeGrid);
-    const accountDialog = C.dialog('account-dialog', 'Cadastrar conta', '<form id="account-form"><label class="cc-field">Nome da conta<input id="account-name" maxlength="100" placeholder="Ex.: Dinheiro, Nubank, poupança" required></label><div class="form-row"><label class="cc-field">Tipo<select id="account-type"><option value="checking">Conta corrente</option><option value="savings">Poupança</option><option value="credit">Cartão de crédito</option><option value="cash">Dinheiro</option><option value="investment">Investimento</option><option value="other">Outra</option></select></label><label class="cc-field">Saldo atual (R$)<input id="account-balance" inputmode="decimal" placeholder="0,00" required></label></div><button type="submit" class="primary-button">Salvar conta</button><p id="account-status" role="status"></p></form>');
     const billDialog = C.dialog('bill-dialog', 'Conta a pagar', '<form id="bill-form"><label class="cc-field">Descrição<input id="bill-name" maxlength="100" placeholder="Ex.: Luz, internet, aluguel" required></label><div class="form-row"><label class="cc-field">Valor previsto (R$)<input id="bill-amount" inputmode="decimal" placeholder="0,00" required></label><label class="cc-field">Vencimento<input id="bill-due-date" type="date" min="1900-01-01" max="2100-12-31" required></label></div><div class="form-row"><label class="cc-field">Recorrência<select id="bill-recurrence"><option value="once">Uma vez</option><option value="monthly">Todo mês</option><option value="yearly">Todo ano</option></select></label><label class="cc-field">Categoria<select id="bill-category"></select></label></div><label class="cc-field">Conta relacionada (opcional)<select id="bill-account"><option value="">Sem conta vinculada</option></select></label><button type="submit" class="primary-button">Salvar conta</button><p id="bill-status" role="status"></p></form>');
+    const resetEntryCategory = categoryEditor(entryDialog, 'entry', $('entry-category'));
+    const resetBillCategory = categoryEditor(billDialog, 'bill', $('bill-category'));
     function syncAccountOptions(selected) {
         const select = $('entry-account'), value = selected || select.value; select.replaceChildren();
         const empty = C.el('option', '', 'Sem conta vinculada'); empty.value = ''; select.append(empty);
@@ -92,46 +130,14 @@
         select.value = value || '';
     }
     function syncBillOptions(categoryValue, accountValue) {
-        const select = $('bill-category'), previous = categoryValue || select.value || 'other';
-        select.replaceChildren();
-        Object.keys(categories).forEach(function (key) { const option = C.el('option', '', categories[key]); option.value = key; select.append(option); });
-        if (customCategories.length) {
-            const group = C.el('optgroup'); group.label = 'Categorias do casal';
-            customCategories.forEach(function (row) { const option = C.el('option', '', row.name); option.value = 'custom:' + row.id; group.append(option); });
-            select.append(group);
-        }
-        select.value = previous; if (!select.value) select.value = 'other';
+        syncCategorySelect($('bill-category'), categoryValue, 'other');
         const accountSelect = $('bill-account'), old = accountValue || accountSelect.value;
         accountSelect.replaceChildren(); const noAccount = C.el('option', '', 'Sem conta vinculada'); noAccount.value = ''; accountSelect.append(noAccount);
         financeAccounts.forEach(function (account) { const option = C.el('option', '', account.name); option.value = account.id; accountSelect.append(option); });
         accountSelect.value = old || '';
     }
-    function renderAccounts() {
-        const box = $('finance-accounts-list'); box.replaceChildren();
-        if (!financeAccounts.length) { box.append(C.el('p', 'empty-state', 'Cadastre uma conta ou conecte um banco para ver os saldos compartilhados aqui.')); return; }
-        financeAccounts.forEach(function (account) {
-            const row = C.el('article', 'finance-account-row'), details = C.el('div');
-            details.append(C.el('strong', '', account.name), C.el('small', '', (account.source === 'pluggy' ? 'Sincronizado pela Pluggy' : 'Conta cadastrada manualmente') + (account.balance_updated_at ? ' · Atualizado ' + C.date(account.balance_updated_at) : '')));
-            row.append(details, C.el('strong', account.account_type === 'credit' ? 'finance-account-credit' : '', C.money(account.balance_cents)));
-            if (account.source === 'manual') {
-                const actions = C.el('div', 'cc-row-actions');
-                actions.append(C.button('Editar', function () { editAccount(account); }), C.button('Excluir', async function () {
-                    if (!confirm('Excluir esta conta? Ela precisa estar sem lançamentos ou contas a pagar vinculados.')) return;
-                    try { C.result(await supabaseClient.from('finance_accounts').delete().eq('id', account.id).eq('version', account.version).select('id').single()); await load(); }
-                    catch (error) { C.notify('Não foi possível excluir. Remova ou desvincule os registros que usam esta conta.', 'error'); }
-                })); row.append(actions);
-            }
-            box.append(row);
-        });
-    }
-    function editAccount(account) {
-        accountEdit = account; $('account-form').reset(); $('account-status').textContent = '';
-        $('account-name').value = account?.name || '';
-        $('account-type').value = account?.account_type || 'checking';
-        $('account-balance').value = account ? (Number(account.balance_cents) / 100).toFixed(2).replace('.', ',') : '';
-        accountDialog.showModal();
-    }
     function editBill(row) {
+        resetBillCategory();
         billEdit = row; $('bill-form').reset(); $('bill-status').textContent = '';
         $('bill-name').value = row?.name || '';
         $('bill-amount').value = row ? (Number(row.amount_cents) / 100).toFixed(2).replace('.', ',') : '';
@@ -140,38 +146,80 @@
         syncBillOptions(row?.custom_category_id ? 'custom:' + row.custom_category_id : row?.category || 'other', row?.account_id || '');
         billDialog.showModal();
     }
+    const shortBillDate = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' });
+    let billsError = '';
+    let billsGeneration = 0;
+    async function loadBills() {
+        const token = ++billsGeneration;
+        try {
+            const rows = await C.all(() => supabaseClient.from('finance_bills').select('*')
+                .eq('couple_id', context.couple).order('is_active', { ascending: false }).order('due_date').order('id'));
+            if (token !== billsGeneration) return;
+            bills = rows;
+            billsReady = true;
+            billsError = '';
+        } catch (error) {
+            if (token !== billsGeneration) return;
+            billsError = C.error(error);
+        }
+        renderBills();
+    }
     function renderBills() {
         const box = $('finance-bills-list'); box.replaceChildren();
-        if (!billsReady) { box.append(C.el('p', 'empty-state', 'Para ativar o controle de contas a pagar, aplique a migration 20261124200000_finance_bills.sql no Supabase.')); return; }
-        if (!bills.length) { box.append(C.el('p', 'empty-state', 'Cadastre uma conta a pagar para acompanhar vencimentos.')); return; }
+        $('new-bill').disabled = !billsReady;
+        if (billsError) {
+            const status = C.el('p', 'empty-state', 'Não foi possível atualizar as contas a pagar. ' + billsError);
+            status.setAttribute('role', 'status');
+            box.append(status, C.button('Tentar novamente', loadBills, 'soft-button'));
+        }
+        if (!bills.length) {
+            if (!billsError) box.append(C.el('p', 'empty-state', 'Cadastre uma conta a pagar para acompanhar vencimentos.'));
+            return;
+        }
+        if (!bills.some(bill => bill.is_active)) box.append(C.el('p', 'empty-state finance-bills-overview-empty', 'Nenhuma conta em aberto.'));
         bills.forEach(function (bill) {
             const row = C.el('article', 'finance-bill-row'), details = C.el('div');
+            row.dataset.active = String(bill.is_active);
+            row.dataset.category = bill.category;
             const account = financeAccounts.find(function (item) { return item.id === bill.account_id; });
             const recurrence = bill.recurrence === 'monthly' ? 'Mensal' : bill.recurrence === 'yearly' ? 'Anual' : 'Avulsa';
             const status = bill.is_active ? (bill.due_date < C.today() ? 'Vencida' : bill.due_date === C.today() ? 'Vence hoje' : 'Vence em ' + C.date(bill.due_date)) : 'Paga em ' + C.date(bill.last_paid_at);
-            details.append(C.el('strong', '', bill.name), C.el('small', '', status + ' · ' + recurrence + (account ? ' · ' + account.name : '')));
+            let compactStatus = status;
+            if (bill.is_active && bill.due_date > C.today()) {
+                const parts = shortBillDate.formatToParts(new Date(bill.due_date + 'T00:00:00Z'));
+                const day = parts.find(part => part.type === 'day').value;
+                const month = parts.find(part => part.type === 'month').value.replace('.', '');
+                compactStatus = 'Vence em ' + day + ' ' + month;
+            }
+            details.append(C.el('strong', '', bill.name),
+                C.el('small', 'finance-bill-status', status + ' · ' + recurrence + (account ? ' · ' + account.name : '')),
+                C.el('small', 'finance-bill-status-compact', compactStatus));
             row.append(details, C.el('strong', '', C.money(bill.amount_cents)));
             const actions = C.el('div', 'cc-row-actions');
             if (bill.is_active) actions.append(C.button('Marcar paga', async function () {
                 C.result(await supabaseClient.rpc('finance_mark_bill_paid', { p_bill_id: bill.id, p_paid_on: C.today() }));
-                C.notify('Pagamento registrado. Registre o gasto manualmente se ele não vier do banco.'); await load();
+                C.notify('Pagamento registrado. Registre o gasto manualmente se ele não vier do banco.'); await loadBills();
             }, 'soft-button'));
             actions.append(C.button('Editar', function () { editBill(bill); }), C.button('Excluir', async function () {
                 if (!confirm('Excluir esta conta a pagar?')) return;
                 C.result(await supabaseClient.from('finance_bills').delete().eq('id', bill.id).eq('version', bill.version).select('id').single());
-                await load();
+                await loadBills();
             }));
-            row.append(actions); box.append(row);
+            const menu = C.el('details', 'finance-bill-menu');
+            const toggle = C.el('summary', '', 'Opções');
+            toggle.setAttribute('aria-label', 'Opções de ' + bill.name);
+            menu.append(toggle, actions);
+            row.append(menu); box.append(row);
         });
     }
-    function enable(ok) { ['new-entry','new-account'].forEach(function (id) { $(id).disabled = !ok; }); $('new-bill').disabled = !ok || !billsReady; }
+    function enable(ok) { $('new-entry').disabled = !ok; $('new-bill').disabled = !ok || !billsReady; }
     enable(false);
     function editEntry(row) {
         edited = row;
         const key = row ? row.id : 'new';
         if (draftKey === key) { entryDialog.showModal(); return; }
         draftKey = key;
-        $('inline-category-editor').hidden = true;
+        resetEntryCategory();
         $('entry-form').reset(); $('entry-status').textContent = '';
         $('entry-description').value = row?.description || '';
         $('entry-type').value = row?.entry_type || 'expense';
@@ -190,6 +238,12 @@
         if (preset === 'week') start = shiftDate(today, -6);
         if (preset === '15days') start = shiftDate(today, -14);
         if (preset === 'month') start = today.slice(0, 7) + '-01';
+        if (preset === 'selected-month') {
+            const selectedMonth = $('finance-month').value;
+            const [year, month] = selectedMonth.split('-').map(Number);
+            start = selectedMonth + '-01';
+            end = selectedMonth + '-' + new Date(year, month, 0).getDate();
+        }
         if (preset === '6months') { const d = new Date(today + 'T12:00:00'); d.setMonth(d.getMonth() - 6); start = d.toISOString().slice(0, 10); }
         if (preset === 'year') start = today.slice(0, 4) + '-01-01';
         if (preset === 'custom') { start = $('finance-from').value; end = $('finance-to').value; }
@@ -201,145 +255,46 @@
     function paymentLabel(entry) {
         return paymentLabels[entry.payment_method] || 'Meio não informado';
     }
-    let dismissChart = function () {};
-    document.addEventListener('click', function (event) {
-        if (!event.target.closest('.chart-bar')) dismissChart();
-    });
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') dismissChart();
-    });
-
-    function categoryBars(data) {
-        const box = $('finance-categories-mobile');
+    function chart(summary) {
+        const box = $('finance-chart');
         box.replaceChildren();
-        const total = data.reduce(function (sum, row) { return sum + Number(row.amount); }, 0);
+        const data = (summary.categories || []).filter(row => Number(row.amount) > 0);
+        const total = data.reduce((sum, row) => sum + Number(row.amount), 0);
         if (!total) {
-            box.append(C.el('p', 'cc-status', 'Nenhuma despesa neste período.'));
+            box.append(C.el('p', 'empty-state', 'Nenhuma despesa neste período.'));
             return;
         }
         data.forEach(function (row, index) {
-            const item = C.el('div', 'finance-category-row');
-            const heading = C.el('div', 'finance-category-title');
-            const label = row.name || categories[row.category] || 'Categoria do casal';
-            heading.append(C.el('strong', '', label), C.el('span', '', C.money(row.amount)));
+            const name = row.name || categories[row.category] || 'Categoria do casal';
+            const share = Number(row.amount) / total;
+            const details = C.el('details', 'finance-category-row');
+            const title = C.el('summary', 'finance-category-title');
+            const line = C.el('span', 'finance-category-line');
+            const figures = C.el('span', 'finance-category-figures');
+            const percent = Math.round(share * 100) + '%';
+            figures.append(C.el('strong', '', C.money(row.amount)), C.el('span', '', percent));
+            line.append(C.el('strong', '', name), figures);
             const bar = C.el('progress', 'finance-category-progress');
             bar.max = total;
             bar.value = Number(row.amount);
-            bar.dataset.tone = String(index % 4);
-            bar.setAttribute('aria-label', label + ' · proporção das despesas');
-            item.append(heading, bar);
-            box.append(item);
-        });
-    }
-
-    /* Eixos e marcas em reais; a altura das barras usa a mesma escala do eixo Y. */
-    function chart(summary) {
-        const box = $('finance-chart'); box.replaceChildren();
-        dismissChart = function () {};
-        const data = (summary.categories || []).filter(row => Number(row.amount) > 0);
-        categoryBars(data);
-        if (!data.length) { box.append(C.el('p', 'empty-state', 'Nenhuma despesa registrada neste período.')); return; }
-        const max = Math.max.apply(null, data.map(function (r) { return Number(r.amount); }));
-        const raw = max / 5, power = Math.pow(10, Math.floor(Math.log10(raw)));
-        const nice = [1,2,2.5,5,10].find(function (n) { return n * power >= raw; });
-        const step = Math.max(1, Math.ceil(nice * power)); const top = step * 5;
-        box.append(C.el('p', 'chart-axis-title', 'Valor (R$)'));
-        const frame = C.el('div', 'chart-frame'), y = C.el('div', 'chart-y-axis'); y.setAttribute('aria-hidden', 'true');
-        for (let i = 0; i <= 5; i++) { const label = C.el('span', '', C.money(top - i * step)); label.style.top = i * 20 + '%'; y.append(label); }
-        const scroll = C.el('div', 'chart-scroll'); scroll.tabIndex = 0; scroll.setAttribute('role', 'region'); scroll.setAttribute('aria-label', 'Gráfico de despesas por categoria. Role horizontalmente para ver mais categorias.');
-        const plot = C.el('div', 'chart-plot'); plot.style.minWidth = Math.max(200, data.length * 62) + 'px';
-        const lines = C.el('div', 'chart-grid'); lines.setAttribute('aria-hidden', 'true');
-        for (let i = 0; i <= 5; i++) { const line = C.el('span'); line.style.top = i * 20 + '%'; lines.append(line); }
-        const bars = C.el('div', 'chart-bars'); bars.append(lines);
-        const x = C.el('div', 'chart-x-axis');
-        const table = C.el('table', 'cc-sr'); const caption = C.el('caption', '', 'Despesas por categoria em reais'); const body = C.el('tbody'); table.append(caption, body);
-        const detail = C.el('p', 'chart-detail');
-        detail.setAttribute('aria-live', 'polite');
-        detail.hidden = true;
-
-        let selected = null;
-        function display(state) {
-            bars.querySelectorAll('.chart-bar').forEach(item => item.classList.toggle('is-highlighted', item === state?.bar));
-            detail.hidden = !state;
-            detail.textContent = state ? state.text() : '';
-            bars.querySelectorAll('.chart-tooltip').forEach(tip => { tip.hidden = tip.parentElement !== state?.bar; });
-        }
-        dismissChart = function () {
-            selected?.bar.setAttribute('aria-pressed', 'false');
-            selected = null;
-            display(null);
-        };
-        data.forEach(function (row) {
-            const name = row.name || categories[row.category] || 'Categoria do casal';
-            const slot = C.el('div', 'chart-bar-slot'), bar = C.el('button', 'chart-bar');
-            bar.type = 'button';
-            const label = name + ' · ' + C.money(row.amount);
-            bar.setAttribute('aria-label', label);
-            bar.setAttribute('aria-pressed', 'false');
-            const state = { bar, text: function () {
-                const amounts = new Map(), places = new Set();
-                let loaded = 0;
-                entries.filter(entry => entry.entry_type === 'expense' &&
-                    (entry.custom_category_id ? 'custom:' + entry.custom_category_id : entry.category) === row.category
-                ).forEach(entry => {
-                    const method = paymentLabel(entry), amount = Number(entry.amount_cents);
-                    loaded += amount;
-                    amounts.set(method, (amounts.get(method) || 0) + amount);
-                    places.add(entry.description);
-                });
-                const methods = Array.from(amounts, ([method, cents]) => method + ' ' + C.money(cents));
-                const preview = Array.from(places).slice(0, 2);
-                const coverage = loaded === Number(row.amount) ? '' : 'Detalhes das movimentações carregadas';
-                return [label, coverage, ...methods, ...preview].filter(Boolean).join(' · ');
-            } };
-            bar.addEventListener('mouseenter', () => display(state));
-            bar.addEventListener('mouseleave', () => display(selected));
-            bar.addEventListener('focus', () => display(state));
-            bar.addEventListener('blur', () => display(selected));
-            bar.addEventListener('click', () => {
-                if (selected === state) { dismissChart(); return; }
-                selected?.bar.setAttribute('aria-pressed', 'false');
-                selected = state;
-                bar.setAttribute('aria-pressed', 'true');
-                display(state);
+            bar.dataset.tone = String(index % 7);
+            bar.setAttribute('aria-label', name + ': ' + percent + ' do total de despesas');
+            const amounts = new Map();
+            let loaded = 0;
+            entries.filter(entry => entry.entry_type === 'expense' &&
+                (entry.custom_category_id ? 'custom:' + entry.custom_category_id : entry.category) === row.category
+            ).forEach(entry => {
+                const method = paymentLabel(entry), value = Number(entry.amount_cents);
+                amounts.set(method, (amounts.get(method) || 0) + value);
+                loaded += value;
             });
-            bar.style.height = Number(row.amount) / top * 100 + '%';
-            const amount = C.el('span', 'chart-bar-value', C.money(row.amount));
-            const tooltip = C.el('span', 'chart-tooltip', label);
-            tooltip.setAttribute('aria-hidden', 'true');
-            tooltip.hidden = true;
-            bar.append(amount, tooltip); slot.append(bar); bars.append(slot);
-            x.append(C.el('span', '', name));
-            const tr = C.el('tr'), th = C.el('th', '', name); th.scope = 'row'; tr.append(th, C.el('td', '', C.money(row.amount))); body.append(tr);
+            const methods = Array.from(amounts, ([method, value]) => method + ' ' + C.money(value));
+            const detail = methods.length ? methods.join(' · ') : 'Sem detalhes nos lançamentos carregados.';
+            title.append(line, bar);
+            details.append(title, C.el('p', 'finance-category-detail',
+                methods.length && loaded !== Number(row.amount) ? 'Lançamentos carregados · ' + detail : detail));
+            box.append(details);
         });
-        let drag = null, dragged = false;
-        scroll.addEventListener('pointerdown', event => {
-            dragged = false;
-            if (event.pointerType === 'mouse' && event.button === 0 && scroll.scrollWidth > scroll.clientWidth) {
-                drag = { x: event.clientX, left: scroll.scrollLeft };
-            }
-        });
-        scroll.addEventListener('pointermove', event => {
-            if (!drag || !(event.buttons & 1)) { drag = null; return; }
-            const dx = event.clientX - drag.x;
-            if (Math.abs(dx) > 5 || dragged) {
-                dragged = true;
-                scroll.setPointerCapture(event.pointerId);
-                scroll.scrollLeft = drag.left - dx;
-            }
-        });
-        scroll.addEventListener('pointerup', () => { drag = null; });
-        scroll.addEventListener('click', event => {
-            if (dragged) { event.stopPropagation(); event.preventDefault(); }
-            dragged = false;
-        }, true);
-        scroll.addEventListener('keydown', event => {
-            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-                event.preventDefault();
-                scroll.scrollLeft += event.key === 'ArrowRight' ? 90 : -90;
-            }
-        });
-        plot.append(bars, x); scroll.append(plot); frame.append(y, scroll); box.append(frame, C.el('p', 'chart-axis-caption', 'Categorias'), detail, table);
     }
     function summaryState(summary) {
         const balance = Number(summary.balance), card = $('balance-card');
@@ -350,31 +305,46 @@
     function renderEntries() {
         const box = $('finance-entries'); box.replaceChildren();
         if (!entries.length) box.append(C.el('p', 'empty-state', 'Nenhum lançamento neste período.'));
+        const accountNames = new Map(financeAccounts.map(account => [account.id, account.name]));
+        let date;
         entries.forEach(function (row) {
-            const line = C.el('article', 'transaction'), text = C.el('p');
-            const paths = {
-                food: 'M4 3v6a3 3 0 0 0 6 0V3M7 3v18m11 0V3c-3 2-4 5-4 9h4',
-                cart: 'M2 4h3l2 11h12l2-8H6m3 13h.01m8 0h.01',
-                pix: 'M12 2l10 10-10 10L2 12zM7 8l5 5 5-5M7 16l5-5 5 5',
-                transit: 'M4 16V6l2-2h12l2 2v10H4zm0-6h16M6 17v3m12-3v3',
-                transfer: row.entry_type === 'income' ? 'M18 6 6 18V9m0 9h9' : 'M6 18 18 6v9m0-9H9'
-            };
-            const key = row.payment_method === 'pix' ? 'pix' : /restaurante|lanch|pizza/i.test(row.description) ?
-                'food' : row.category === 'market' ? 'cart' : row.category === 'transport' ? 'transit' : 'transfer';
-            const mark = C.el('span', 'entry-icon');
-            mark.setAttribute('aria-hidden', 'true');
-            mark.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="' + paths[key] + '"/></svg>';
-            text.append(C.el('b', '', row.description), C.el('small', '', C.date(row.entry_date) + ' · ' + categoryName(row)));
-            line.append(mark, text, C.el('strong', row.entry_type === 'income' ? 'positive' : '', (row.entry_type === 'income' ? '+ ' : '− ') + C.money(row.amount_cents)));
+            if (row.entry_date !== date) {
+                date = row.entry_date;
+                box.append(C.el('h4', 'finance-entry-date', C.date(date)));
+            }
+            const incoming = row.entry_type === 'income';
+            const line = C.el('article', 'transaction finance-entry'), text = C.el('div', 'finance-entry-copy');
+            line.dataset.direction = incoming ? 'in' : 'out';
+            const label=categoryName(row);
+            const categoryIcons={house:'home',market:'shopping',transport:'transport',health:'health',leisure:'heart',salary:'income'};
+            const kinds=[
+                [/energia|luz|eletric/i,'charge'],[/restaur|pizza|lanch|alimenta/i,'food'],
+                [/invest|aplicação|resgate/i,'investment'],[/transfer[êe]ncia/i,'transfer'],
+                [/cartão|fatura/i,'card']
+            ];
+            const key=kinds.find(([pattern])=>pattern.test(label+' '+row.description))?.[1] ||
+                categoryIcons[row.category] || (incoming?'income':row.payment_method==='credit'?'card':row.payment_method==='pix'?'transfer':'receipt');
+            const mark=C.el('span','entry-icon');
+            mark.dataset.icon=key;
+            mark.append(C.uiIcon(key));
+            const source = accountNames.get(row.account_id);
+            const labels = [categoryName(row), source, row.payment_method && paymentLabel(row)].filter(Boolean);
+            text.append(C.el('strong', '', row.description), C.el('small', '', labels.join(' · ')));
+            line.append(mark, text, C.el('strong', 'finance-entry-amount', (incoming ? '+ ' : '− ') + C.money(row.amount_cents)));
             if (row.source === 'pluggy') {
-                text.append(C.el('small', 'finance-entry-source', row.payment_method ? paymentLabel(row) + ' · Importado' : 'Importado'));
+                text.append(C.el('small', 'finance-entry-source', 'Open Finance'));
             } else {
                 const actions = C.el('div', 'cc-row-actions');
                 actions.append(C.button('Editar', function () { editEntry(row); }), C.button('Excluir', async function () {
                     if (!confirm('Excluir este lançamento?')) return;
                     C.result(await supabaseClient.from('finance_entries').delete().eq('id', row.id).eq('version', row.version).select('id').single()); C.notify('Lançamento removido.');
                     await load();
-                })); line.append(actions);
+                }));
+                const menu = C.el('details', 'finance-entry-menu');
+                const toggle = C.el('summary', '', 'Opções');
+                toggle.setAttribute('aria-label', 'Opções de ' + row.description);
+                menu.append(toggle, actions);
+                line.append(menu);
             }
             box.append(line);
         });
@@ -383,39 +353,40 @@
     async function load() {
         if (!context?.couple) return;
         const token = ++generation; loading = true; $('reload-finance').hidden = true; $('finance-status').classList.add('cc-sr'); $('finance-status').textContent = 'Atualizando finanças…'; $('finance-status').classList.remove('is-error');
+        const billsRequest = loadBills();
         try {
             const bounds = periodBounds();
-            const [summary, entriesResponse, categoriesResponse, accountsResponse, billsResponse] = await Promise.all([
+            const [summary, entriesResponse, categoriesResponse, accountsResponse] = await Promise.all([
                 C.financeSummary(bounds.start, bounds.end),
                 supabaseClient.from('finance_entries').select('*').eq('couple_id', context.couple).gte('entry_date', bounds.start).lte('entry_date', bounds.end).order('entry_date', { ascending: false }).order('id').limit(limit),
-                C.all(function () { return supabaseClient.from('finance_categories').select('id,name').eq('couple_id', context.couple).order('name').order('id'); })
-                ,supabaseClient.from('finance_accounts').select('id,name,account_type,source,balance_cents,currency_code,balance_updated_at,version').eq('couple_id', context.couple).order('created_at', { ascending: false }),
-                supabaseClient.from('finance_bills').select('*').eq('couple_id', context.couple).order('is_active', { ascending: false }).order('due_date')
+                loadCategories(),
+                supabaseClient.from('finance_accounts').select('id,name,account_type,source,balance_cents,currency_code,balance_updated_at,version').eq('couple_id', context.couple).order('created_at', { ascending: false })
             ]);
             if (token !== generation) return;
             entries = C.result(entriesResponse);
-            customCategories = categoriesResponse;
+            // Uma atualização do extrato pode ter começado antes de uma categoria ser salva.
+            customCategories = Array.from(new Map([...customCategories, ...categoriesResponse]
+                .map(category => [category.id, category])).values());
             financeAccounts = C.result(accountsResponse);
-            const billError = billsResponse.error;
-            if (billError && billError.code !== 'PGRST205' && billError.code !== '42P01') C.result(billsResponse);
-            billsReady = !billError;
-            if (billsReady) bills = C.result(billsResponse); else bills = [];
-            $('new-bill').disabled = !billsReady;
             syncCategories(); syncAccountOptions(); syncBillOptions(); summaryState(summary);
             $('finance-balance').textContent = C.money(summary.balance); $('finance-income').textContent = C.money(summary.income); $('finance-expense').textContent = C.money(summary.expense);
-            chart(summary); renderEntries(); renderAccounts(); renderBills();
-            window.dispatchEvent(new CustomEvent('finance-summary-updated', { detail: { bounds, summary } }));
+            chart(summary); renderEntries();
+            C.mockFinanceData = { bounds, summary, entries, accounts: financeAccounts, complete: entries.length < limit };
+            window.dispatchEvent(new CustomEvent('finance-summary-updated', { detail: C.mockFinanceData }));
             $('finance-status').textContent = 'Resumo de ' + bounds.label + ' atualizado.';
         } catch (error) {
             if (token !== generation) return;
             ['finance-balance','finance-income','finance-expense'].forEach(function (id) { $(id).textContent = '—'; });
-            ['finance-chart','finance-categories-mobile','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
+            ['finance-chart','finance-entries'].forEach(function (id) { C.empty(id, 'Consulta indisponível.'); });
             $('finance-status').textContent = C.error(error); $('finance-status').classList.add('is-error'); $('finance-status').classList.remove('cc-sr');
             $('balance-card').classList.remove('is-positive','is-negative'); $('balance-card').classList.add('is-neutral');
             $('finance-balance').removeAttribute('aria-label');
             $('reload-finance').hidden = false;
-            window.dispatchEvent(new Event('finance-summary-updated'));
-        } finally { if (token === generation) { loading = false; C.pageReady(); } }
+            C.mockFinanceData = null; window.dispatchEvent(new Event('finance-summary-updated'));
+        } finally {
+            await billsRequest;
+            if (token === generation) { loading = false; C.pageReady(); }
+        }
     }
     C.form($('entry-form'), async function () {
         const title = $('entry-description').value.trim(); if (!title) throw new Error('Informe uma descrição.');
@@ -424,21 +395,19 @@
         C.result(await query.select('id').single()); draftKey = null; entryDialog.close(); await load();
     });
     $('new-entry').addEventListener('click', function () { editEntry(null); });
-    $('new-account').addEventListener('click', function () { editAccount(null); });
-    C.form($('account-form'), async function () {
-        const name = $('account-name').value.trim(); if (!name) throw new Error('Informe o nome da conta.');
-        const values = { name: name, account_type: $('account-type').value, balance_cents: balanceCents($('account-balance').value), currency_code: 'BRL' };
-        const query = accountEdit ? supabaseClient.from('finance_accounts').update(values).eq('id', accountEdit.id).eq('version', accountEdit.version) : supabaseClient.from('finance_accounts').insert(Object.assign({ couple_id: context.couple }, values));
-        C.result(await query.select('id').single()); accountEdit = null;
-        accountDialog.close(); await load();
-    });
     $('new-bill').addEventListener('click', function () { editBill(null); });
     C.form($('bill-form'), async function () {
         const name = $('bill-name').value.trim(); if (!name) throw new Error('Informe uma descrição.');
         const categoryValue = $('bill-category').value;
         const values = { name: name, amount_cents: C.cents($('bill-amount').value), due_date: $('bill-due-date').value, recurrence: $('bill-recurrence').value, category: categoryValue.startsWith('custom:') ? 'other' : categoryValue, custom_category_id: categoryValue.startsWith('custom:') ? categoryValue.slice(7) : null, account_id: $('bill-account').value || null };
         const query = billEdit ? supabaseClient.from('finance_bills').update(values).eq('id', billEdit.id).eq('version', billEdit.version) : supabaseClient.from('finance_bills').insert(Object.assign({ couple_id: context.couple }, values));
-        C.result(await query.select('id').single()); billDialog.close(); await load();
+        const saved = C.result(await query.select('*').single());
+        ++billsGeneration;
+        bills = [...bills.filter(bill => bill.id !== saved.id), saved].sort((a, b) =>
+            Number(b.is_active) - Number(a.is_active) || a.due_date.localeCompare(b.due_date));
+        renderBills();
+        billDialog.close();
+        await loadBills();
     });
     function changePeriod() {
         const custom = $('finance-period').value === 'custom';
@@ -458,7 +427,7 @@
     $('reload-finance').addEventListener('click', function () { if (context) void load(); else window.location.reload(); });
     C.refreshOnReturn(function () { if (!loading && !document.querySelector('dialog[open]')) return load(); });
     $('more-entries').addEventListener('click', function () { if (!loading) { limit += 30; load(); } });
-    C.ready.then(function (c) { context = c; if (!c.couple) { C.pageReady(); $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-categories-mobile','finance-entries','finance-accounts-list','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { C.pageReady(); $('reload-finance').hidden = false; $('finance-status').textContent = C.error(e); });
+    C.ready.then(function (c) { context = c; if (!c.couple) { C.pageReady(); $('finance-status').textContent = 'Conecte seu casal em Configurações para usar as finanças.'; ['finance-chart','finance-entries','finance-bills-list'].forEach(function (id) { C.empty(id, 'Nenhum casal conectado.'); }); return; } enable(true); load(); }).catch(function (e) { C.pageReady(); $('reload-finance').hidden = false; $('finance-status').textContent = C.error(e); });
 })();
 
 

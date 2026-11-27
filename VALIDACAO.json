@@ -1,12 +1,18 @@
 {
-  "signatureTestsPassed": true,
-  "databaseTestsPassed": true,
+  "stage": "structural-redesign-preview",
+  "pluggyMockTestsPassed": true,
+  "javascriptSyntaxPassed": true,
+  "renderedPages": 8,
+  "viewportWidths": [
+    1440,
+    390
+  ],
+  "mockBrowserUncaughtErrors": 0,
+  "mockBrowserHorizontalOverflow": 0,
+  "healthMockQueryPassed": false,
+  "databaseTestsPassed": null,
   "testedWithRealPluggy": false,
-  "productionChanged": false,
-  "storesOnly": [
-    "event_hash",
-    "event_type",
-    "item_id",
-    "received_at"
-  ]
+  "pixelPerfectVerified": false,
+  "backendFilesComparedUnchanged": 33,
+  "productionChanged": false
 }

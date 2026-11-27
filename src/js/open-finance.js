@@ -5,10 +5,10 @@
     let user, coupleId, active = null, cursor = null, rows = [], busy = false;
     let accounts = [], syncing = false, queuedRange = null;
 
-    const section = C.el('section', 'card bank-panel');
-    section.setAttribute('aria-labelledby', 'bank-title');
-    section.innerHTML = '<header class="card-title"><div><span>OPEN FINANCE · COMPARTILHADO</span><h2 id="bank-title">Contas do casal</h2></div><button type="button" class="primary-button" id="connect-bank" disabled>＋ Conectar banco</button></header><p>Conecte uma conta para atualizar saldos e importar movimentações para as finanças compartilhadas.</p><p class="bank-privacy">✓ O casal verá os saldos e lançamentos importados. A conexão Pluggy continua vinculada a quem autorizou o banco.</p><p id="bank-status" role="status" aria-live="polite">Carregando conexões…</p><div id="bank-connections"></div><div id="bank-statement" hidden><div class="bank-toolbar"><h3 id="bank-account-title">Extrato</h3><label>De <input id="bank-date-from" type="date" required></label><label>Até <input id="bank-date-to" type="date" required></label><button type="button" class="soft-button" id="bank-reload">Atualizar e importar</button></div><p>Movimentações efetivadas entram nos totais compartilhados. Pendentes não entram; transferências internas e pagamentos de fatura identificados pela descrição são ignorados. Confira os lançamentos importados.</p><div id="bank-transactions" class="bank-scroll"></div><button type="button" id="bank-more" class="soft-button" hidden>Carregar mais transações</button></div>';
-    $('conteudo-pagina').insertBefore(section, $('conteudo-pagina').querySelector('footer'));
+    const section = C.el('section', 'bank-panel');
+    section.innerHTML = '<header class="card-title"><h3>Minhas conexões</h3><button type="button" class="primary-button" id="connect-bank" aria-label="Conectar banco" disabled>Adicionar +</button></header><details class="bank-connection-manage bank-privacy"><summary>Como funciona o compartilhamento?</summary><p>As contas conectadas atualizam os saldos e importam movimentações para o casal. A conexão Pluggy continua vinculada a quem autorizou o banco.</p></details><p id="bank-status" role="status" aria-live="polite">Carregando conexões…</p><div id="bank-connections"></div><div id="bank-statement" hidden><div class="bank-toolbar"><h3 id="bank-account-title">Extrato</h3><label>De <input id="bank-date-from" type="date" required></label><label>Até <input id="bank-date-to" type="date" required></label><button type="button" class="soft-button" id="bank-reload">Atualizar e importar</button></div><p>Movimentações efetivadas entram nos totais compartilhados. Pendentes não entram; transferências internas e pagamentos de fatura identificados pela descrição são ignorados. Confira os lançamentos importados.</p><div id="bank-transactions" class="bank-scroll"></div><button type="button" id="bank-more" class="soft-button" hidden>Carregar mais transações</button></div>';
+    const dialog = C.dialog('connected-accounts-dialog', 'Contas conectadas', '');
+    dialog.append(section);
     const today = C.today();
     $('bank-date-from').value = today.slice(0, 7) + '-01';
     $('bank-date-to').value = today;
@@ -140,6 +140,48 @@
         }
     }
 
+    const logoCatalog = 'https://cdn.jsdelivr.net/npm/logos-bancos-br@0/';
+    let institutionsByCode;
+    function catalogLogo(code) {
+        if (!/^\d{3,4}$/.test(code || '')) return Promise.resolve(null);
+        institutionsByCode ||= fetch(logoCatalog + 'data/cdn-index.min.json')
+            .then(response => response.ok ? response.json() : null)
+            .then(data => new Map(Object.entries(data?.institutions || {})
+                .filter(([ispb, record]) => /^\d{8}$/.test(ispb) && record[0] && record[2])
+                .map(([ispb, record]) => [String(Number(record[0])), /^\d{8}$/.test(record[3]) ? record[3] : ispb])))
+            .catch(() => new Map());
+        return institutionsByCode.then(index => {
+            const ispb = index.get(String(Number(code)));
+            return ispb ? logoCatalog + 'logos/png/' + ispb + '.png' : null;
+        });
+    }
+    function connectionLogo(bank, providerLogo, compe) {
+        const key = bank.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        const institutions = [
+            [/\bitau\b/, '60701190'], [/\bbradesco\b/, '60746948'], [/\bnubank\b|\bnu pagamentos\b/, '18236120']
+        ];
+        const ispb = institutions.find(([name]) => name.test(key))?.[1];
+        const fallback = ispb && logoCatalog + 'logos/png/' + ispb + '.png';
+        const logo = C.el('span', 'bank-brand', bank.slice(0, 2).toUpperCase());
+        logo.setAttribute('aria-hidden', 'true');
+        void catalogLogo(compe).then(fromCatalog => {
+            const urls = [...new Set([fromCatalog, providerLogo, fallback].filter(Boolean))];
+            if (!urls.length) return;
+            const image = C.el('img');
+            image.alt = '';
+            image.referrerPolicy = 'no-referrer';
+            image.loading = 'lazy';
+            function nextImage() {
+                const url = urls.shift();
+                if (url) image.src = url;
+                else image.remove();
+            }
+            image.addEventListener('error', nextImage);
+            logo.append(image);
+            nextImage();
+        });
+        return logo;
+    }
     async function load() {
         const result = await supabaseClient.from('pluggy_connections')
             .select('item_id,created_at').eq('user_id', user.id).order('created_at', { ascending: false });
@@ -167,22 +209,31 @@
                     active = null; $('bank-statement').hidden = true; await load();
                     if (C.notify) C.notify('Banco desconectado. O histórico importado foi mantido.');
                 }, 'soft-button'));
-                card.append(actions);
+                const manage = C.el('details', 'bank-connection-manage');
+                manage.append(C.el('summary', '', 'Gerenciar conexão'), actions);
                 for (const account of data.accounts || []) {
                     const financeAccountId = await saveAccount(ref.item_id, data.bank, account);
                     accounts.push({ itemId: ref.item_id, accountId: account.id, financeAccountId: financeAccountId, name: account.name, bank: data.bank, type: account.type });
-                    const row = C.el('div', 'bank-account'), info = C.el('div');
-                    info.append(C.el('strong', '', account.name), C.el('p', '', (account.type === 'CREDIT' ? 'Saldo do cartão: ' : 'Saldo: ') + money(account.balance, account.currency)));
-                    row.append(info, C.button('Ver e importar extrato', async function () {
+                    const row = C.el('details', 'bank-account'), header = C.el('summary', 'bank-account-summary');
+                    const info = C.el('div', 'bank-account-name'), content = C.el('div', 'bank-account-content');
+                    const type = account.type === 'CREDIT' ? 'Cartão' : account.subtype === 'SAVINGS_ACCOUNT' ? 'Poupança' : 'Conta';
+                    const name = account.name?.trim() || type;
+                    const title = name.toLowerCase().includes(data.bank.toLowerCase()) ? name : data.bank + ' — ' + name;
+                    info.append(C.el('strong', '', title), C.el('small', '', account.lastFour ? '••• ' + account.lastFour : type));
+                    header.append(connectionLogo(data.bank, data.logoUrl, account.compe), info,
+                        C.el('span', 'bank-account-state', data.status === 'UPDATED' ? 'Conectada' : 'Vinculada'));
+                    content.append(C.el('p', '', (account.type === 'CREDIT' ? 'Saldo do cartão: ' : 'Saldo: ') + money(account.balance, account.currency)));
+                    row.append(header, content);
+                    content.append(C.button('Ver e importar extrato', async function () {
                         active = { itemId: ref.item_id, accountId: account.id, financeAccountId: financeAccountId, name: data.bank + ' · ' + account.name };
                         await statement(false);
                         if (!$('bank-statement').hidden) $('bank-statement').scrollIntoView({ block: 'nearest' });
                     }, 'soft-button'));
-                    row.append(C.button('Agendamentos', async function () {
+                    content.append(C.button('Agendamentos', async function () {
                         const end = new Date(today + 'T12:00:00Z');
                         end.setUTCDate(end.getUTCDate() + 30);
                         const detail = row.querySelector('.scheduled-list') || C.el('div', 'scheduled-list');
-                        row.append(detail); detail.textContent = 'Consultando próximos 30 dias…';
+                        content.append(detail); detail.textContent = 'Consultando próximos 30 dias…';
                         try {
                             const found = new Map(), seen = new Set();
                             let page = null;
@@ -203,6 +254,7 @@
                     }, 'soft-button'));
                     card.append(row);
                 }
+                card.append(manage);
                 if (!data.accounts?.length) card.append(C.el('p', '', 'A instituição ainda não disponibilizou contas. Atualize em alguns instantes.'));
             } catch (error) { failures++; card.append(C.el('p', 'bank-error', error.message)); }
         }
@@ -291,7 +343,7 @@
         const map = new Map(rows.map(function (row) { return [row.id, row]; }));
         data.transactions.forEach(function (row) { map.set(row.id, row); });
         rows = Array.from(map.values());
-        return saveTransactions(data.transactions, account.financeAccountId);
+        return data.transactions;
     }
 
     async function statement(more) {
@@ -299,15 +351,16 @@
         controls(true);
         try {
             if (!more) { rows = []; cursor = null; $('bank-transactions').replaceChildren(); }
-            const imported = await fetchTransactions(more);
-            window.dispatchEvent(new Event('cc-finance-bank-synced'));
+            const fetched = await fetchTransactions(more);
             $('bank-statement').hidden = false;
             $('bank-account-title').textContent = active.name + ' · Extrato';
             const box = $('bank-transactions'); box.replaceChildren();
             rows.forEach(function (transaction) {
                 const line = C.el('article', 'bank-transaction'), text = C.el('div');
                 text.append(C.el('strong', '', transaction.description), C.el('small', '', C.date(transaction.date) + ' · ' + (transaction.status === 'PENDING' ? 'Pendente · não entra nos totais' : 'Registrada')));
-                const amount = C.el('strong', transaction.type === 'CREDIT' ? 'bank-credit' : '', money(transaction.amount, transaction.currency));
+                const incoming = transaction.type === 'CREDIT';
+                const amount = C.el('strong', incoming ? 'bank-credit' : 'bank-debit',
+                    (incoming ? '+ ' : '− ') + money(Math.abs(transaction.amount), transaction.currency));
                 line.append(text, amount); box.append(line);
             });
             const download=C.button('Baixar extrato exibido (CSV)', function(){
@@ -319,6 +372,8 @@
             if(rows.length) box.prepend(download);
             if (!rows.length) box.append(C.el('p', '', 'Nenhuma transação disponibilizada para estas datas.'));
             $('bank-more').hidden = !cursor;
+            const imported = await saveTransactions(fetched, active.financeAccountId);
+            window.dispatchEvent(new Event('cc-finance-bank-synced'));
             notice('Extrato atualizado. ' + imported + ' movimentações importadas para as finanças compartilhadas.');
         } catch (error) { notice(error.message, true); }
         finally { controls(false); }
@@ -363,7 +418,18 @@
         }
     }
 
-    window.CCOpenFinance = { syncRange: syncRange };
+    window.CCOpenFinance = {
+        syncRange,
+        open(bounds) {
+            if (dialog.open) return;
+            if (bounds && ($('bank-date-from').value !== bounds.start || $('bank-date-to').value !== bounds.end)) {
+                $('bank-date-from').value = bounds.start;
+                $('bank-date-to').value = bounds.end;
+                $('bank-statement').hidden = true;
+            }
+            dialog.showModal();
+        }
+    };
     $('connect-bank').addEventListener('click', function () { connect(); });
     $('bank-date-from').addEventListener('change', function () { if (!$('bank-statement').hidden) statement(false); });
     $('bank-date-to').addEventListener('change', function () { if (!$('bank-statement').hidden) statement(false); });

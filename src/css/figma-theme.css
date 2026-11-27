@@ -505,7 +505,6 @@ svg { width: 21px; height: 21px; }
     --orbital-borda: rgba(167,187,220,.13);
 }
 .cc-figma body {
-    color-scheme: dark;
     background: radial-gradient(ellipse at 85% 0, #1c2b472e, transparent 45%), #0a1426;
     color: var(--text);
     font-family: 'DM Sans', sans-serif;
@@ -604,7 +603,6 @@ svg { width: 21px; height: 21px; }
 .cc-figma .cabecalho .selo-tarefas { display: none; }
 .cc-figma .cc-header-actions { display: flex; align-items: center; gap: 10px; }
 .cc-figma .cc-date { font-size: 12px; color: #a9b7ce; white-space: nowrap; }
-.cc-figma .cc-search-open { min-height: 40px; min-width: 150px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); border-radius: 12px; background: #ffffff06; color: #a9b7ce; font-size: 12px; }
 .cc-figma .aplicacao .conteudo-principal > .conteudo {
     flex: 1; width: auto; max-width: 1500px; min-width: 0;
     margin: 0; padding: 30px clamp(24px, 3.6vw, 60px) 40px; display: grid;
@@ -622,7 +620,7 @@ svg { width: 21px; height: 21px; }
 .cc-figma .painel .campo-app { min-width: 0; margin-bottom: 0; }
 .cc-figma .campo-app label { color: #dfe5ef; font-size: 12px; font-weight: 600; }
 .cc-figma .form-app { display: grid; gap: 18px; }
-.cc-figma .campo-app :is(input, select, textarea), .cc-figma .cc-search input {
+.cc-figma .campo-app :is(input, select, textarea) {
     min-width: 0; width: 100%; min-height: 50px; padding: 12px 15px;
     border: 1px solid #ffffff16; border-radius: 13px;
     background: #ffffff06; color: #f5f7fb; font-size: 14px;
@@ -665,13 +663,6 @@ svg { width: 21px; height: 21px; }
 .cc-figma .calendario-formularios { gap: 20px; }
 .cc-figma .lista-app > :is(article, li) { border-color: #ffffff12; }
 .cc-figma .cc-mobile-open, .cc-figma .cc-bottom-nav, .cc-figma .cc-backdrop { display: none; }
-.cc-figma .cc-search { width: min(480px, calc(100% - 32px)); max-height: 80dvh; margin: auto; padding: 24px; border: 1px solid #ffffff24; border-radius: 22px; background: #111f38; color: #f5f7fb; }
-.cc-figma .cc-search::backdrop { background: #030915bb; backdrop-filter: blur(4px); }
-.cc-figma .cc-search header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.cc-figma .cc-search h2 { font: 600 22px 'Outfit', sans-serif; }
-.cc-figma .cc-search nav { display: grid; gap: 5px; margin-top: 16px; }
-.cc-figma .cc-search a { display: flex; gap: 12px; padding: 12px; border-radius: 10px; color: #d7dff0; }
-.cc-figma .cc-search a:hover { background: #ffffff0b; }
 .cc-figma .cc-compact .menu-lateral { width: 78px; padding-inline: 12px; }
 .cc-figma .cc-compact .conteudo-principal { margin-left: 110px; }
 .cc-figma .cc-compact :is(.marca-tarefas-nome, .item-menu > span, .cc-nav-label, .conta-nome, .cc-menu-note) { display: none; }

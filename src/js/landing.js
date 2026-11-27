@@ -12,10 +12,50 @@
     const linksPainel = document.querySelectorAll('[data-enter-app]');
     const sair = document.getElementById('landing-sign-out');
     const cadastroPublico = document.querySelectorAll('[data-signup]');
+    const instalacao = document.getElementById('modal-instalar');
+    const instalar = document.getElementById('confirmar-instalacao');
+    const statusInstalacao = document.getElementById('status-instalacao');
+    let conviteInstalacao;
     let versaoConta = 0;
     let origemLogin = entrada;
     let origemCadastro = document.getElementById('abrir-cadastro');
 
+    window.addEventListener('beforeinstallprompt', event => {
+        event.preventDefault();
+        conviteInstalacao = event;
+        instalar.hidden = false;
+    });
+    window.addEventListener('appinstalled', () => {
+        conviteInstalacao = null;
+        instalar.hidden = true;
+        statusInstalacao.textContent = 'CoupleCare instalado.';
+    });
+    function abrirInstalacao(platform) {
+        statusInstalacao.textContent = '';
+        const active = platform || (/iPhone|iPad/i.test(navigator.userAgent) ? 'ios' :
+            /Android/i.test(navigator.userAgent) ? 'android' : 'desktop');
+        instalacao.querySelectorAll('[data-platform]').forEach(item => {
+            item.open = item.dataset.platform === active;
+        });
+        if (!instalacao.open) instalacao.showModal();
+    }
+    document.querySelectorAll('[data-install]').forEach(button => {
+        button.addEventListener('click', () => abrirInstalacao(button.dataset.install));
+    });
+    if (new URLSearchParams(location.search).get('instalar') === '1') abrirInstalacao();
+    instalar.addEventListener('click', async () => {
+        const prompt = conviteInstalacao;
+        if (!prompt) return;
+        conviteInstalacao = null;
+        instalar.hidden = true;
+        try {
+            await prompt.prompt();
+            const choice = await prompt.userChoice;
+            statusInstalacao.textContent = choice.outcome === 'accepted' ? 'Instalação iniciada.' : '';
+        } catch (_) {
+            statusInstalacao.textContent = 'Use as instruções acima para instalar pelo navegador.';
+        }
+    });
     const campoSenha = document.createElement('div');
     campoSenha.className = 'auth-password';
     senha.before(campoSenha);
@@ -106,7 +146,7 @@
     function lerDestinoDeLogin() {
         if (location.hash !== '#entrar' || cadastro.open) return;
         if (conta.hidden) abrirLogin(entrada);
-        else window.location.replace('/dashboard');
+        else window.location.replace('/src/dashboard.html');
     }
 
     document.addEventListener('click', function (event) {

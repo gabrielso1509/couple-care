@@ -1,4 +1,4 @@
-/* Diálogos de consulta se deslocam do controle de origem até o centro. */
+/* Consultas devolvem o foco ao controle que abriu o painel. */
 (function () {
     'use strict';
     CC.openOverview = function (dialog, trigger) {
@@ -7,17 +7,7 @@
         const closeButton = dialog.querySelector('[data-close]');
         dialog.showModal();
         closeButton.focus({ preventScroll: true });
-        const origin = trigger.getBoundingClientRect();
-        const end = dialog.getBoundingClientRect();
-        const dx = origin.left + origin.width / 2 - (end.left + end.width / 2);
-        const dy = origin.top + origin.height / 2 - (end.top + end.height / 2);
-        const x = Math.max(-100, Math.min(100, dx * .25));
-        const y = Math.max(-72, Math.min(72, dy * .25));
-        const from = { transform: 'translate(' + x + 'px, ' + y + 'px) scale(.95)', opacity: 0 };
-        const to = { transform: 'none', opacity: 1 };
-        let animation = reduced.matches ? null : dialog.animate([from, to], {
-            duration: 280, easing: 'cubic-bezier(.18,.77,.28,1)'
-        });
+        let animation;
         let closing = false;
         let backdropPointer = false;
 
@@ -36,13 +26,16 @@
             event.preventDefault();
             if (closing) return;
             closing = true;
-            if (animation) animation.cancel();
             if (reduced.matches) {
                 dialog.close();
                 return;
             }
             dialog.dataset.closing = 'true';
-            animation = dialog.animate([to, from], { duration: 190, easing: 'ease-in', fill: 'forwards' });
+            const style = getComputedStyle(dialog);
+            animation = dialog.animate([
+                { transform: style.transform, opacity: style.opacity },
+                { transform: 'translateX(35px)', opacity: 0 }
+            ], { duration: 190, easing: 'ease-in', fill: 'forwards' });
             animation.onfinish = function () { dialog.close(); };
         }
 

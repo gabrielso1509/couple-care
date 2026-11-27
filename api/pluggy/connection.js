@@ -17,7 +17,20 @@ module.exports=P.handler(async function(s,body){
  if(body.action==='disconnect'){await P.api('/items/'+item.id,key,{method:'DELETE'});await P.store(s,'?item_id=eq.'+item.id,{method:'DELETE'});return {deleted:true};}
  if(body.action==='accounts'){
   const list=await P.api('/accounts?itemId='+item.id,key);
-  return {status:item.status,updatedAt:item.lastUpdatedAt,bank:item.connector?.name||'Instituição conectada',accounts:(list.results||[]).map(a=>({id:a.id,name:a.name,type:a.type,currency:a.currencyCode||'BRL',balance:a.balance}))};
+  const logoUrl=item.connector?.imageUrl;
+  return {
+   status:item.status,
+   updatedAt:item.lastUpdatedAt,
+   bank:item.connector?.name||'Instituição conectada',
+   logoUrl:typeof logoUrl==='string'&&/^https:\/\/cdn\.pluggy\.ai\/assets\/[\w./-]+\.(?:svg|png|webp)$/i.test(logoUrl)?logoUrl:null,
+   accounts:(list.results||[]).map(account=>{
+    const digits=String(account.number||'').split('/')[0].replace(/\D/g,'');
+    const compe=String(account.bankData?.transferNumber||'').match(/^(\d{3,4})\//)?.[1];
+    return {id:account.id,name:account.name,type:account.type,subtype:account.subtype,
+     currency:account.currencyCode||'BRL',balance:account.balance,lastFour:digits.length>=4?digits.slice(-4):null,
+     compe:compe||null};
+   })
+  };
  }
  if(body.action==='transactions'){
   P.id(body.accountId);const account=await P.api('/accounts/'+body.accountId,key);if(account.itemId!==item.id)P.fail(403,'Conta não pertence à conexão.');

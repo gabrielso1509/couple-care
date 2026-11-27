@@ -90,7 +90,9 @@
             if (task.description) title.append(C.el('small', 'mobile-only', task.description));
             const assignment = C.taskAssignment(task, members);
             if (assignment) title.append(assignment);
-            button.append(C.el('span', 'mobile-only dashboard-task-mark'), title, C.el('small', '', due(task.due_date)));
+            const overdue = task.due_date && task.due_date < today;
+            button.append(C.el('span', 'mobile-only dashboard-task-mark'), title,
+                C.el('small', overdue ? 'dashboard-task-overdue' : '', (overdue ? 'Atrasada · ' : '') + due(task.due_date)));
             button.addEventListener('click', function () { open(button, task.id); });
             return button;
         });

@@ -15,38 +15,14 @@
     const monthButton = $('compromisso-mes-atual');
     const previousMonth = $('compromisso-mes-anterior');
     const nextMonth = $('compromisso-mes-seguinte');
-    const monthDialog = C.dialog('compromisso-mes-dialog', 'Consultar compromissos', `
-        <form class="form-app" id="compromisso-mes-form">
-            <label class="cc-field">Mês
-                <select id="compromisso-mes-numero" required></select>
-            </label>
-            <label class="cc-field">Ano
-                <input type="number" id="compromisso-mes-ano" min="1900" max="2100" step="1" required>
-            </label>
-            <button class="primary-button" type="submit">Consultar</button>
-        </form>`);
-    const monthSelect = $('compromisso-mes-numero');
-    const yearInput = $('compromisso-mes-ano');
-    for (let index = 0; index < 12; index += 1) {
-        const name = new Date(2000, index, 1).toLocaleDateString('pt-BR', { month: 'long' });
-        monthSelect.append(new Option(name, String(index + 1).padStart(2, '0')));
-    }
-
+    month.value = C.today().slice(0, 7);
     function setMonth(value) {
+        if (value < '1900-01' || value > '2100-12') return;
         month.value = value;
         void load();
     }
-    monthButton.addEventListener('click', function () {
-        monthSelect.value = month.value.slice(5);
-        yearInput.value = month.value.slice(0, 4);
-        monthDialog.showModal();
-        monthSelect.focus();
-    });
-    $('compromisso-mes-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        setMonth(yearInput.value + '-' + monthSelect.value);
-        monthDialog.close();
-    });
+    const updateMonth = C.monthPicker({ id:'compromisso-mes-dialog', button:monthButton,
+        caption:$('compromisso-mes-legenda'), current:() => month.value, select:setMonth });
     [previousMonth, nextMonth].forEach(function (button, index) {
         button.addEventListener('click', function () {
             const date = A.local(month.value + '-01');
@@ -112,7 +88,7 @@
         }
         const start = month.value + '-01';
         const date = A.local(start);
-        monthButton.textContent = date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        updateMonth();
         monthButton.disabled = false;
         previousMonth.disabled = month.value === '1900-01';
         nextMonth.disabled = month.value === '2100-12';
@@ -148,6 +124,7 @@
         const feedback = editing ? 'Compromisso atualizado.' : 'Compromisso criado.';
         $('feedback-compromisso').textContent = feedback;
         dialog.close();
+        C.tarefasEditor.mostrarSecao('compromisso');
         await load();
         newItem.focus();
     });

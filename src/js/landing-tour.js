@@ -30,7 +30,7 @@
         { id: 'home', label: 'Início', title: 'Dashboard', icon: 'home', headline: 'Um resumo do dia de vocês', copy: 'Vejam a agenda, as tarefas e as finanças no painel inicial.' },
         { id: 'tasks', label: 'Tarefas', title: 'Tarefas', icon: 'check', headline: 'Dividam a rotina', copy: 'Marquem o que já foi feito e vejam o progresso de hoje.' },
         { id: 'calendar', label: 'Calendário', title: 'Calendário', icon: 'calendar', headline: 'Planejem a semana juntos', copy: 'Escolham um dia para ver os compromissos ou troquem para a visão do mês.' },
-        { id: 'wellbeing', label: 'Bem-estar', title: 'Bem-estar', icon: 'heart', headline: 'Cuidem um do outro', copy: 'Experimentem registrar um sentimento de exemplo.' },
+        { id: 'wellbeing', label: 'Saúde', title: 'Bem-estar', icon: 'heart', headline: 'Cuidem um do outro', copy: 'Experimentem registrar um sentimento de exemplo.' },
         { id: 'finances', label: 'Finanças', title: 'Finanças', icon: 'wallet', headline: 'Acompanhem as contas do casal', copy: 'Troquem o período para ver o saldo, os gastos por categoria e a atividade recente.' }
     ];
     const tasks = [
@@ -62,7 +62,7 @@
     const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
     const moods = ['Tranquila', 'Com energia', 'Sensível', 'Cansada'];
     const state = {
-        page: 'calendar', date: referenceDay, month: false,
+        page: 'home', date: referenceDay, month: false,
         taskFilter: 'today', period: 'month', moneyVisible: true,
         feeling: null, savedFeeling: null
     };
@@ -169,14 +169,17 @@
             <div class="device-card"><h4>Atividade recente</h4>${rows.slice(-3).reverse().map(row => `<div class="device-row"><span class="row-title"><strong>${row.title}</strong><small>${row.category}</small></span><span>${money(row.amount)}</span></div>`).join('')}</div>`;
     }
 
-    function renderHome() {
-        const open = tasks.filter(task => task.when === 'Hoje' && !task.done).length;
-        return heading('Dashboard') + `<div class="device-card"><span class="device-kicker">Agenda de hoje</span><h4>O que vem por aí</h4>
-            <p>10:00 · Consulta médica</p><p>20:00 · Jantar a dois</p></div>
-            <div class="device-card"><h4>Tarefas</h4><p>${open} ${open === 1 ? 'pendência' : 'pendências'} hoje</p></div>
-            <div class="device-card"><h4>Finanças do mês</h4><strong class="device-balance">${state.moneyVisible ? formatter.format(entries.reduce((sum,row) => sum + row.amount,0)) : '••••'}</strong></div>
-            <div class="device-card"><h4>Ciclo compartilhado</h4><small>Como se sente hoje</small><p>${state.savedFeeling ? text(state.savedFeeling) : 'Ainda sem check-in de exemplo. ♡'}</p></div>`;
+    // As imagens e os números desta vitrine são somente ilustrativos.
+    function goalPhoto(image, title, value, ratio) {
+        return `<div class="device-card mock-demo-goal"><img class="mock-demo-photo" src="/src/img/mockup-${image}.webp" alt=""><b>${title}</b><small>${value}</small><div class="goal-progress"><div class="mock-demo-progress"><i style="width:${ratio}%"></i></div><small>${ratio}%</small></div></div>`;
     }
+    function renderHome() {
+        return `<h3 class="mock-demo-title">Olá, casal! 💜</h3><p class="device-subtitle">Hoje é um bom dia para avançar nos seus planos.</p>
+            <div class="mock-demo-metrics"><div class="device-card"><span class="metric-icon">${icon('wallet')}</span><span class="device-kicker">Finanças</span><strong>R$ 4.320,00</strong><small>Saldo do casal</small></div><div class="device-card"><span class="metric-icon">${icon('check')}</span><span class="device-kicker">Tarefas</span><strong>${tasks.filter(t=>!t.done).length} pendentes</strong></div></div>
+            <h4 class="mock-demo-title">Metas do casal</h4>${goalPhoto('viagem','Viagem dos sonhos','R$ 6.500,00 de R$ 10.000,00',65)}<div class="device-card"><span class="device-kicker">Próxima atividade</span><b>Jantar a dois</b><p>Hoje, 20:00</p></div>`;
+    }
+    function renderTimelinePreview(){return `<h3 class="mock-demo-title">Linha do tempo</h3><div class="device-controls"><button>Momentos</button><button>Conquistas</button></div><div class="device-card"><img class="mock-demo-photo" src="/src/img/mockup-momento.webp" alt=""><b>Nosso aniversário 💜</b><p>2 anos juntos</p></div>`;}
+    function renderGoalsPreview(){return `<h3 class="mock-demo-title">Nossas metas</h3>${goalPhoto('casa','Comprar nosso lar','R$ 120.000,00 de R$ 300.000,00',40)}${goalPhoto('viagem','Viagem dos sonhos','R$ 6.500,00 de R$ 10.000,00',65)}`;}
 
     function renderWellbeing() {
         return heading('Bem-estar') + `<div class="device-card"><span class="device-kicker">Check-in de exemplo</span><h4>Como você se sente hoje?</h4>
@@ -231,8 +234,8 @@
     }
 
     nav.innerHTML = screens.map(page => `<button type="button" data-demo-page="${page.id}" aria-controls="demo-screen" aria-pressed="false">${icon(page.icon)}<span>${page.label}</span></button>`).join('');
-    renderSide('demo-left', renderTasks());
-    renderSide('demo-right', renderFinances());
+    renderSide('demo-left', renderTimelinePreview());
+    renderSide('demo-right', renderGoalsPreview());
     renderChecklist();
     showPage(state.page);
 

@@ -3,7 +3,6 @@
     'use strict';
     const C = CC, A = C.agenda, $ = C.$;
     const dialog = $('dialogo-dia');
-    const monthTitle = $('mes');
     const grid = $('dias');
     const status = $('status-calendario');
     const cycleLabels = {
@@ -18,12 +17,15 @@
     const weekGrid = $('mobile-semana');
     const toggle = $('alternar-calendario');
     const calendar = grid.closest('.calendario-mensal');
+    const agendaToggle = $('calendar-agenda-toggle');
     let selected = C.today();
-    let weekMode = mobile.matches;
+    let weekMode = false;
+    let displayMode = "month", filterType = "all";
+    const filtered = day => (grouped.get(day) || []).filter(item => filterType === "all" || item.type === filterType);
     let month = A.local(selected);
     let context;
     let grouped = new Map();
-    let viewing = null;
+    let openGroup = null;
     let requestId = 0;
     let partial = false;
     let loading = true;
@@ -35,15 +37,11 @@
     }
 
     function paintWeek() {
-        calendar.toggleAttribute('data-week', weekMode);
+        calendar.toggleAttribute('data-week', weekMode); calendar.dataset.mode=displayMode;
         toggle.setAttribute('aria-pressed', String(!weekMode));
         toggle.textContent = weekMode ? 'Ver mês' : 'Ver semana';
-        $('mobile-calendar-label').textContent = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-        $('mobile-calendar-heading').textContent = weekMode ? 'Esta semana' : 'Visão mensal';
         $('anterior').setAttribute('aria-label', weekMode ? 'Semana anterior' : 'Mês anterior');
         $('seguinte').setAttribute('aria-label', weekMode ? 'Próxima semana' : 'Próximo mês');
-        if (!mobile.matches) return;
-
         const focused = document.activeElement?.dataset.semanaDia;
         const fragment = document.createDocumentFragment();
         const first = weekStart();
@@ -51,7 +49,7 @@
             const day = A.plusDays(first, index);
             const date = A.local(day);
             const button = C.el('button', 'mobile-semana-dia');
-            const count = (grouped.get(day) || []).length;
+            const count = filtered(day).length;
             button.type = 'button';
             button.dataset.semanaDia = day;
             button.disabled = day < '1900-01-01' || day > '2100-12-31';
@@ -68,20 +66,36 @@
     }
 
     function paintInline() {
-        if (!mobile.matches) return;
+        const listMode = $("mock-calendar-list");
+        if (listMode) {
+            listMode.hidden = displayMode !== "list";
+            listMode.replaceChildren();
+            if (displayMode === "list") {
+                Array.from(grouped.keys()).sort().forEach(day => { const items=filtered(day); if(!items.length)return;const heading=C.el("h3","",C.date(day));listMode.append(heading);items.forEach(item=>listMode.append(makeCard(item))); });
+                if(!listMode.children.length)listMode.append(C.el("p","empty-state","Nenhum evento neste período."));
+            }
+        }
         const date = A.local(selected);
         $('mobile-dia-semana').textContent = date.toLocaleDateString('pt-BR', { weekday: 'long' });
-        const action = document.querySelector('.mobile-dia-heading a');
+        const action = document.querySelector('.calendar-day-action');
         action.href = 'tarefas.html?evento=' + selected + '#compromissos';
-        $('mobile-dia-titulo').textContent = date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
-        const items = grouped.get(selected) || [];
+        $('mobile-dia-titulo').textContent = date.toLocaleDateString('pt-BR', { weekday:'short', day:'numeric', month:'long' });
+        const items = filtered(selected);
+        const cover = items.find(item => item.type !== 'pessoal');
+        $('calendar-day-cover').hidden = !cover;
+        if (cover) {
+            $('calendar-day-cover-date').textContent = String(date.getDate());
+            $('calendar-day-cover-title').textContent = cover.title;
+            $('calendar-day-cover-type').textContent = cover.time || '';
+            $('calendar-day-cover-description').textContent = descriptionLines(cover).join(' · ');
+        }
         const list = $('mobile-dia-itens');
         list.replaceChildren();
-        items.forEach(function (item) {
+        items.filter(item => item !== cover).forEach(function (item) {
             const row = C.el('article', 'mobile-day-row cal-tipo-' + item.type);
             const detail = C.el('div');
-            detail.append(C.el('h3', '', item.title), C.el('small', '', item.label));
-            item.lines.forEach(function (line) { if (line) detail.append(C.el('p', '', line)); });
+            detail.append(C.el('h3', '', item.title));
+            descriptionLines(item).forEach(line => detail.append(C.el('p', '', line)));
             row.append(C.el('span', 'mobile-day-time', item.time || '—'), detail);
             list.append(row);
         });
@@ -104,28 +118,78 @@
         return person ? person.display_name.split(' ')[0] : 'Compartilhado com você';
     }
 
-    function makeCard(item) {
+    function descriptionLines(item) {
+        const normalize = text => text.trim().toLocaleLowerCase('pt-BR');
+        const seen = new Set([item.title, item.label].map(normalize));
+        const author = item.type === 'pessoal' ? item.label.split(' · ')[1] : '';
+        return [author, ...item.lines].filter(line => {
+            if (!line || seen.has(normalize(line))) return false;
+            seen.add(normalize(line));
+            return true;
+        });
+    }
+
+    function makeCard(item, day) {
         const card = C.el('article', 'modal-consulta-item cal-tipo-' + item.type);
-        card.append(C.el('small', '', item.time ? item.label + ' · ' + item.time : item.label), C.el('h3', '', item.title));
-        item.lines.forEach(function (line) { if (line) card.append(C.el('p', '', line)); });
+        if (day || item.time) {
+            const meta = C.el('div', 'calendar-item-meta');
+            if (day) {
+                const date = C.el('time', '', C.date(day));
+                date.dateTime = day;
+                meta.append(date);
+            }
+            if (item.time) meta.append(C.el('span', '', item.time));
+            card.append(meta);
+        }
+        card.append(C.el('h3', '', item.title));
+        descriptionLines(item).forEach(line => card.append(C.el('p', '', line)));
         return card;
     }
 
-    function drawAgenda(day) {
-        $('selecionado').textContent = A.local(day).toLocaleDateString('pt-BR', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    const weekGroups = [
+        ['aniversario','Aniversários','birthday'], ['evento','Compromissos do casal','calendar'],
+        ['conta','Contas a vencer','card'], ['lembrete','Lembretes','bell'],
+        ['momento','Momentos especiais','heart'], ['tarefa','Tarefas','task'], ['pessoal','Ciclo e bem-estar','cycle']
+    ];
+    function drawAgenda() {
+        const first=weekStart(), last=A.plusDays(first,6);
+        $('selecionado').textContent=C.date(first)+' a '+C.date(last);
+        const list=$('lista');
+        const groups=weekGroups.map(([type,label,symbol])=>{
+            const entries=[];
+            for(let index=0;index<7;index++){
+                const day=A.plusDays(first,index);
+                for(const item of grouped.get(day)||[]) if(item.type===type)entries.push({day,item});
+            }
+            const details=C.el('details','calendar-week-category');
+            details.dataset.kind=type;
+            details.open=openGroup===type;
+            const summary=C.el('summary','');
+            const icon=C.el('span','calendar-week-icon'); icon.append(C.uiIcon(symbol));
+            summary.append(icon,C.el('strong','',label),C.el('span','calendar-week-count',String(entries.length)));
+            summary.addEventListener('click',()=>{
+                openGroup=details.open?null:type;
+                for(const other of list.children)if(other!==details)other.open=false;
+            });
+            const panel=C.el('div','calendar-week-items');
+            for(const {day,item} of entries){
+                panel.append(makeCard(item,day));
+            }
+            if(!entries.length)panel.append(C.el('p','empty-state',loading?'Carregando…':'Nenhum item nesta semana.'));
+            details.append(summary,panel);
+            return details;
         });
-        const items = grouped.get(day) || [];
-        const cards = document.createDocumentFragment();
-        items.forEach(function (item) { cards.append(makeCard(item)); });
-        $('lista').replaceChildren(cards);
-        $('agenda-vazia').hidden = Boolean(items.length || loading || partial);
-        $('agenda-aviso').hidden = !loading && !partial;
-        $('agenda-aviso').textContent = loading ? 'Carregando os itens do dia…' : 'Parte da agenda está indisponível.';
+        list.replaceChildren(...groups);
+        $('agenda-vazia').hidden=true;
+        $('agenda-aviso').hidden=!loading&&!partial;
+        $('agenda-aviso').textContent=loading?'Carregando a agenda…':'Parte da agenda está indisponível.';
     }
 
+    const updateMonth=C.monthPicker({id:'calendar-month-dialog',button:$('calendar-month-picker'),caption:$('mes'),
+        current:()=>A.key(month).slice(0,7),select:value=>go(A.local(value+'-01'))});
+
     function drawMonth() {
-        monthTitle.textContent = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+        updateMonth();
         const today = C.today();
         const year = month.getFullYear();
         const number = month.getMonth();
@@ -140,6 +204,7 @@
             if (day < 1 || day > last) {
                 const blank = C.el('span', 'calendario-dia-vazio');
                 blank.setAttribute('aria-hidden', 'true');
+                blank.append(C.el('span','calendario-dia-numero',String(new Date(year,number,day).getDate())));
                 days.append(blank);
                 continue;
             }
@@ -148,27 +213,25 @@
             const button = C.el('button', 'calendario-dia');
             const markers = C.el('span', 'calendario-dia-resumo');
             const byType = new Map();
-            (grouped.get(key) || []).forEach(function (item) {
+            filtered(key).forEach(function (item) {
                 if (!byType.has(item.type)) byType.set(item.type, []);
                 byType.get(item.type).push(item);
             });
-            byType.forEach(function (items, type) {
+            const groups = Array.from(byType);
+            for (const [type,items] of groups.slice(0,2)) {
                 const marker = C.el('span', 'calendario-marcador cal-tipo-' + type);
                 marker.append(C.el('span', 'calendario-marcador-titulo', items[0].title));
                 if (items.length > 1) marker.append(C.el('span', 'calendario-marcador-total', '+' + (items.length - 1)));
                 markers.append(marker);
-            });
+            }
+            const remaining = groups.slice(2).reduce((sum,[,items])=>sum+items.length,0);
+            if (remaining) markers.append(C.el('span','calendar-extra-count','+'+remaining));
 
             button.type = 'button';
             button.dataset.dia = key;
-            if (mobile.matches) {
-                button.setAttribute('aria-controls', 'mobile-dia-agenda');
-                button.setAttribute('aria-pressed', String(key === selected));
-            } else {
-                button.setAttribute('aria-haspopup', 'dialog');
-                button.setAttribute('aria-controls', dialog.id);
-            }
-            const total = (grouped.get(key) || []).length;
+            button.setAttribute('aria-controls', 'mobile-dia-agenda');
+            button.setAttribute('aria-pressed', String(key === selected));
+            const total = filtered(key).length;
             button.setAttribute('aria-label', C.date(key) + (total ? ', ' + total + (total === 1 ? ' item' : ' itens') : ''));
             if (key === today) button.setAttribute('aria-current', 'date');
             markers.setAttribute('aria-hidden', 'true');
@@ -188,14 +251,28 @@
         grouped.get(day).push({ type: type, label: label, title: title, lines: lines, time: time });
     }
 
+    function recordAnniversary(title, monthNumber, dayNumber, start, end) {
+        const firstYear = Number(start.slice(0,4));
+        const lastYear = Number(end.slice(0,4));
+        for (let year = firstYear; year <= lastYear; year++) {
+            const day = Math.min(dayNumber, new Date(year,monthNumber,0).getDate());
+            const key = A.key(new Date(year,monthNumber-1,day));
+            if (key >= start && key <= end) record(key,'aniversario','Aniversário',title,[]);
+        }
+    }
+
     async function load() {
         if (!context) return;
         const id = ++requestId;
         const first = weekStart();
         const last = A.plusDays(first, 6);
-        const start = weekMode ? (first < '1900-01-01' ? '1900-01-01' : first) : A.key(month);
+        const monthFirst=A.key(month);
+        const monthLast=A.key(new Date(month.getFullYear(),month.getMonth()+1,0));
+        const paddedStart=A.plusDays(monthFirst,-month.getDay());
+        const paddedEnd=A.plusDays(monthLast,6-A.local(monthLast).getDay());
+        const start = weekMode ? (first < '1900-01-01' ? '1900-01-01' : first) : (paddedStart<'1900-01-01'?'1900-01-01':paddedStart);
         const end = weekMode ? (last > '2100-12-31' ? '2100-12-31' : last) :
-            A.key(new Date(month.getFullYear(), month.getMonth() + 1, 0));
+            (paddedEnd>'2100-12-31'?'2100-12-31':paddedEnd);
         const couple = context.couple;
         loading = true;
         controls();
@@ -211,7 +288,18 @@
                 return supabaseClient.from('daily_wellbeing').select('id,user_id,entry_date,feelings,note')
                     .gte('entry_date', start).lte('entry_date', end).order('entry_date').order('id');
             }),
-            A.cycle(start, end)
+            A.cycle(start, end),
+            couple ? C.all(() => supabaseClient.from('finance_bills').select('id,name,due_date')
+                .eq('couple_id',couple).eq('is_active',true).gte('due_date',start).lte('due_date',end)
+                .order('due_date').order('id')) : [],
+            couple ? C.all(() => supabaseClient.from('couple_memories').select('id,title,memory_date')
+                .eq('couple_id',couple).gte('memory_date',start).lte('memory_date',end)
+                .order('memory_date').order('id')) : [],
+            couple ? C.relationship() : null,
+            couple ? supabaseClient.rpc('get_partner_birthday').then(C.result) : [],
+            C.all(() => supabaseClient.from('app_notifications').select('id,title,created_at')
+                .eq('user_id',context.user.id).gte('created_at',start+'T00:00:00').lt('created_at',A.plusDays(end,1)+'T00:00:00')
+                .order('created_at').order('id'))
         ]);
         if (id !== requestId) return;
 
@@ -236,10 +324,22 @@
                 estimated ? 'Estimativa aproximada. Os sintomas podem variar.' : '';
             record(entry.entry_date, 'pessoal', 'Ciclo · ' + byPerson(entry.user_id), cycleLabels[entry.kind], [line]);
         });
+        rows[4].forEach(bill => record(bill.due_date,'conta','Conta a vencer',bill.name,[]));
+        rows[5].forEach(memory => record(memory.memory_date,'momento','Momento especial',memory.title,[]));
+        if (rows[6]?.relationship_date) {
+            const [,m,d] = rows[6].relationship_date.split('-').map(Number);
+            recordAnniversary('Aniversário de vocês',m,d,start,end);
+        }
+        const birthday = rows[7][0];
+        const partner = context.members.find(member => member.user_id !== context.user.id);
+        if (birthday && partner) recordAnniversary('Aniversário de '+partner.display_name.split(' ')[0],
+            birthday.birthday_month,birthday.birthday_day,start,end);
+
+        rows[8].forEach(item=>record(A.key(new Date(item.created_at)),'lembrete','Lembrete',item.title,[]));
 
         // Mantém o botão de origem no DOM enquanto o modal estiver aberto.
         if (dialog.open) {
-            drawAgenda(viewing);
+            drawAgenda();
             paintInline();
             controls();
         } else drawMonth();
@@ -266,56 +366,58 @@
         else go(new Date(month.getFullYear(), month.getMonth() + amount, 1));
     }
 
+    function selectDay(day) {
+        selected = day;
+        month = A.local(day);
+        month.setDate(1);
+        updateMonth();
+        grid.querySelector('[aria-pressed="true"]')?.setAttribute('aria-pressed','false');
+        grid.querySelector('[data-dia="'+day+'"]')?.setAttribute('aria-pressed','true');
+        paintWeek();
+        paintInline();
+    }
+
+    document.querySelectorAll('[data-calendar-mode]').forEach(button => button.addEventListener('click', () => { displayMode=button.dataset.calendarMode; weekMode=displayMode==='week'; calendar.dataset.mode=displayMode; document.querySelectorAll('[data-calendar-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button))); go(A.local(selected)); }));
+    $('mock-calendar-filter')?.addEventListener('change', function(){filterType=this.value;drawMonth();});
     $('anterior').addEventListener('click', function () { move(-1); });
     $('seguinte').addEventListener('click', function () { move(1); });
     $('hoje').addEventListener('click', function () { go(A.local(C.today())); });
     toggle.addEventListener('click', function () {
         weekMode = !weekMode;
+        displayMode = weekMode ? "week" : "month";
         go(A.local(selected));
     });
     mobile.addEventListener('change', function () {
-        weekMode = mobile.matches;
+        weekMode = displayMode === "week";
         if (dialog.open) dialog.close();
         go(A.local(selected));
     });
     weekGrid.addEventListener('click', function (event) {
         const button = event.target.closest('[data-semana-dia]');
         if (!button || button.disabled) return;
-        selected = button.dataset.semanaDia;
-        month = A.local(selected);
-        month.setDate(1);
-        monthTitle.textContent = month.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-        paintWeek();
-        paintInline();
+        selectDay(button.dataset.semanaDia);
     });
     $('atualizar-calendario').addEventListener('click', function () { if (context) void load(); else window.location.reload(); });
     grid.addEventListener('click', function (event) {
         const button = event.target.closest('[data-dia]');
         if (!button) return;
-        viewing = button.dataset.dia;
-        selected = viewing;
-        paintInline();
-        if (mobile.matches) {
-            grid.querySelector('[aria-pressed="true"]')?.removeAttribute('aria-pressed');
-            button.setAttribute('aria-pressed', 'true');
-            return;
-        }
-        drawAgenda(viewing);
-        dialog.scrollTop = 0;
-        C.openOverview(dialog, button);
+        selectDay(button.dataset.dia);
     });
+    function openWeek() {
+        openGroup=null;
+        drawAgenda();
+        dialog.scrollTop=0;
+        C.openOverview(dialog,this);
+    }
+    $('calendar-day-detail').addEventListener('click',openWeek);
+    agendaToggle.addEventListener('click',openWeek);
     dialog.addEventListener('close', function () {
         // Redesenha só depois que o foco voltar ao botão que abriu o modal.
         queueMicrotask(drawMonth);
     });
     C.refreshOnReturn(function () {
         if (!context || loading) return;
-        // Evita exibir dados antigos após trocar de aba ou revogar compartilhamento.
-        grouped = new Map();
-        partial = false;
-        void load();
-        if (dialog.open) drawAgenda(viewing);
-        else drawMonth();
+        return load();
     });
 
     drawMonth();
@@ -327,7 +429,7 @@
         loading = false;
         partial = true;
         status.textContent = C.error(error);
-        if (dialog.open) drawAgenda(viewing);
+        if (dialog.open) drawAgenda();
         paintInline();
         controls();
     });
